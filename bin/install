@@ -1,0 +1,30 @@
+#!/bin/sh
+
+cd ../etc/
+
+if [ -f /home/pi/.config/lxsession/LXDE-pi/autostart ]
+    then
+        sudo cp autostart/autostart /home/pi/.config/lxsession/LXDE-pi/
+fi
+
+if [ -f /home/pi/.config/lxsession/LXDE/autostart ]
+    then
+        sudo cp autostart/autostart /home/pi/.config/lxsession/LXDE/
+fi
+
+if [ -d /etc/nginx/sites-available/ ]
+    then
+        sudo cp nginx/navapp /etc/nginx/sites-available/
+        sudo ln -s /etc/nginx/sites-available/navapp /etc/nginx/sites-enabled/
+fi
+
+if [ ! -f /usr/bin/pm2 ] then
+    sudo npm install -g pm2
+fi
+
+sudo service nginx reload
+
+if [ -f /usr/bin/pm2 ] then
+    sudo pm2 startup systemd -u pi
+    sudo pm2 start app.js --name navapp -u root
+fi

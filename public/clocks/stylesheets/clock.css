@@ -1,0 +1,22 @@
+body{
+	background-color: #333;
+}
+div{
+	position:fixed;
+	top:0px
+}
+.left{
+	right:0px;
+}
+.right{
+	left:0px;
+}
+p{
+	color: #eee;
+	font-weight: 900;
+    	font-size: larger;
+	text-align:center;
+}
+canvas{
+	background-color:#333;
+}

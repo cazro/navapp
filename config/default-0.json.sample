@@ -1,0 +1,38 @@
+{
+    "features":{
+        "rpi": true,
+        "weather": false,
+        "reddit": true
+    },
+    "settings":{
+        "urls": [
+            "https://www.google.com/#q=news&tbm=nws",
+            "http://www.npr.org/sections/news/",
+            "http://www.theverge.com/tech"
+        ],
+        "_deletedUrls": [
+            "http://www.yahoo.com"
+        ],
+        "seconds": 60,              
+        "gpio": {		
+            "buttonForward": 9,
+            "buttonPause": 10,
+            "buttonBack": 11,
+            "ledForward": 3,
+            "ledPause": 2,
+            "ledBack": 4
+        },
+        "weather":{
+            "directory": "gif/",
+            "key": "",
+            "zipcode": "90210",
+            "refresh": 920
+        },
+        "reddit":{
+            "directory": "osha/",
+            "clientId": "",
+            "secret": "",
+            "refresh": 1820
+        }
+    }
+}

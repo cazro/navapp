@@ -1,0 +1,48 @@
+<html>
+<head>
+</head>
+<body id="bfun">
+<style>
+	body{
+              background-position: center center;
+	      background-repeat: no-repeat;
+	}
+</style>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	function getFiles(dir){
+    		fileList = [];
+ 		var sources = [
+			dir+'/'+"dance_dance_carlton.gif",
+			dir+'/'+"PBJ.gif",
+			dir+'/'+"popcornshow.gif",
+			dir+'/'+"baseball.gif",
+			dir+'/'+"bees.gif",
+			dir+'/'+"catwoah.gif",
+			dir+'/'+"dognopes.gif",
+			dir+'/'+"fuzzyscared.gif",
+			dir+'/'+"towersinks.gif"			
+		];
+    		
+		return sources;
+    		
+	}
+	$(document).ready(function(){
+
+		
+		var sources = getFiles('images/gif');
+		var len = sources.length;
+		var randSrc = Math.floor(Math.random() * len);
+		var x = 0;
+		var direction = 1;
+
+		//$("#bfun").css("background-image","url("+sources[randSrc]+")");
+		$(".fun").css("background-image", "url("+sources[randSrc]+")");
+			
+	});
+	</script>
+	<div class="fun" style="position:fixed;width:100%;height:100%;background-size:50%;background-position:center center;background-repeat:no-repeat"></img>
+</body>
+</html>

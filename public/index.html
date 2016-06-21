@@ -1,0 +1,23 @@
+<html>
+        <head>
+                <title> NO ONE WILL EVEN SEE THIS </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        </head>
+        <body>
+	<link rel="stylesheet" type="text/css" href="stylesheets/index.css"></link>
+	<script src="/socket.io/socket.io.js"></script>
+	
+	<script src="javascripts/socketEvents.js"></script>
+        <script>
+            $(document).ready(function()
+            {
+                getSource();
+            });
+        </script>
+    	<iframe id="frame" class="frames main"></iframe>
+	<div class="weather"></div>
+	<iframe id="clock" src="clocks/central.html" class="frames clock1"></iframe>
+	
+	<iframe id="clock" src="clocks/belgium.html" class="frames clock2"></iframe>
+	</body>
+</html>

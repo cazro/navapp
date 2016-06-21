@@ -1,0 +1,33 @@
+BEFORE INSTALLING:
+
+Necessary:
+npm
+node
+
+Recommended:
+nginx
+
+INSTALLING:
+cd to navapp directory
+sudo npm install
+
+KEY FILES:
+
+./config/default-0.json:
+Contains the configuration for the navapp server. 
+
+./bin/install:
+Runs immediately after "npm install".  Places configuration files from ./etc
+to their appropriate places.  Installs pm2 globally using npm and attempts to
+start pm2 and set up the system startup file.
+
+./etc/autostart/autostart:
+Script used by the Raspberry Pi on boot.
+Turns off screensaver.  Starts browser in kiosk mode and starts X11VNC server.
+
+./etc/nginx/navapp:
+Server configuration file for the NGINX server that passes connections to the 
+node server.
+
+
+

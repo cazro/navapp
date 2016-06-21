@@ -1,0 +1,21 @@
+<script>
+ $.ajax({
+  	url :"http://api.wunderground.com/api/a61213c36388ea48/geolookup/alerts/q/OK/OKC.json",
+  	dataType : "jsonp",
+  	success : function(parsed_json) {
+		console.log(parsed_json);
+  		var numAlerts = parsed_json['alerts'].length;
+  		var alerts = parsed_json['alerts'];
+  		if(numAlerts && !badWeather){
+		   sources.push("weather.html");
+		   badWeather = true;
+		   $("p.weather").text(alerts[0].description);
+		} else if(!numAlerts && badWeather){
+		   sources.pop();
+		   badWeather = false;
+		   $("p.weather").text("");
+		}
+		console.log("There are "+numAlerts+" severe weather alerts for OKC.");
+  	}
+  });
+</script>
