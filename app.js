@@ -494,7 +494,7 @@ function watchdogInterval(){
                     }
                 });
             }
-
+            //checkInd(urls,ind);
             if(ind >= urls.length){
                 ind = 0;
             } else if(ind <= -1){
@@ -592,6 +592,11 @@ function getImg(data,dest,type){
             }
         }
     });
+    
+}
+
+function checkInd(array,index){
+    
     
 }
 function changeOsha(){
