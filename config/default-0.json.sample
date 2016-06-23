@@ -30,6 +30,7 @@
         },
         "reddit":{
             "directory": "osha/",
+            "subreddit": "osha",
             "clientId": "",
             "secret": "",
             "refresh": 1820
