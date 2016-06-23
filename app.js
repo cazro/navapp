@@ -48,10 +48,10 @@ if(features.reddit){
     console.log("Reddit is enabled");
     var rawjs = require('raw.js');
     var gm = require('gm');
-    var reddit = new rawjs("IBA Osha pic grabber");
+    var redditApp = new rawjs("IBA Reddit pic grabber");
     var redditSettings = settings.reddit;
-    var oshaStore = imgStore+redditSettings.directory;
-    var oshaUrls = [];
+    var redditStore = imgStore+redditSettings.directory;
+    var redditUrls = [];
     
 }
 
@@ -60,7 +60,7 @@ var urls = settings.urls;
 var ind = 0;
 var badWeather = false;
 var weatherInfo = '';
-var osha = false;
+var reddit = false;
 var busy = false;
 var clientHeight;
 var clientWidth;
@@ -96,15 +96,15 @@ app.use(function(err, req, res, next) {
 
 console.log("Number of urls: "+urls.length);
 if(features.reddit){
-    fs.readdir(oshaStore,function(err,files){
+    fs.readdir(redditStore,function(err,files){
         if(!err){
             if(files.length){
-                console.log("Found osha pics in directory." +oshaStore);
+                console.log("Found Reddit pics in directory." +redditStore);
                 for(var i in files){
                     
-                    oshaUrls.push('images/osha/'+files[i]);
-                    console.log("Pushing images/osha/"+files[i]+" to oshaUrls array");
-                    resize(oshaStore+files[i],function(res,path){
+                    redditUrls.push('images/'+redditSettings.directory+files[i]);
+                    console.log("Pushing images/"+redditSettings.directory+files[i]+" to redditUrls array");
+                    resize(redditStore+files[i],function(res,path){
                         if(res){
                             
                             path = path.split('/');
@@ -112,13 +112,13 @@ if(features.reddit){
                         } else {
                             fs.unlink(path);
                             path = path.split('/');
-                            if(urls[0] === 'images/osha/'+path[path.length-1]){
-                                changeOsha();
+                            if(urls[0] === 'images/'+redditSettings.directory+path[path.length-1]){
+                                changeReddit();
                             }
                         }
                     });
                     if(i == (files.length-1)){
-                        changeOsha();
+                        changeReddit();
                     }
                 }
             }
@@ -258,32 +258,32 @@ if(features.weather){
         });
     },weatherSettings.refresh*1000);
 }
-//Interval to check reddit for Osha pics
+//Interval to check reddit for pics
 if(features.reddit){
     setInterval(function(){
         
         busy = true;
         
-        reddit = new rawjs("IBA Osha pic grabber");
+        reddit = new rawjs("IBA picture grabber");
         reddit.setupOAuth2(redditSettings.clientId, redditSettings.secret, "http://www.iba-protontherapy.com");
 
         var rOptions = {
-            r:"osha",
+            r: redditSettings.subreddit,
             all:true,
             limit:30
         };
-        reddit.hot(rOptions,function(err,res){
+        redditApp.hot(rOptions,function(err,res){
             if(!err){
                 
                 console.log("Reddit success!");
                 
-                fs.readdir(oshaStore,function(err,files){
+                fs.readdir(redditStore,function(err,files){
                     if(!err){
                         for(var f in files){
                             
-                            fs.unlink(oshaStore+files[f]);
+                            fs.unlink(redditStore+files[f]);
                             
-                            console.log("Removing "+files[f]+" from osha directory");
+                            console.log("Removing "+files[f]+" from "+redditSettings.directory+" directory");
                         }
                     }
                 });
@@ -309,7 +309,7 @@ if(features.reddit){
                                         
                                         data.url = data.url+'.jpg';
                                         
-                                        getImg(data,oshaStore+splitUrl[splitUrl.length-1]+'.jpg','unknown');
+                                        getImg(data,redditStore+splitUrl[splitUrl.length-1]+'.jpg','unknown');
                                         
                                     } else if(splitFile.length === 2){
                                         
@@ -317,14 +317,14 @@ if(features.reddit){
                                         
                                         if(extension === 'jpg' || extension === 'gif' || extension === 'jpeg' || extension === 'png'){
                                             
-                                            getImg(data,oshaStore+splitUrl[splitUrl.length-1],'jpg');
+                                            getImg(data,redditStore+splitUrl[splitUrl.length-1],'jpg');
                                             
                                         } else if(extension === 'gifv'){
                                             
                                             var urlNoExt = data.url.split('gifv')[0];
                                             data.url = urlNoExt+'gif';
                                             
-                                            getImg(data,oshaStore+splitFile[0]+'.gif','gif');
+                                            getImg(data,redditStore+splitFile[0]+'.gif','gif');
                                             
                                         }
                                     } else {
@@ -335,7 +335,7 @@ if(features.reddit){
                         } // if link is from imgur
                     } // if result is a link
                 } // for(res.children)
-                //console.log("Osha URLs: "+oshaUrls);
+                
                 busy = false;
             } else {
                 console.log("Reddit error");
@@ -361,7 +361,7 @@ if(features.rpi){
                 ind = urls.length-1;
             }
             if(ind === 0){
-                changeOsha();
+                changeReddit();
             }
 
             ledLeft.setDirection('in');
@@ -392,7 +392,7 @@ if(features.rpi){
             }
             
             if(ind === 0){
-                changeOsha();
+                changeReddit();
             }
   
             ledLeft.setDirection('out');
@@ -480,16 +480,16 @@ function watchdogInterval(){
 
             if(ind === urls.length || ind === -1){
 
-                fs.readdir(oshaStore,function(err,files){
+                fs.readdir(redditStore,function(err,files){
                     if(!err){
-                        console.log("Clearing oshaUrls array.");
+                        console.log("Clearing redditUrls array.");
                         
-                        oshaUrls.splice(0,oshaUrls.length);
-                        oshaUrls.length = 0;
+                        redditUrls.splice(0,redditUrls.length);
+                        redditUrls.length = 0;
                         
                         for(var f in files){
-                            oshaUrls.push('images/osha/'+files[f]);
-                            console.log("Pushing "+files[f]+" to oshaUrls array");
+                            redditUrls.push('images/'+redditSettings.directory+files[f]);
+                            console.log("Pushing "+files[f]+" to redditUrls array");
                         }
                     }
                 });
@@ -501,7 +501,7 @@ function watchdogInterval(){
                 ind = urls.length-1;
             }
             if(ind === 0){
-                changeOsha();
+                changeReddit();
             }
             
             sendSource({but:"No",url:urls[ind]});
@@ -584,7 +584,7 @@ function getImg(data,dest,type){
 
                     console.log("Pushing weather gif onto urls array");
 
-                    urls.push('images/gif/weather.gif');
+                    urls.push('images/'+weatherSettings.directory+'weather.gif');
 
                     badWeather = true;
 
@@ -599,17 +599,17 @@ function checkInd(array,index){
     
     
 }
-function changeOsha(){
-    if(oshaUrls.length){
-        var url = randElement(oshaUrls);
-        if(osha){
+function changeReddit(){
+    if(redditUrls.length){
+        var url = randElement(redditUrls);
+        if(reddit){
             urls.splice(0,1,url);
-            console.log("Replacing first urls element with new random osha pic. "+url);
+            console.log("Replacing first urls element with new random Reddit pic. "+url);
         } else {
 
-            console.log("Inserting random Osha pic at beginning of urls array. " +url);
+            console.log("Inserting random Reddit pic at beginning of urls array. " +url);
             urls.splice(0,0,url);
-            osha = true;
+            reddit = true;
         }
     }
 }
