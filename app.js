@@ -185,7 +185,7 @@ if(features.weather){
                 var alerts = body.alerts;
                 var needMap = false;
                 
-                if(alerts.length){
+                if(alerts && alerts.length){
                     
                     console.log("Detected bad weather");
                     console.log("There "+(alerts.length===1?"is ":"are ")+alerts.length+" weather "+(alerts.length===1?"alert.":"alerts."));
