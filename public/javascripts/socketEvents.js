@@ -41,7 +41,7 @@ socket.on('weatherInfo',function(data){
         $("div.weather").text(data.info);
         $("div.weather").show();
     } else {
-        console.log("Bad weather is gone.");
+        console.log("There is no bad weather.");
         $("div.weather").text("");
         $("div.weather").hide();
     }

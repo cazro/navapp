@@ -1,30 +1,109 @@
-#!/bin/sh
+#!/bin/bash
 
-cd ../etc/
+BOOTSTRAP_DIR=$(cd $(dirname $0); pwd);
 
-if [ -f /home/pi/.config/lxsession/LXDE-pi/autostart ]
-    then
-        sudo cp autostart/autostart /home/pi/.config/lxsession/LXDE-pi/
+echo "Current directory: "$(dirname $0)
+
+echo "Bootstrap directory: "$BOOTSTRAP_DIR
+
+if [ $(dirname $0) == '.' ]
+then 
+	echo "Going to parent dir"
+	cd ../
+else
+	echo "Going to bootstrap dir" $BOOTSTRAP_DIR
+	cd $BOOTSTRAP_DIR
 fi
 
-if [ -f /home/pi/.config/lxsession/LXDE/autostart ]
-    then
-        sudo cp autostart/autostart /home/pi/.config/lxsession/LXDE/
+if [ ! -f /etc/profile.d/kiosk.sh ]
+  then
+	
+	echo "Copying kiosk.sh to /etc/profile.d"
+	sudo cp etc/profile.d/kiosk.sh /etc/profile.d/
+	
+  else
+	num=`diff /etc/profile.d/kiosk.sh etc/profile.d/kiosk.sh | wc -l`
+	if [ $num -gt 0 ]
+	  then
+		echo "The script kiosk.sh is different from the one found"
+		echo "Copying kiosk.sh to /etc/profile.d"
+		sudo cp etc/profile.d/kiosk.sh /etc/profile.d/
+	fi
+fi
+
+if [ -f /usr/bin/startkiosk.sh ]
+  then
+	num=`diff /usr/bin/startkiosk.sh bin/startkiosk.sh | wc -l`
+	if [ $num -gt 0 ]
+	  then
+		echo "startkiosk.sh is different from yours."
+		echo "Copying startkiosk.sh"
+		sudo cp bin/startkiosk.sh /usr/bin/
+	fi
+  else
+	echo "Copying startkiosk.sh"
+	sudo cp bin/startkiosk.sh /usr/bin/
+fi
+
+if [ ! -d /etc/nginx/ ]
+  then
+	echo "Installing nginx"
+	sudo apt-get install -y nginx
+fi
+
+if [ ! -e /usr/bin/midori ]
+  then
+	echo "Installing midori"
+	sudo apt-get install -y midori matchbox
 fi
 
 if [ -d /etc/nginx/sites-available/ ]
-    then
-        sudo cp nginx/navapp /etc/nginx/sites-available/
-        sudo ln -s /etc/nginx/sites-available/navapp /etc/nginx/sites-enabled/
+  then
+	if [ ! -f /etc/nginx/sites-available/navapp ]
+	  then
+		echo "Copying nginx config"
+		sudo cp etc/nginx/navapp /etc/nginx/sites-available/
+	  else
+		num=`diff /etc/nginx/sites-available/navapp etc/nginx/navapp | wc -l`
+		if [ $num -gt 0 ]
+		  then
+			echo "Nginx config navapp is different from yours"
+			sudo cp etc/nginx/navapp /etc/nginx/sites-available/
+		fi
+	fi
+	
+	if [ -h /etc/nginx/sites-enabled/default ]
+	  then
+		echo "Removing old nginx config"
+		sudo rm /etc/nginx/sites-enabled/default
+	fi
+
+	if [ ! -h /etc/nginx/sites-enabled/navapp ]
+	  then
+		echo "Linking navapp config to sites-enabled"
+		sudo ln -sf /etc/nginx/sites-available/navapp /etc/nginx/sites-enabled/		
+	fi
+	
+	echo "Reloading nginx"
+	sudo service nginx reload
 fi
 
-if [ ! -f /usr/bin/pm2 ] then
+if [ ! -f /usr/bin/pm2 ]
+ then
+    echo "Installing pm2"
     sudo npm install -g pm2
 fi
 
-sudo service nginx reload
-
-if [ -f /usr/bin/pm2 ] then
-    sudo pm2 startup systemd -u pi
-    sudo pm2 start app.js --name navapp -u root
+if [ -f /usr/bin/pm2 ]
+  then
+	num=`ps -elf | grep -w node | wc -l`
+	
+	if [ $num -gt 1 ]
+	  then
+        echo "Node process running"
+	  else
+		echo "Starting pm2"
+		pm2 start app.js --name navapp
+	fi
 fi
+exit;
