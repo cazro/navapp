@@ -6,43 +6,43 @@ echo "Current directory: "$(dirname $0)
 
 echo "Bootstrap directory: "$BOOTSTRAP_DIR
 
-if [ $(dirname $0) == '.' ]
-then 
-	echo "Going to parent dir"
-	cd ../
-else
+#if [ $(dirname $0) == '.' ]
+#then 
+#	echo "Going to parent dir"
+#	cd ../
+#else
 	echo "Going to bootstrap dir" $BOOTSTRAP_DIR
 	cd $BOOTSTRAP_DIR
-fi
+#fi
 
 if [ ! -f /etc/profile.d/kiosk.sh ]
   then
 	
 	echo "Copying kiosk.sh to /etc/profile.d"
-	sudo cp etc/profile.d/kiosk.sh /etc/profile.d/
+	sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
 	
   else
-	num=`diff /etc/profile.d/kiosk.sh etc/profile.d/kiosk.sh | wc -l`
+	num=`diff /etc/profile.d/kiosk.sh ../etc/profile.d/kiosk.sh | wc -l`
 	if [ $num -gt 0 ]
 	  then
 		echo "The script kiosk.sh is different from the one found"
 		echo "Copying kiosk.sh to /etc/profile.d"
-		sudo cp etc/profile.d/kiosk.sh /etc/profile.d/
+		sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
 	fi
 fi
 
 if [ -f /usr/bin/startkiosk.sh ]
   then
-	num=`diff /usr/bin/startkiosk.sh bin/startkiosk.sh | wc -l`
+	num=`diff /usr/bin/startkiosk.sh ../bin/startkiosk.sh | wc -l`
 	if [ $num -gt 0 ]
 	  then
 		echo "startkiosk.sh is different from yours."
 		echo "Copying startkiosk.sh"
-		sudo cp bin/startkiosk.sh /usr/bin/
+		sudo cp ../bin/startkiosk.sh /usr/bin/
 	fi
   else
 	echo "Copying startkiosk.sh"
-	sudo cp bin/startkiosk.sh /usr/bin/
+	sudo cp ../bin/startkiosk.sh /usr/bin/
 fi
 
 if [ ! -d /etc/nginx/ ]
@@ -64,11 +64,11 @@ if [ -d /etc/nginx/sites-available/ ]
 		echo "Copying nginx config"
 		sudo cp etc/nginx/navapp /etc/nginx/sites-available/
 	  else
-		num=`diff /etc/nginx/sites-available/navapp etc/nginx/navapp | wc -l`
+		num=`diff /etc/nginx/sites-available/navapp ../etc/nginx/navapp | wc -l`
 		if [ $num -gt 0 ]
 		  then
 			echo "Nginx config navapp is different from yours"
-			sudo cp etc/nginx/navapp /etc/nginx/sites-available/
+			sudo cp ../etc/nginx/navapp /etc/nginx/sites-available/
 		fi
 	fi
 	
@@ -88,11 +88,10 @@ if [ -d /etc/nginx/sites-available/ ]
 	sudo service nginx reload
 fi
 
-if [ ! -f /usr/bin/pm2 ]
- then
-    echo "Installing pm2"
-    sudo npm install -g pm2
-fi
+sudo apt-get install -y x11vnc unclutter GraphicsMagick
+
+echo "Installing pm2"
+sudo npm install -g pm2
 
 if [ -f /usr/bin/pm2 ]
   then
@@ -103,6 +102,7 @@ if [ -f /usr/bin/pm2 ]
         echo "Node process running"
 	  else
 		echo "Starting pm2"
+		cd ../
 		pm2 start app.js --name navapp
 	fi
 fi
