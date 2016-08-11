@@ -143,6 +143,10 @@ if(features.weather){
 
 //Interval to check reddit for pics
 if(features.reddit){
+	setTimeout(function(){
+		getReddit();
+	},30*1000);
+	
     setInterval(function(){
         getReddit();   
     },redditSettings.refresh*1000);//1000000 is about 16 minutes.
@@ -303,19 +307,7 @@ function checkReddit(){
 
 						redditUrls.push('images/'+redditSettings.directory+files[i]);
 						console.log("Pushing images/"+redditSettings.directory+files[i]+" to redditUrls array");
-	//                    resize(redditStore+files[i],function(res,path){
-	//                        if(res){
-	//                            
-	//                            path = path.split('/');
-	//                            
-	//                        } else {
-	//                            fs.unlink(path);
-	//                            path = path.split('/');
-	//                            if(urls[0] === 'images/'+redditSettings.directory+path[path.length-1]){
-	//                                changeReddit();
-	//                            }
-	//                        }
-	//                    });
+	
 						if(i == (files.length-1)){
 							changeReddit();
 						}
