@@ -106,4 +106,7 @@ if [ -f /usr/bin/pm2 ]
 		pm2 start app.js --name navapp
 	fi
 fi
+
+sudo reboot
+
 exit;

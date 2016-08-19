@@ -63,7 +63,8 @@ var reddit = false;
 var busy = false;
 var clientHeight;
 var clientWidth;
-// uncomment after placing your favicon in /public
+var clients = [];
+
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -100,6 +101,12 @@ io.on('connection', function(socket){
 	
     console.log("Client connected...");
     
+	clients.push({
+		'id':socket.id,
+		'watchdogInterval':watchdogInterval,
+		'watchdog':watchdogInterval()
+	});
+	
     socket.emit('test', 
     {
         paused:paused,
@@ -453,7 +460,7 @@ function getReddit(){
 
 											var extension = splitFile[1];
 
-											if(extension === 'jpg' || extension === 'gif' || extension === 'jpeg' || extension === 'png'){
+											if(extension === 'jpg' ||  extension === 'jpeg' || extension === 'png'){
 
 												fileNames.push(fileName);
 												
@@ -465,24 +472,26 @@ function getReddit(){
 													console.log("Reddit image already downloaded. "+fileName);
 												}
 												
-											} else if(extension === 'gifv'){
-
-												var urlNoExt = data.url.split('gifv')[0];
-												
-												data.url = urlNoExt+'gif'; 
-												
-												fileName = splitFile[0]+'.gif';
-												fileNames.push(fileName);
-												
-												temp.push("images/"+redditSettings.directory+fileName);
-												
-												if(!inArray(fileName,files)){
-													getImg(data,redditStore+splitFile[0]+'.gif','gif');
-												}else {
-													console.log("Reddit image already downloaded. "+fileName);
-												}
 											}
-										} else {
+//											else if(extensiofn === 'gifv'){
+//
+//												var urlNoExt = data.url.split('gifv')[0];
+//												
+//												data.url = urlNoExt+'gif'; 
+//												
+//												fileName = splitFile[0]+'.gif';
+//												fileNames.push(fileName);
+//												
+//												temp.push("images/"+redditSettings.directory+fileName);
+//												
+//												if(!inArray(fileName,files)){
+//													getImg(data,redditStore+splitFile[0]+'.gif','gif');
+//												}else {
+//													console.log("Reddit image already downloaded. "+fileName);
+//												}
+//											}
+										}
+										else {
 											console.log("Don't know what to do with the URL");
 										} // Check is link is a direct link to the picture
 									
