@@ -101,11 +101,11 @@ io.on('connection', function(socket){
 	
     console.log("Client connected...");
     
-	clients.push({
-		'id':socket.id,
-		'watchdogInterval':watchdogInterval,
-		'watchdog':watchdogInterval()
-	});
+//	clients.push({
+//		'id':socket.id,
+//		'watchdogInterval':watchdogInterval,
+//		'watchdog':watchdogInterval()
+//	});
 	
     socket.emit('test', 
     {
