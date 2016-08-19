@@ -33,6 +33,7 @@
             "subreddit": "osha",
             "clientId": "",
             "secret": "",
+			"limit":10,
             "refresh": 1820
         }
     }

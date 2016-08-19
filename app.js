@@ -404,7 +404,7 @@ function getReddit(){
     var rOptions = {
         r: redditSettings.subreddit,
         all:true,
-        limit:30
+        limit:redditSettings.limit
     };
     redditApp.hot(rOptions,function(err,res){
         if(!err){
