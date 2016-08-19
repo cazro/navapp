@@ -63,7 +63,6 @@ var reddit = false;
 var busy = false;
 var clientHeight;
 var clientWidth;
-var clients = [];
 
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -101,11 +100,6 @@ io.on('connection', function(socket){
 	
     console.log("Client connected...");
     
-//	clients.push({
-//		'id':socket.id,
-//		'watchdogInterval':watchdogInterval,
-//		'watchdog':watchdogInterval()
-//	});
 	
     socket.emit('test', 
     {
@@ -473,23 +467,6 @@ function getReddit(){
 												}
 												
 											}
-//											else if(extensiofn === 'gifv'){
-//
-//												var urlNoExt = data.url.split('gifv')[0];
-//												
-//												data.url = urlNoExt+'gif'; 
-//												
-//												fileName = splitFile[0]+'.gif';
-//												fileNames.push(fileName);
-//												
-//												temp.push("images/"+redditSettings.directory+fileName);
-//												
-//												if(!inArray(fileName,files)){
-//													getImg(data,redditStore+splitFile[0]+'.gif','gif');
-//												}else {
-//													console.log("Reddit image already downloaded. "+fileName);
-//												}
-//											}
 										}
 										else {
 											console.log("Don't know what to do with the URL");
@@ -686,23 +663,7 @@ function watchdogInterval(){
             } else {
                 ind--;
             }
-
-            if(ind >= urls.length || ind <= -1){
-//                fs.readdir(redditStore,function(err,files){
-//                    if(!err){
-//                        console.log("Clearing redditUrls array.");
-//                        
-//                        redditUrls.splice(0,redditUrls.length);
-//                        redditUrls.length = 0;
-//                        
-//                        for(var f in files){
-//                            redditUrls.push('images/'+redditSettings.directory+files[f]);
-//                            console.log("Pushing "+files[f]+" to redditUrls array");
-//                        }
-//                    }
-//                });
-            }
-            //checkInd(urls,ind);
+           
             if(ind >= urls.length){
                 ind = 0;
             } else if(ind <= -1){
