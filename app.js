@@ -447,8 +447,9 @@ function getReddit(){
 
 												data.url = data.url+'.jpg';
 
+												fileNames.push(fileName+'.jpg');
+												fileNames.push(fileName+'.gif');
 												fileName = fileName+'.jpg';
-												fileNames.push(fileName);
 
 												temp.push('images/'+redditSettings.directory+fileName);
 
