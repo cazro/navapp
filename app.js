@@ -63,7 +63,7 @@ var reddit = false;
 var busy = false;
 var clientHeight;
 var clientWidth;
-// uncomment after placing your favicon in /public
+
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -100,6 +100,7 @@ io.on('connection', function(socket){
 	
     console.log("Client connected...");
     
+	
     socket.emit('test', 
     {
         paused:paused,
@@ -143,6 +144,10 @@ if(features.weather){
 
 //Interval to check reddit for pics
 if(features.reddit){
+	setTimeout(function(){
+		getReddit();
+	},30*1000);
+	
     setInterval(function(){
         getReddit();   
     },redditSettings.refresh*1000);//1000000 is about 16 minutes.
@@ -303,19 +308,7 @@ function checkReddit(){
 
 						redditUrls.push('images/'+redditSettings.directory+files[i]);
 						console.log("Pushing images/"+redditSettings.directory+files[i]+" to redditUrls array");
-	//                    resize(redditStore+files[i],function(res,path){
-	//                        if(res){
-	//                            
-	//                            path = path.split('/');
-	//                            
-	//                        } else {
-	//                            fs.unlink(path);
-	//                            path = path.split('/');
-	//                            if(urls[0] === 'images/'+redditSettings.directory+path[path.length-1]){
-	//                                changeReddit();
-	//                            }
-	//                        }
-	//                    });
+	
 						if(i == (files.length-1)){
 							changeReddit();
 						}
@@ -405,7 +398,7 @@ function getReddit(){
     var rOptions = {
         r: redditSettings.subreddit,
         all:true,
-        limit:30
+        limit:redditSettings.limit
     };
     redditApp.hot(rOptions,function(err,res){
         if(!err){
@@ -461,7 +454,7 @@ function getReddit(){
 
 											var extension = splitFile[1];
 
-											if(extension === 'jpg' || extension === 'gif' || extension === 'jpeg' || extension === 'png'){
+											if(extension === 'jpg' ||  extension === 'jpeg' || extension === 'png'){
 
 												fileNames.push(fileName);
 												
@@ -473,24 +466,9 @@ function getReddit(){
 													console.log("Reddit image already downloaded. "+fileName);
 												}
 												
-											} else if(extension === 'gifv'){
-
-												var urlNoExt = data.url.split('gifv')[0];
-												
-												data.url = urlNoExt+'gif'; 
-												
-												fileName = splitFile[0]+'.gif';
-												fileNames.push(fileName);
-												
-												temp.push("images/"+redditSettings.directory+fileName);
-												
-												if(!inArray(fileName,files)){
-													getImg(data,redditStore+splitFile[0]+'.gif','gif');
-												}else {
-													console.log("Reddit image already downloaded. "+fileName);
-												}
 											}
-										} else {
+										}
+										else {
 											console.log("Don't know what to do with the URL");
 										} // Check is link is a direct link to the picture
 									
@@ -685,23 +663,7 @@ function watchdogInterval(){
             } else {
                 ind--;
             }
-
-            if(ind >= urls.length || ind <= -1){
-//                fs.readdir(redditStore,function(err,files){
-//                    if(!err){
-//                        console.log("Clearing redditUrls array.");
-//                        
-//                        redditUrls.splice(0,redditUrls.length);
-//                        redditUrls.length = 0;
-//                        
-//                        for(var f in files){
-//                            redditUrls.push('images/'+redditSettings.directory+files[f]);
-//                            console.log("Pushing "+files[f]+" to redditUrls array");
-//                        }
-//                    }
-//                });
-            }
-            //checkInd(urls,ind);
+           
             if(ind >= urls.length){
                 ind = 0;
             } else if(ind <= -1){
