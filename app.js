@@ -395,6 +395,8 @@ function getImg(data,dest,type){
 function getReddit(){
     var temp = [];
 	var fileNames = [];
+	var validExt = ['jpg','jpeg','png','gif'];
+	var imgurDoms = ['imgur.com','i.imgur.com'];
     busy = true;
 
     redditApp = new rawjs("IBA picture grabber");
@@ -421,7 +423,7 @@ function getReddit(){
 
 								var data = res.children[i].data;
 
-								if(data.domain === 'imgur.com' || data.domain === 'i.imgur.com'){
+								if(imgurDoms.indexOf(data.domain) !== -1){
 
 									var splitUrl = data.url.split('/');
 
@@ -460,7 +462,7 @@ function getReddit(){
 
 												var extension = splitFile[1];
 
-												if(extension === 'jpg' ||  extension === 'jpeg' || extension === 'png'){
+												if(validExt.indexOf(extension) !== -1){
 
 													fileNames.push(fileName);
 
