@@ -497,7 +497,7 @@ function getReddit(){
 							}
 						});
 					}
-					redditUrls = temp;
+					//redditUrls = temp;
 					setTimeout(function(){
 						checkReddit();
 					},30000);
