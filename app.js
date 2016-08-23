@@ -498,6 +498,9 @@ function getReddit(){
 						});
 					}
 					redditUrls = temp;
+					setTimeout(function(){
+						checkReddit();
+					},10000);
 				});           
 
 			} else {
