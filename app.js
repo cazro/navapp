@@ -327,8 +327,8 @@ function checkReddit(){
 		});
 	}
 }
-function getImg(data,dest,type){
-	
+function getImg(data,dir,file,type,fn){
+	dest = dir+file;
 	fs.access(dest, fs.F_OK,function(err){
 		
 		if(err){
@@ -336,7 +336,7 @@ function getImg(data,dest,type){
 				if(err){
 					console.error(err);
 					busy = false;
-					return false;
+					if(fn) fn(false);
 				} else {
 
 					console.log("Downloaded file "+res.file);
@@ -363,32 +363,32 @@ function getImg(data,dest,type){
 
 										resize(res.file.split('.')[0]+'.gif');
 										
-										return true;
+										if(fn) fn(file.split('.')[0]+'.gif');
 
 									});
 									
 								} else {
 
 									resize(res.file);
-									return true;
+									if(fn) fn(file);
 								}
 							} else {
 
 								fs.unlink(res.file);
-								return false;
+								if(fn) fn(false);
 							}
 						} else {
-							return false;
+							if(fn) fn(false);
 						}
 					}
 					
 					busy = false;
-					return true;
+					if(fn) fn(file);
 				}
 			});
 		} else {
 			console.log(dest+" already exists.  Not downloading.");
-			return true;
+			if(fn) fn(file);
 		}
 	});
 }
@@ -446,14 +446,17 @@ function getReddit(){
 											if(splitFile.length === 1){
 
 												data.url = data.url+'.jpg';
-
+												fileNames.push(fileName+'.jpg');
+												fileNames.push(fileName+'.gif');
 												fileName = fileName+'.jpg';
-												fileNames.push(fileName);
-
-												temp.push('images/'+redditSettings.directory+fileName);
 
 												if(!inArray(fileName,files)){
-													getImg(data,redditStore+fileName,'unknown');
+													getImg(data,redditStore,fileName,'unknown',function(retFile){
+														if(retFile){
+															temp.push('images/'+redditSettings.directory+retFile);
+														}
+													});
+													
 												} else {
 													console.log("Reddit image already downloaded. "+fileName);
 												}
@@ -466,10 +469,14 @@ function getReddit(){
 
 													fileNames.push(fileName);
 
-													temp.push("images/"+redditSettings.directory+fileName);
-
 													if(!inArray(fileName,files)){
-														getImg(data,redditStore+splitUrl[splitUrl.length-1],'jpg');
+														getImg(data,redditStore,splitUrl[splitUrl.length-1],'jpg',function(retFile){
+															if(retFile){
+															
+																temp.push("images/"+redditSettings.directory+retFile);
+															}
+														});
+														
 													}else {
 														console.log("Reddit image already downloaded. "+fileName);
 													}
