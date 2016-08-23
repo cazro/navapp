@@ -410,7 +410,7 @@ function getReddit(){
 			if(!err){
 
 				console.log("Reddit success!");
-
+				console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
 				fs.readdir(redditStore,function(err,files){
 
 					if(!err){
