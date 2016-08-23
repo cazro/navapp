@@ -46,9 +46,13 @@ if(features.weather){
 
 if(features.reddit){
     console.log("Reddit is enabled");
+	
     var rawjs = require('raw.js');
-    var gm = require('gm');
-    var redditApp = new rawjs("IBA Reddit pic grabber");
+	var redditApp = new rawjs("IBA Reddit pic grabber");
+	
+	var WorkQueue = require('mule').WorkQueue;
+	var procQueue = new WorkQueue('./resize.js');
+	
     var redditSettings = settings.reddit;
     var redditStore = imgStore+redditSettings.directory;
     var redditUrls = [];
@@ -411,7 +415,7 @@ function getReddit(){
 					
 					for(var i in res.children){
 						
-						if(res.children[i].kind === 't3'){
+						if(res.children[i].kind === 't3' && temp.length <= 10){
 							
 							var data = res.children[i].data;
 							
@@ -624,16 +628,27 @@ function randElement(arr){
 }
 
 function resize(path,fn){
-	var fork = cp.fork('./resize');
-	fork.send({'path':path});
-
-	fork.on('message',function(m){
-		if(m){
+//	var fork = cp.fork('./resize');
+//	fork.send({'path':path});
+//
+//	fork.on('message',function(m){
+//		if(m){
+//			if(fn) fn(true,path);
+//			fork.kill();
+//		} else {
+//			if(fn) fn(false,path);
+//			fork.kill();
+//		}
+//		
+//	});
+	
+	
+	procQueue.enqueue({'path':path},function(result){
+		
+		if(result){
 			if(fn) fn(true,path);
-			fork.kill();
 		} else {
 			if(fn) fn(false,path);
-			fork.kill();
 		}
 		
 	});
