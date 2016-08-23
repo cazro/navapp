@@ -415,7 +415,7 @@ function getReddit(){
 					
 					for(var i in res.children){
 						
-						if(res.children[i].kind === 't3' && temp.length <= 10){
+						if(res.children[i].kind === 't3'){
 							
 							var data = res.children[i].data;
 							
