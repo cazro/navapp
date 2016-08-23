@@ -404,7 +404,7 @@ function getReddit(){
         all:true,
         limit:redditSettings.limit
     };
-    redditApp.hot(rOptions,function(err,res){
+    redditApp['hot'](rOptions,function(err,res){
         if(!err){
 
             console.log("Reddit success!");
