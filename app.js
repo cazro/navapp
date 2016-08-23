@@ -448,10 +448,9 @@ function getReddit(){
 												data.url = data.url+'.jpg';
 												fileNames.push(fileName+'.jpg');
 												fileNames.push(fileName+'.gif');
-												
+												fileName = fileName+'.jpg';
 
-												if(!inArray(fileName+'.jpg',files) && !inArray(fileName+'.gif',files)){
-													fileName = fileName+'.jpg';
+												if(!inArray(fileName,files)){
 													getImg(data,redditStore,fileName,'unknown',function(retFile){
 														if(retFile){
 															temp.push('images/'+redditSettings.directory+retFile);
@@ -459,7 +458,6 @@ function getReddit(){
 													});
 													
 												} else {
-													
 													console.log("Reddit image already downloaded. "+fileName);
 												}
 
