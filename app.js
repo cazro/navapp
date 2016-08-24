@@ -56,6 +56,7 @@ if(features.reddit){
     var redditSettings = settings.reddit;
     var redditStore = imgStore+redditSettings.directory;
     var redditUrls = [];
+	var redditListings = ['hot','top','new','controversial','random'];
 }
 
 var seconds = settings.seconds;
@@ -394,6 +395,8 @@ function getImg(data,dest,type){
 function getReddit(){
     var temp = [];
 	var fileNames = [];
+	var validExt = ['jpg','jpeg','png','gif'];
+	var imgurDoms = ['imgur.com','i.imgur.com'];
     busy = true;
 
     redditApp = new rawjs("IBA picture grabber");
@@ -404,103 +407,114 @@ function getReddit(){
         all:true,
         limit:redditSettings.limit
     };
-    redditApp.hot(rOptions,function(err,res){
-        if(!err){
+	if(redditListings.indexOf(redditSettings.listing) !== -1){
+		redditApp[redditSettings.listing](rOptions,function(err,res){
+			if(!err){
 
-            console.log("Reddit success!");
-			
-			fs.readdir(redditStore,function(err,files){
-				
-				if(!err){
-					
-					for(var i in res.children){
-						
-						if(res.children[i].kind === 't3' && temp.length <= 10){
-							
-							var data = res.children[i].data;
-							
-							if(data.domain === 'imgur.com' || data.domain === 'i.imgur.com'){
+				console.log("Reddit success!");
+				console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
+				fs.readdir(redditStore,function(err,files){
 
-								var splitUrl = data.url.split('/');
+					if(!err){
 
-								for(var s in splitUrl){
+						for(var i in res.children){
 
-									if(splitUrl[s] === 'a' || splitUrl[s] === 'gallery'){
+							if(res.children[i].kind === 't3'){
 
-										break;
-									}
+								var data = res.children[i].data;
 
-									var len = splitUrl.length - 1;
+								if(imgurDoms.indexOf(data.domain) !== -1){
 
-									if(len == s){
+									var splitUrl = data.url.split('/');
 
-										var fileName = splitUrl[splitUrl.length-1];
-										
-										
-										var splitFile = fileName.split('.');
-										
-										if(splitFile.length === 1){
+									for(var s in splitUrl){
 
-											data.url = data.url+'.jpg';
-											
-											fileName = fileName+'.jpg';
-											fileNames.push(fileName);
-										
-											temp.push('images/'+redditSettings.directory+fileName);
-											
-											if(!inArray(fileName,files)){
-												getImg(data,redditStore+fileName,'unknown');
-											} else {
-												console.log("Reddit image already downloaded. "+fileName);
-											}
-											
-										} else if(splitFile.length === 2){
+										if(splitUrl[s] === 'a' || splitUrl[s] === 'gallery'){
 
-											var extension = splitFile[1];
+											break;
+										}
 
-											if(extension === 'jpg' ||  extension === 'jpeg' || extension === 'png'){
+										var len = splitUrl.length - 1;
 
-												fileNames.push(fileName);
+										if(len == s){
+
+											var fileName = splitUrl[splitUrl.length-1];
+
+
+											var splitFile = fileName.split('.');
+
+											if(splitFile.length === 1){
+
+												data.url = data.url+'.jpg';
+
+												fileNames.push(fileName+'.jpg');
+												fileNames.push(fileName+'.gif');
 												
-												temp.push("images/"+redditSettings.directory+fileName);
-												
-												if(!inArray(fileName,files)){
-													getImg(data,redditStore+splitUrl[splitUrl.length-1],'jpg');
-												}else {
+												temp.push('images/'+redditSettings.directory+fileName);
+
+												if(!inArray(fileName+'.jpg',files) && !inArray(fileName+'.gif',files)){
+													fileName = fileName+'.jpg';
+													getImg(data,redditStore+fileName,'unknown');
+												} else {
+													fileName = fileName+'.jpg';
 													console.log("Reddit image already downloaded. "+fileName);
 												}
-												
+
+											} else if(splitFile.length === 2){
+
+												var extension = splitFile[1];
+
+												if(validExt.indexOf(extension) !== -1){
+
+													fileNames.push(fileName);
+
+													temp.push("images/"+redditSettings.directory+fileName);
+
+													if(!inArray(fileName,files)){
+														getImg(data,redditStore+splitUrl[splitUrl.length-1],'jpg');
+													}else {
+														console.log("Reddit image already downloaded. "+fileName);
+													}
+
+												}
 											}
-										}
-										else {
-											console.log("Don't know what to do with the URL");
-										} // Check is link is a direct link to the picture
-									
-								
-									} // if loop on the last url segment
-								} // Loop through the url split by '/'	
-							} // if link is from imgur
-						} // if result is a link
-					} // for(res.children)
-					fs.readdir(redditStore,function(err,files){
-						if(!err){
-							for(var f in files){
-								if(!inArray(files[f],fileNames)){
-									fs.unlink(redditStore+files[f]);
+											else {
+												console.log("Don't know what to do with the URL");
+											} // Check is link is a direct link to the picture
+
+
+										} // if loop on the last url segment
+									} // Loop through the url split by '/'	
+								} // if link is from imgur
+							} // if result is a link
+						} // for(res.children)
+						fs.readdir(redditStore,function(err,files){
+							if(!err){
+								for(var f in files){
+									if(!inArray(files[f],fileNames)){
+										fs.unlink(redditStore+files[f]);
+									}
 								}
 							}
-						}
-					});
-				}
-				redditUrls = temp;
-			});           
-            
-        } else {
-            console.log("Reddit error");
-            console.error(err);
-        }
-        busy = false;
-    });
+						});
+					}
+					//redditUrls = temp;
+					setTimeout(function(){
+						redditUrls = [];
+						checkReddit();
+					},30000);
+				});           
+
+			} else {
+				console.log("Reddit error");
+				console.error(err);
+			}
+			busy = false;
+		});
+	} else {
+		console.log("Bad Reddit listing type. Must be one of:");
+		console.log(redditListings);
+	}
 }
 
 function getWeather(){
