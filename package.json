@@ -40,6 +40,7 @@
     "express": "~4.13.1",
     "gm": "^1.22.0",
     "http-request": "^0.7.0",
+	"imgur": "git+https://github.com/cazro/imgur.git",
     "morgan": "~1.6.1",
     "mule": "^0.1.0",
     "onoff": "^1.0.3",

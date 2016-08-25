@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-var cp = require('child_process');
+
 require( "console-stamp" )( console, { pattern : "dd/mm/yyyy HH:MM:ss.l" } );
 
 var io = require('socket.io')(server);
@@ -13,13 +13,15 @@ var http = require('http');
 var httpReq = require('http-request');
 
 var config = require('config');
-console.log("CWD: "+process.cwd());
-console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
+
 var features = config.get('features');
 var settings = config.get('settings');
+
 var appPath = process.cwd()+'/';
 var imgStore = appPath+'public/images/';
 
+console.log("CWD: "+process.cwd());
+console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
 console.log(settings);
 
 if(features.rpi){
@@ -57,6 +59,12 @@ if(features.reddit){
     var redditStore = imgStore+redditSettings.directory;
     var redditUrls = [];
 	var redditListings = ['hot','top','new','controversial','random'];
+	
+	var imgClientSecret = "3d09584230c69496c586a176352cdf7bbc7ef769";
+	var imgClientID = "264c7647c10eaaa";
+	
+	var validExt = ['jpg','jpeg','png','gif'];
+	var imgurDoms = ['imgur.com','i.imgur.com'];
 }
 
 var seconds = settings.seconds;
@@ -395,8 +403,7 @@ function getImg(data,dest,type){
 function getReddit(){
     var temp = [];
 	var fileNames = [];
-	var validExt = ['jpg','jpeg','png','gif'];
-	var imgurDoms = ['imgur.com','i.imgur.com'];
+	
     busy = true;
 
     redditApp = new rawjs("IBA picture grabber");
@@ -456,7 +463,8 @@ function getReddit(){
 													fileName = fileName+'.jpg';
 													getImg(data,redditStore+fileName,'unknown');
 												} else {
-													fileName = fileName+'.jpg';
+													if(inArray(fileName+'.jpg')) fileName = fileName+'.jpg';
+													if(inArray(fileName+'.gif')) fileName = fileName+'.gif';
 													console.log("Reddit image already downloaded. "+fileName);
 												}
 
