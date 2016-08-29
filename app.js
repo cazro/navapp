@@ -340,7 +340,7 @@ function checkReddit(){
 function getImg(url,dir,file,callback){
 	var dest = dir+file;
 	var data = {};
-	data.url = url;
+	data.url = str(url);
 	fs.access(dest, fs.F_OK,function(err){
 		
 		if(err){
@@ -445,7 +445,7 @@ function getReddit(){
 										
 									} else if(splitFile.length > 1){  //Reddit submission is a direct link to a picture.
 										
-										getImg(data,redditStore,fileName,function(file){
+										getImg(data.url,redditStore,fileName,function(file){
 											fileNames.push(file);
 											
 										});
