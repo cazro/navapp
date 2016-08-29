@@ -340,7 +340,7 @@ function checkReddit(){
 function getImg(url,dir,file,callback){
 	var dest = dir+file;
 	var data = {};
-	data.url = str(url);
+	data.url = url;
 	fs.access(dest, fs.F_OK,function(err){
 		
 		if(err){
