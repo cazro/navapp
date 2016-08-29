@@ -423,6 +423,7 @@ function getReddit(){
 											for(var u in urls){
 												var splitUrl = urls[u].split('/');
 												var fileName = splitUrl[splitUrl.length-1];
+												var splitFile = fileName.split('.');
 												if(splitFile[1] === 'gifv'){
 													splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
 													data.url = splitUrl.join('/');
@@ -440,6 +441,7 @@ function getReddit(){
 											for (var u in urls){
 												var splitUrl = urls[u].split('/');
 												var fileName = splitUrl[splitUrl.length-1];
+												var splitFile = fileName.split('.');
 												if(splitFile[1] === 'gifv'){
 													splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
 													data.url = splitUrl.join('/');
@@ -466,6 +468,7 @@ function getReddit(){
 										imgur.image(data.url,function(url){
 											var splitUrl = data.url.split('/');
 											var fileName = splitUrl[splitUrl.length-1];
+											var splitFile = fileName.split('.');
 											if(splitFile[1] === 'gifv'){
 												splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
 												data.url = splitUrl.join('/');
