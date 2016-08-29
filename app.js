@@ -443,8 +443,11 @@ function getReddit(){
 											}
 										});
 										
-									} else if(splitFile.length > 1){  //Reddit submission is a direct link to a picture.
-										
+									} else if(splitFile.length === 2){  //Reddit submission is a direct link to a picture.
+										if(splitFile[1] === 'gifv'){
+											splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
+											data.url = splitUrl.join('/');
+										}
 										getImg(data.url,redditStore,fileName,function(file){
 											fileNames.push(file);
 											
@@ -472,6 +475,7 @@ function getReddit(){
 								if(!err){
 									for(var f in files){
 										if(fileNames.indexOf(files[f]) < 0){
+											console.log("Old file: "+redditStore+files[f]+". Removing...");
 											fs.unlink(redditStore+files[f]);
 										}
 									}
