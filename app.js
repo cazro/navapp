@@ -43,7 +43,7 @@ if(features.weather){
     console.log("Weather checking is enabled");
     var weatherSettings = settings.weather;
     var gifStore = imgStore+weatherSettings.directory;
-   
+	var visualAlerts = ['HUR','TOR','TOW','WRN','SEW','WIN','FLO','WAT','SVR','SPE','HWW'];
 }
 
 if(features.reddit){
@@ -60,11 +60,12 @@ if(features.reddit){
     var redditUrls = [];
 	var redditListings = ['hot','top','new','controversial','random'];
 	
-	var imgClientSecret = "3d09584230c69496c586a176352cdf7bbc7ef769";
 	var imgClientID = "264c7647c10eaaa";
 	
 	var validExt = ['jpg','jpeg','png','gif'];
 	var imgurDoms = ['imgur.com','i.imgur.com'];
+	
+	var imgur = require('imgur')(imgClientID);
 }
 
 var seconds = settings.seconds;
@@ -317,6 +318,7 @@ function checkReddit(){
 			if(!err){
 				if(files.length){
 					console.log("Found Reddit pics in directory." +redditStore);
+					redditUrls = [];
 					for(var i in files){
 
 						redditUrls.push('images/'+redditSettings.directory+files[i]);
@@ -335,8 +337,10 @@ function checkReddit(){
 		});
 	}
 }
-function getImg(data,dest,type){
-	
+function getImg(url,dir,file,callback){
+	var dest = dir+file;
+	var data = {};
+	data.url = url;
 	fs.access(dest, fs.F_OK,function(err){
 		
 		if(err){
@@ -344,64 +348,40 @@ function getImg(data,dest,type){
 				if(err){
 					console.error(err);
 					busy = false;
+					if(callback) callback(false);
 					return false;
 				} else {
 
 					console.log("Downloaded file "+res.file);
 
-					var imgFile = res.file.split('/');
-					imgFile = imgFile[imgFile.length-1];
+					var resFile = res.file.split('/');
+					resFile = resFile[resFile.length-1];
 
-					if(type === 'jpg'){
+					var contentType = res.stream.headers['content-type'];
+					var splitCT = contentType.split('/');
 
-						resize(res.file);
-
-					} else if(type ==='unknown'){
-
-						var contentType = res.stream.headers['content-type'];
-						var splitCT = contentType.split('/');
-
-						if(splitCT.length >= 2){
-							if(splitCT[0] === 'image'){
-								if(splitCT[1] === 'gif'){
-
-									fs.rename(res.file,res.file.split('.')[0]+'.gif',function(){
-
-										console.log("Changed to .gif from .jpg");
-
-										resize(res.file.split('.')[0]+'.gif');
-										
-										return true;
-
-									});
-									
-								} else {
-
-									resize(res.file);
-									return true;
-								}
-							} else {
-
-								fs.unlink(res.file);
-								return false;
+					if(splitCT.length >= 2){
+						if(splitCT[0] === 'image'){
+							if(splitCT[1] !== 'gif'){	
+								resize(res.file);								
 							}
-						} else {
-							return false;
 						}
 					}
 					
 					busy = false;
-					return true;
+					if(callback) callback(resFile);
+					return resFile;
 				}
 			});
 		} else {
 			console.log(dest+" already exists.  Not downloading.");
-			return true;
+			if(callback) callback(file);
+			return file;
 		}
 	});
 }
 function getReddit(){
-    var temp = [];
+
 	var fileNames = [];
 	
     busy = true;
@@ -433,84 +413,73 @@ function getReddit(){
 								if(imgurDoms.indexOf(data.domain) !== -1){
 
 									var splitUrl = data.url.split('/');
-
-									for(var s in splitUrl){
-
-										if(splitUrl[s] === 'a' || splitUrl[s] === 'gallery'){
-
-											break;
-										}
-
-										var len = splitUrl.length - 1;
-
-										if(len == s){
-
-											var fileName = splitUrl[splitUrl.length-1];
-
-
-											var splitFile = fileName.split('.');
-
-											if(splitFile.length === 1){
-
-												data.url = data.url+'.jpg';
-
-												fileNames.push(fileName+'.jpg');
-												fileNames.push(fileName+'.gif');
-												
-												temp.push('images/'+redditSettings.directory+fileName);
-
-												if(!inArray(fileName+'.jpg',files) && !inArray(fileName+'.gif',files)){
-													fileName = fileName+'.jpg';
-													getImg(data,redditStore+fileName,'unknown');
-												} else {
-													if(inArray(fileName+'.jpg')) fileName = fileName+'.jpg';
-													if(inArray(fileName+'.gif')) fileName = fileName+'.gif';
-													console.log("Reddit image already downloaded. "+fileName);
-												}
-
-											} else if(splitFile.length === 2){
-
-												var extension = splitFile[1];
-
-												if(validExt.indexOf(extension) !== -1){
-
-													fileNames.push(fileName);
-
-													temp.push("images/"+redditSettings.directory+fileName);
-
-													if(!inArray(fileName,files)){
-														getImg(data,redditStore+splitUrl[splitUrl.length-1],'jpg');
-													}else {
-														console.log("Reddit image already downloaded. "+fileName);
-													}
-
-												}
+									var fileName = splitUrl[splitUrl.length-1];
+									var splitFile = fileName.split('.');
+									
+									if(splitUrl.indexOf('a') !== -1 || splitUrl.indexOf('album') !== -1){ // Submission is an album
+										
+										imgur.album(data.url,function(urls){
+											
+											for(var u in urls){
+												var splitUrl = urls[u].split('/');
+												var fileName = splitUrl[splitUrl.length-1];
+												getImg(urls[u],redditStore,fileName,function(file){
+													fileNames.push(file);
+													
+												});
 											}
-											else {
-												console.log("Don't know what to do with the URL");
-											} // Check is link is a direct link to the picture
-
-
-										} // if loop on the last url segment
-									} // Loop through the url split by '/'	
+										});
+										
+									} else if(splitUrl.indexOf('gallery') !== -1){ // Submission is a gallery.
+										
+										imgur.gallery(data.url,function(urls){
+											for (var u in urls){
+												var splitUrl = urls[u].split('/');
+												var fileName = splitUrl[splitUrl.length-1];
+												getImg(urls[u],redditStore,fileName,function(file)
+												{
+													fileNames.push(file);
+												});
+											}
+										});
+										
+									} else if(splitFile.length > 1){  //Reddit submission is a direct link to a picture.
+										
+										getImg(data,redditStore,fileName,function(file){
+											fileNames.push(file);
+											
+										});
+										
+									} else if(splitFile.length === 1){ // Link just has imgur id
+										
+										imgur.image(data.url,function(url){
+											var splitUrl = data.url.split('/');
+											var fileName = splitUrl[splitUrl.length-1];
+											getImg(url,redditStore,fileName,function(file){
+												fileNames.push(file);
+												
+											});
+										});
+										
+									} else {
+										
+									}									
 								} // if link is from imgur
 							} // if result is a link
 						} // for(res.children)
-						fs.readdir(redditStore,function(err,files){
-							if(!err){
-								for(var f in files){
-									if(!inArray(files[f],fileNames)){
-										fs.unlink(redditStore+files[f]);
+						setTimeout(function(){
+							fs.readdir(redditStore,function(err,files){
+								if(!err){
+									for(var f in files){
+										if(fileNames.indexOf(files[f]) < 0){
+											fs.unlink(redditStore+files[f]);
+										}
 									}
+									checkReddit();
 								}
-							}
-						});
+							});
+						},60000);	
 					}
-					//redditUrls = temp;
-					setTimeout(function(){
-						redditUrls = [];
-						checkReddit();
-					},30000);
 				});           
 
 			} else {
@@ -553,7 +522,7 @@ function getWeather(){
                 for(var i in body.alerts){
                     info += (i>0?', ':'')+body.alerts[i].description;
                     var type = body.alerts[i].type;
-                    if(type === 'HUR' || type === 'TOR' || type === 'TOW' || type === 'WRN' || type === 'SEW' || type === 'WIN' || type === 'FLO' || type === 'WAT' || type === 'SVR' || type === 'SPE' || type === 'HWW'){
+                    if(visualAlerts.indexOf(type) !== -1){
                         needMap = true;
                     }
                 }
