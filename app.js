@@ -459,9 +459,9 @@ function getReddit(){
 										if(splitFile[1] === 'gifv'){
 											fileName = splitFile[0]+'.gif';
 											splitUrl[splitUrl.length-1] = fileName;
-											var newUrl = splitUrl.join('/');
+											data.url = splitUrl.join('/');
 										}
-										getImg(newUrl,redditStore,fileName,function(file){
+										getImg(data.url,redditStore,fileName,function(file){
 											fileNames.push(file);
 											
 										});
