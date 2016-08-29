@@ -415,7 +415,7 @@ function getReddit(){
 									var splitUrl = data.url.split('/');
 									var fileName = splitUrl[splitUrl.length-1];
 									var splitFile = fileName.split('.');
-									
+									console.log(data.url+" has domain of "+data.domain);
 									if(splitUrl.indexOf('a') !== -1 || splitUrl.indexOf('album') !== -1){ // Submission is an album
 										
 										imgur.album(data.url,function(urls){
