@@ -456,9 +456,9 @@ function getReddit(){
 									} else if(splitFile.length === 2){  //Reddit submission is a direct link to a picture.
 										if(splitFile[1] === 'gifv'){
 											splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
-											data.url = splitUrl.join('/');
+											var newUrl = splitUrl.join('/');
 										}
-										getImg(data.url,redditStore,fileName,function(file){
+										getImg(newUrl,redditStore,fileName,function(file){
 											fileNames.push(file);
 											
 										});
