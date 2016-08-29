@@ -415,7 +415,7 @@ function getReddit(){
 									var splitUrl = data.url.split('/');
 									var fileName = splitUrl[splitUrl.length-1];
 									var splitFile = fileName.split('.');
-									console.log(data.url+" has domain of "+data.domain);
+									
 									if(splitUrl.indexOf('a') !== -1 || splitUrl.indexOf('album') !== -1){ // Submission is an album
 										
 										imgur.album(data.url,function(urls){
@@ -425,7 +425,8 @@ function getReddit(){
 												var fileName = splitUrl[splitUrl.length-1];
 												var splitFile = fileName.split('.');
 												if(splitFile[1] === 'gifv'){
-													splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
+													fileName = splitFile[0]+'.gif';
+													splitUrl[splitUrl.length-1] = fileName;
 													data.url = splitUrl.join('/');
 												}
 												getImg(urls[u],redditStore,fileName,function(file){
@@ -443,7 +444,8 @@ function getReddit(){
 												var fileName = splitUrl[splitUrl.length-1];
 												var splitFile = fileName.split('.');
 												if(splitFile[1] === 'gifv'){
-													splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
+													fileName = splitFile[0]+'.gif';
+													splitUrl[splitUrl.length-1] = fileName;
 													data.url = splitUrl.join('/');
 												}
 												getImg(urls[u],redditStore,fileName,function(file)
@@ -455,7 +457,8 @@ function getReddit(){
 										
 									} else if(splitFile.length === 2){  //Reddit submission is a direct link to a picture.
 										if(splitFile[1] === 'gifv'){
-											splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
+											fileName = splitFile[0]+'.gif';
+											splitUrl[splitUrl.length-1] = fileName;
 											var newUrl = splitUrl.join('/');
 										}
 										getImg(newUrl,redditStore,fileName,function(file){
@@ -470,7 +473,8 @@ function getReddit(){
 											var fileName = splitUrl[splitUrl.length-1];
 											var splitFile = fileName.split('.');
 											if(splitFile[1] === 'gifv'){
-												splitUrl[splitUrl.length-1] = splitFile[0]+'.gif';
+												fileName = splitFile[0]+'.gif';
+												splitUrl[splitUrl.length-1] = fileName;
 												data.url = splitUrl.join('/');
 											}
 											getImg(url,redditStore,fileName,function(file){
