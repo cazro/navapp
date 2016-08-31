@@ -69,7 +69,7 @@ if(features.reddit){
 }
 
 var seconds = settings.seconds;
-var urls = settings.urls;
+var kioskUrls = settings.urls;
 var ind = 0;
 var badWeather = false;
 var weatherInfo = '';
@@ -106,7 +106,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
 });
 
-console.log("Number of urls: "+urls.length);
+console.log("Number of kioskUrls: "+kioskUrls.length);
 
 checkReddit();
 
@@ -137,12 +137,12 @@ io.on('connection', function(socket){
         console.log('Client has frame height of '+data.height+' and a width of '+data.width);
         clientHeight = ''+data.height;
         clientWidth = ''+data.width;
-        sendSource({but:"No",url:urls[ind]});
+        sendSource({but:"No",url:kioskUrls[ind]});
     });
     
     socket.on('sourceRequest',function(fn){
         console.log("Source Requested");
-        sendSource({but:"No",url:urls[ind]});
+        sendSource({but:"No",url:kioskUrls[ind]});
     });
 });
 
@@ -180,10 +180,10 @@ if(features.rpi){
             fwDir = false;
             
             ind--;
-            if(ind === urls.length){
+            if(ind === kioskUrls.length){
                 ind = 0;
             } else if(ind === -1){
-                ind = urls.length-1;
+                ind = kioskUrls.length-1;
             }
             if(ind === 0){
                 changeReddit();
@@ -194,7 +194,7 @@ if(features.rpi){
             ledPause.setDirection('out');
             
             clearInterval(watchdog);
-            sendSource({but:'Left',url:urls[ind]});
+            sendSource({but:'Left',url:kioskUrls[ind]});
             watchdog = watchdogInterval();
 
         }
@@ -210,10 +210,10 @@ if(features.rpi){
             fwDir = true;
             
             ind++;
-            if(ind === urls.length){
+            if(ind === kioskUrls.length){
                     ind = 0;
             } else if(ind === -1){
-                    ind = urls.length-1;
+                    ind = kioskUrls.length-1;
             }
             
             if(ind === 0){
@@ -225,7 +225,7 @@ if(features.rpi){
             ledPause.setDirection('out');
             
             clearInterval(watchdog);
-            sendSource({but:'Right',url:urls[ind]});
+            sendSource({but:'Right',url:kioskUrls[ind]});
             watchdog = watchdogInterval();
         }
     });
@@ -251,10 +251,10 @@ if(features.rpi){
                 ledLeft.setDirection('out');
                 ledRight.setDirection('in');
                 ledPause.setDirection('out');
-                if(ind >= urls.length){
+                if(ind >= kioskUrls.length){
                     ind = 0;
                 } else if(ind <= -1){
-                    ind = urls.length-1;
+                    ind = kioskUrls.length-1;
                 }
                 if(ind === 0){
 
@@ -262,16 +262,16 @@ if(features.rpi){
 
                 }
                 
-                sendSource({but:'Unpause',url:urls[ind]});
+                sendSource({but:'Unpause',url:kioskUrls[ind]});
                 
             }
             else if(!paused && !fwDir){
                 
                 ind--;
-                if(ind >= urls.length){
+                if(ind >= kioskUrls.length){
                     ind = 0;
                 } else if(ind <= -1){
-                    ind = urls.length-1;
+                    ind = kioskUrls.length-1;
                 }
                 if(ind === 0){
 
@@ -283,7 +283,7 @@ if(features.rpi){
                 ledPause.setDirection('out');
                 
                 
-                sendSource({but:'Unpause',url:urls[ind]});
+                sendSource({but:'Unpause',url:kioskUrls[ind]});
                 
             } else if(paused){
                 
@@ -300,12 +300,12 @@ function changeReddit(){
         if(redditUrls.length){
             var url = randElement(redditUrls);
             if(reddit){
-                urls.splice(0,1,url);
-                console.log("Replacing first urls element with new random Reddit pic. "+url);
+                kioskUrls.splice(0,1,url);
+                console.log("Replacing first kioskUrls element with new random Reddit pic. "+url);
             } else {
 
-                console.log("Inserting random Reddit pic at beginning of urls array. " +url);
-                urls.splice(0,0,url);
+                console.log("Inserting random Reddit pic at beginning of kioskUrls array. " +url);
+                kioskUrls.splice(0,0,url);
                 reddit = true;
             }
         }
@@ -337,10 +337,10 @@ function checkReddit(){
 		});
 	}
 }
-function getImg(url,dir,file,callback){
+function getImg(data,dir,file,callback){
 	var dest = dir+file;
-	var data = {};
-	data.url = url;
+	//var data = {};
+	//data.url = url;
 	fs.access(dest, fs.F_OK,function(err){
 		
 		if(err){
@@ -421,15 +421,17 @@ function getReddit(){
 										imgur.album(data.url,function(urls){
 											
 											for(var u in urls){
-												var splitUrl = urls[u].split('/');
+												var url = urls[u];
+												var splitUrl = url.split('/');
 												var fileName = splitUrl[splitUrl.length-1];
 												var splitFile = fileName.split('.');
 												if(splitFile[1] === 'gifv'){
 													fileName = splitFile[0]+'.gif';
 													splitUrl[splitUrl.length-1] = fileName;
-													data.url = splitUrl.join('/');
+													url = splitUrl.join('/');
 												}
-												getImg(urls[u],redditStore,fileName,function(file){
+												
+												getImg({url:url},redditStore,fileName,function(file){
 													fileNames.push(file);
 													
 												});
@@ -440,15 +442,16 @@ function getReddit(){
 										
 										imgur.gallery(data.url,function(urls){
 											for (var u in urls){
-												var splitUrl = urls[u].split('/');
+												var url = urls[u];
+												var splitUrl = url.split('/');
 												var fileName = splitUrl[splitUrl.length-1];
 												var splitFile = fileName.split('.');
 												if(splitFile[1] === 'gifv'){
 													fileName = splitFile[0]+'.gif';
 													splitUrl[splitUrl.length-1] = fileName;
-													data.url = splitUrl.join('/');
+													url = splitUrl.join('/');
 												}
-												getImg(urls[u],redditStore,fileName,function(file)
+												getImg({url:url},redditStore,fileName,function(file)
 												{
 													fileNames.push(file);
 												});
@@ -461,7 +464,7 @@ function getReddit(){
 											splitUrl[splitUrl.length-1] = fileName;
 											data.url = splitUrl.join('/');
 										}
-										getImg(data.url,redditStore,fileName,function(file){
+										getImg(data,redditStore,fileName,function(file){
 											fileNames.push(file);
 											
 										});
@@ -475,9 +478,9 @@ function getReddit(){
 											if(splitFile[1] === 'gifv'){
 												fileName = splitFile[0]+'.gif';
 												splitUrl[splitUrl.length-1] = fileName;
-												data.url = splitUrl.join('/');
+												url = splitUrl.join('/');
 											}
-											getImg(url,redditStore,fileName,function(file){
+											getImg({url:url},redditStore,fileName,function(file){
 												fileNames.push(file);
 												
 											});
@@ -569,18 +572,18 @@ function getWeather(){
                         }
                     };
 
-                    if(getImg(data,gifStore+'weather.gif','weather')){
-					
-						if(!badWeather){
+                    getImg(data,gifStore,'weather.gif',function(file){
+						if(!badWeather && file){
 
-							console.log("Pushing weather gif onto urls array");
+							console.log("Pushing weather gif onto kioskUrls array");
 
-							urls.push('images/'+weatherSettings.directory+'weather.gif');
+							kioskUrls.push('images/'+weatherSettings.directory+file);
 
 							badWeather = true;
 
 						} 
-					}
+					});
+		
                 } else {
 
                     busy = false;
@@ -592,7 +595,7 @@ function getWeather(){
 
                         badWeather = false;
 
-                        urls.pop();
+                        kioskUrls.pop();
                     }
                 }
 
@@ -607,7 +610,7 @@ function getWeather(){
 
                     badWeather = false;
 
-                    urls.pop();
+                    kioskUrls.pop();
 
                     weatherInfo = '';
 
@@ -642,21 +645,7 @@ function randElement(arr){
 }
 
 function resize(path,fn){
-//	var fork = cp.fork('./resize');
-//	fork.send({'path':path});
-//
-//	fork.on('message',function(m){
-//		if(m){
-//			if(fn) fn(true,path);
-//			fork.kill();
-//		} else {
-//			if(fn) fn(false,path);
-//			fork.kill();
-//		}
-//		
-//	});
-	
-	
+
 	procQueue.enqueue({'path':path},function(result){
 		
 		if(result){
@@ -693,10 +682,10 @@ function watchdogInterval(){
                 ind--;
             }
            
-            if(ind >= urls.length){
+            if(ind >= kioskUrls.length){
                 ind = 0;
             } else if(ind <= -1){
-                ind = urls.length-1;
+                ind = kioskUrls.length-1;
             }
             if(ind === 0){
                 
@@ -704,7 +693,7 @@ function watchdogInterval(){
                 
             }
             
-            sendSource({but:"No",url:urls[ind]});
+            sendSource({but:"No",url:kioskUrls[ind]});
             
         }else{
 
