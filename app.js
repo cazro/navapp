@@ -472,18 +472,40 @@ function getReddit(){
 									} else if(splitFile.length === 1){ // Link just has imgur id
 										
 										imgur.image(data.url,function(url){
-											var splitUrl = data.url.split('/');
+											var splitUrl = url.split('/');
 											var fileName = splitUrl[splitUrl.length-1];
 											var splitFile = fileName.split('.');
-											if(splitFile[1] === 'gifv'){
-												fileName = splitFile[0]+'.gif';
-												splitUrl[splitUrl.length-1] = fileName;
-												url = splitUrl.join('/');
+											if(splitFile.length > 1){
+												if(splitFile[1] === 'gifv'){
+													fileName = splitFile[0]+'.gif';
+													splitUrl[splitUrl.length-1] = fileName;
+													url = splitUrl.join('/');
+												}
+												getImg({url:url},redditStore,fileName,function(file){
+													fileNames.push(file);
+
+												});
+											} else {
+												imgur.album(data.url,function(urls){
+													for (var u in urls){
+														var url = urls[u];
+														var splitUrl = url.split('/');
+														var fileName = splitUrl[splitUrl.length-1];
+														var splitFile = fileName.split('.');
+														if(splitFile.length > 1){
+															if(splitFile[1] === 'gifv'){
+																fileName = splitFile[0]+'.gif';
+																splitUrl[splitUrl.length-1] = fileName;
+																url = splitUrl.join('/');
+															}
+															getImg({url:url},redditStore,fileName,function(file){
+																fileNames.push(file);
+
+															});
+														}
+													}
+												});
 											}
-											getImg({url:url},redditStore,fileName,function(file){
-												fileNames.push(file);
-												
-											});
 										});
 										
 									} else {
