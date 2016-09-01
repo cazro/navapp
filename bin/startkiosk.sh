@@ -5,9 +5,9 @@ xset s noblank
 x11vnc -display :0 -shared -forever &
 unclutter -d :0  &
 export NODE_ENV=production
-cd /opt/navapp/
+cd $NAVAPP_DIR
 pm2 delete all
-pm2 start /opt/navapp/app.js --name navapp
+pm2 start app.js --name navapp
 echo "Waiting 40 seconds"
 sleep 40s
 echo "Starting matchbox-window-manager"

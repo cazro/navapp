@@ -1,10 +1,16 @@
 #!/bin/bash
-
+NAVAPP_DIR=$(cd .;pwd);
 BOOTSTRAP_DIR=$(cd $(dirname $0); pwd);
+
+echo "Navapp directory: "$NAVAPP_DIR
 
 echo "Current directory: "$(dirname $0)
 
 echo "Bootstrap directory: "$BOOTSTRAP_DIR
+
+echo "NAVAPP_DIR=$NAVAPP_DIR" >> /etc/environment
+
+source /etc/environment
 
 #if [ $(dirname $0) == '.' ]
 #then 
