@@ -211,9 +211,9 @@ if(features.rpi){
             
             ind++;
             if(ind === kioskUrls.length){
-                    ind = 0;
+				ind = 0;
             } else if(ind === -1){
-                    ind = kioskUrls.length-1;
+				ind = kioskUrls.length-1;
             }
             
             if(ind === 0){
@@ -721,11 +721,6 @@ function watchdogInterval(){
 
         }
     },seconds * 1000);
-}
-
-function checkInd(array,index){
-    
-    
 }
 
 function exit(err){
