@@ -556,8 +556,11 @@ function getWeather(){
         res.on('end',function(){
 
             console.log("Received response from wunderground");
-
-            body = JSON.parse(body);
+			try{
+				body = JSON.parse(body);
+			} catch (e){
+				console.error(e);
+			}
             var alerts = body.alerts;
             var needMap = false;
 
@@ -644,7 +647,11 @@ function getWeather(){
             }
             busy = false;
         });
-    });
+		
+		
+    }).on('error',function(e){
+		console.error('ERROR: '+e.message);
+	});
 }
 function inArray(element,array){
 	for(var i in array){
