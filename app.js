@@ -151,6 +151,10 @@ var watchdog = watchdogInterval();
 
 // Interval to check the weather
 if(features.weather){
+	setTimeout(function(){
+		getWeather();
+	},15*1000);
+	
     setInterval(function(){
         getWeather(); 
     },weatherSettings.refresh*1000);
