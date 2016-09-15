@@ -25,7 +25,9 @@
         "weather":{
             "directory": "gif/",
             "key": "",
-            "zipcode": "90210",
+			"zipcode": 90210,
+            "state": "CA",
+			"city": "LA",
             "refresh": 920
         },
         "reddit":{

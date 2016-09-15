@@ -549,7 +549,7 @@ function getReddit(){
 function getWeather(){
     busy = true;
         
-    http.get("http://api.wunderground.com/api/"+weatherSettings.key+"/geolookup/alerts/q/"+weatherSettings.zipcode+".json",function(res){
+    http.get("http://api.wunderground.com/api/"+weatherSettings.key+"/geolookup/alerts/q/"+weatherSettings.state+"/"+weatherSettings.city+".json",function(res){
 
         var body='';
 
