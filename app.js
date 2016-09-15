@@ -585,8 +585,12 @@ function getWeather(){
 				sendWeather({bad:true,info:weatherInfo});
 				
                 if(needMap){
-
+					
                     console.log("Downloading weather gif");
+					fs.access(gifStore+'weather.gif',function(err){
+						if(!err) fs.unlink(gifStore+'weather.gif');
+					});
+					
 
                     var data = {
                         url:"http://api.wunderground.com/api/"+weatherSettings.key+"/animatedradar/q/"+weatherSettings.zipcode+".gif?newmaps=1&smooth=1&width="+clientHeight+"&height="+clientHeight+"&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20",
@@ -618,6 +622,10 @@ function getWeather(){
                     if(badWeather){
                         console.log("Removing weather gif.");
 
+						fs.access(gifStore+'weather.gif',function(err){
+							if(!err) fs.unlink(gifStore+'weather.gif');
+						});
+						
                         badWeather = false;
 
                         kioskUrls.pop();
@@ -632,7 +640,11 @@ function getWeather(){
 
                     console.log("Bad weather has passed.");
                     console.log("Removing weather gif");
-
+					
+					fs.access(gifStore+'weather.gif',function(err){
+						if(!err) fs.unlink(gifStore+'weather.gif');
+					});
+					
                     badWeather = false;
 
                     kioskUrls.pop();
