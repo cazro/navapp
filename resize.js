@@ -12,7 +12,7 @@ process.on('message',function(data){
 			console.error(err);
 			process.send(false);
 		}
-	}).resize(1200,'>').resize(1200,'<').write(data.path,function(err){
+	}).resize(data.width,'>').resize(data.width,'<').write(data.path,function(err){
 		if(!err) {
 			console.log("Resize done on "+data.path);
 			process.send(true);

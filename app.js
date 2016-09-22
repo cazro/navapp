@@ -691,7 +691,7 @@ function randElement(arr){
 
 function resize(path,fn){
 
-	procQueue.enqueue({'path':path},function(result){
+	procQueue.enqueue({'path':path,'width':clientWidth},function(result){
 		
 		if(result){
 			if(fn) fn(true,path);
