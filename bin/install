@@ -96,9 +96,6 @@ fi
 
 sudo apt-get install -y x11vnc unclutter GraphicsMagick
 
-echo "Installing pm2"
-sudo npm install -g pm2
-
 if [ -f /usr/bin/pm2 ]
   then
 	num=`ps -elf | grep -w node | wc -l`
@@ -111,6 +108,9 @@ if [ -f /usr/bin/pm2 ]
 		cd ../
 		pm2 start app.js --name navapp
 	fi
+  else
+    echo "Installing pm2"
+    sudo npm install -g pm2
 fi
 
 sudo reboot

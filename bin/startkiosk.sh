@@ -13,6 +13,7 @@ sleep 40s
 echo "Starting matchbox-window-manager"
 matchbox-window-manager &
 echo "Starting Midori"
+export DISPLAY=":0"
 while true; do
    midori -e Fullscreen -a http://localhost
 done

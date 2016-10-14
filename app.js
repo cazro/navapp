@@ -81,8 +81,8 @@ var badWeather = false;
 var weatherInfo = '';
 var reddit = false;
 var busy = false;
-var clientHeight;
-var clientWidth;
+var clientHeight = 1600;
+var clientWidth = 1080;
 
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
