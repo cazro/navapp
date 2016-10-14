@@ -37,6 +37,8 @@ if(features.rpi){
         ledRight =          new GPIO(gpio.ledForward, 'in');
     var fwDir = true;
     var paused = false;
+} else {
+	console.log("Raspberry Pi features are disabled");
 }
 
 if(features.weather){
@@ -44,6 +46,8 @@ if(features.weather){
     var weatherSettings = settings.weather;
     var gifStore = imgStore+weatherSettings.directory;
 	var visualAlerts = ['HUR','TOR','TOW','WRN','SEW','WIN','FLO','WAT','SVR','SPE','HWW'];
+} else {
+	console.log("Weather checking is disabled");
 }
 
 if(features.reddit){
@@ -66,6 +70,8 @@ if(features.reddit){
 	var imgurDoms = ['imgur.com','i.imgur.com'];
 	
 	var imgur = require('imgur')(imgClientID);
+} else {
+	console.log("Reddit is disabled");
 }
 
 var seconds = settings.seconds;
