@@ -20,6 +20,9 @@ var settings = config.get('settings');
 var appPath = process.cwd()+'/';
 var imgStore = appPath+'public/images/';
 
+var fwDir = true;
+var paused = false;
+
 console.log("CWD: "+process.cwd());
 console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
 console.log(settings);
@@ -35,8 +38,7 @@ if(features.rpi){
         ledLeft =           new GPIO(gpio.ledBack, 'out'),
         ledPause =          new GPIO(gpio.ledPause, 'out'),
         ledRight =          new GPIO(gpio.ledForward, 'in');
-    var fwDir = true;
-    var paused = false;
+    
 } else {
 	console.log("Raspberry Pi features are disabled");
 }
