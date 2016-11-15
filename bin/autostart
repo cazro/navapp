@@ -1,0 +1,11 @@
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+@xscreensaver -no-splash
+@xset -dpms
+@xset s off
+@xset s noblank
+@x11vnc -display :0 -shared -forever &
+@unclutter -d :0  &
+@export NODE_ENV=production
+@startkiosk
+
