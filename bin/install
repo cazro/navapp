@@ -123,4 +123,5 @@ if [ -f /usr/bin/pm2 ]
     pm2 startup systemd
 fi
 
+startkiosk &
 exit;
