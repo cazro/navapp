@@ -20,6 +20,9 @@ var settings = config.get('settings');
 var appPath = process.cwd()+'/';
 var imgStore = appPath+'public/images/';
 
+var fwDir = true;
+var paused = false;
+
 console.log("CWD: "+process.cwd());
 console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
 console.log(settings);
@@ -35,8 +38,7 @@ if(features.rpi){
         ledLeft =           new GPIO(gpio.ledBack, 'out'),
         ledPause =          new GPIO(gpio.ledPause, 'out'),
         ledRight =          new GPIO(gpio.ledForward, 'in');
-    var fwDir = true;
-    var paused = false;
+    
 } else {
 	console.log("Raspberry Pi features are disabled");
 }
@@ -482,39 +484,41 @@ function getReddit(){
 									} else if(splitFile.length === 1){ // Link just has imgur id
 										
 										imgur.image(data.url,function(url){
-											var splitUrl = url.split('/');
-											var fileName = splitUrl[splitUrl.length-1];
-											var splitFile = fileName.split('.');
-											if(splitFile.length > 1){
-												if(splitFile[1] === 'gifv'){
-													fileName = splitFile[0]+'.gif';
-													splitUrl[splitUrl.length-1] = fileName;
-													url = splitUrl.join('/');
-												}
-												getImg({url:url},redditStore,fileName,function(file){
-													fileNames.push(file);
-
-												});
-											} else {
-												imgur.album(data.url,function(urls){
-													for (var u in urls){
-														var url = urls[u];
-														var splitUrl = url.split('/');
-														var fileName = splitUrl[splitUrl.length-1];
-														var splitFile = fileName.split('.');
-														if(splitFile.length > 1){
-															if(splitFile[1] === 'gifv'){
-																fileName = splitFile[0]+'.gif';
-																splitUrl[splitUrl.length-1] = fileName;
-																url = splitUrl.join('/');
-															}
-															getImg({url:url},redditStore,fileName,function(file){
-																fileNames.push(file);
-
-															});
-														}
+											if(url){
+												var splitUrl = url.split('/');
+												var fileName = splitUrl[splitUrl.length-1];
+												var splitFile = fileName.split('.');
+												if(splitFile.length > 1){
+													if(splitFile[1] === 'gifv'){
+														fileName = splitFile[0]+'.gif';
+														splitUrl[splitUrl.length-1] = fileName;
+														url = splitUrl.join('/');
 													}
-												});
+													getImg({url:url},redditStore,fileName,function(file){
+														fileNames.push(file);
+
+													});
+												} else {
+													imgur.album(data.url,function(urls){
+														for (var u in urls){
+															var url = urls[u];
+															var splitUrl = url.split('/');
+															var fileName = splitUrl[splitUrl.length-1];
+															var splitFile = fileName.split('.');
+															if(splitFile.length > 1){
+																if(splitFile[1] === 'gifv'){
+																	fileName = splitFile[0]+'.gif';
+																	splitUrl[splitUrl.length-1] = fileName;
+																	url = splitUrl.join('/');
+																}
+																getImg({url:url},redditStore,fileName,function(file){
+																	fileNames.push(file);
+
+																});
+															}
+														}
+													});
+												}
 											}
 										});
 										

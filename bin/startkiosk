@@ -1,0 +1,5 @@
+#!/bin/bash
+export NODE_ENV=production
+sleep 30s
+midori -e Fullscreen -a http://localhost &
+exit

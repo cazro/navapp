@@ -21,36 +21,40 @@ source /etc/environment
 	cd $BOOTSTRAP_DIR
 #fi
 
-if [ ! -f /etc/profile.d/kiosk.sh ]
+#if [ ! -f /etc/profile.d/kiosk.sh ]
+#  then
+	
+#	echo "Copying kiosk.sh to /etc/profile.d"
+#	sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
+	
+#  else
+#	num=`diff /etc/profile.d/kiosk.sh ../etc/profile.d/kiosk.sh | wc -l`
+#	if [ $num -gt 0 ]
+#	  then
+#		echo "The script kiosk.sh is different from the one found"
+#		echo "Copying kiosk.sh to /etc/profile.d"
+#		sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
+#	fi
+#fi
+
+if [ -f /usr/bin/startkiosk ]
   then
-	
-	echo "Copying kiosk.sh to /etc/profile.d"
-	sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
-	
-  else
-	num=`diff /etc/profile.d/kiosk.sh ../etc/profile.d/kiosk.sh | wc -l`
+	num=`diff /usr/bin/startkiosk ../bin/startkiosk | wc -l`
 	if [ $num -gt 0 ]
 	  then
-		echo "The script kiosk.sh is different from the one found"
-		echo "Copying kiosk.sh to /etc/profile.d"
-		sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
-	fi
-fi
-
-if [ -f /usr/bin/startkiosk.sh ]
-  then
-	num=`diff /usr/bin/startkiosk.sh ../bin/startkiosk.sh | wc -l`
-	if [ $num -gt 0 ]
-	  then
-		echo "startkiosk.sh is different from yours."
-		echo "Copying startkiosk.sh"
-		sudo cp ../bin/startkiosk.sh /usr/bin/
+		echo "startkiosk is different from yours."
+		echo "Copying startkiosk"
+		sudo cp ../bin/startkiosk /usr/bin/
 	fi
   else
-	echo "Copying startkiosk.sh"
-	sudo cp ../bin/startkiosk.sh /usr/bin/
+	echo "Copying startkiosk"
+	sudo cp ../bin/startkiosk /usr/bin/
 fi
-
+if [ -f ~/.config/lxsession/LXDE-pi/autostart ]
+  then
+    echo "Copying the autostart script"
+    sudo cp -f ../bin/autostart ~/.config/lxsession/LXDE-pi/
+fi
 if [ ! -d /etc/nginx/ ]
   then
 	echo "Installing nginx"
@@ -99,20 +103,25 @@ sudo apt-get install -y x11vnc unclutter GraphicsMagick
 if [ -f /usr/bin/pm2 ]
   then
 	num=`ps -elf | grep -w node | wc -l`
-	
+
 	if [ $num -gt 1 ]
 	  then
-        echo "Node process running"
+                echo "Node process running"
+		pm2 delete all
+		pkill node
 	  else
 		echo "Starting pm2"
-		cd ../
-		pm2 start app.js --name navapp
 	fi
+	cd ../
+	pm2 start app.js --name navapp
+	pm2 startup systemd
   else
     echo "Installing pm2"
     sudo npm install -g pm2
+    cd ../
+    pm2 start app.js --name navapp
+    pm2 startup systemd
 fi
 
-sudo reboot
-
+startkiosk &
 exit;
