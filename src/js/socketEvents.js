@@ -3,14 +3,11 @@ var socket = io.connect('http://10.10.60.202');
 
 function changeSource(url)
 {
-    $("#frame").fadeOut(function()
-    {
-        $("#frame").attr("src",url);
-
-        $("#frame").load(function(){
-            $(this).fadeIn();
-        });
-    });
+    
+	//$("#frame").load(function(){
+		$("#frame").attr("src",url);
+	//});
+    
 }
 
 function getSource(){
