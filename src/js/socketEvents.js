@@ -1,5 +1,5 @@
 
-var socket = io.connect('http://10.10.60.202');
+var socket = io.connect('http://localhost');
 
 function changeSource(url)
 {
