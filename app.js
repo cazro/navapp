@@ -12,6 +12,9 @@ var routes = require('./routes/index');
 var http = require('http');
 var httpReq = require('http-request');
 
+var rawjs = require('raw.js');
+var WorkQueue = require('mule').WorkQueue;
+
 var config = require('config');
 
 var features = config.get('features');
@@ -55,10 +58,10 @@ if(features.weather){
 if(features.reddit){
     console.log("Reddit is enabled");
 	
-    var rawjs = require('raw.js');
+    
 	var redditApp = new rawjs("IBA Reddit pic grabber");
 	
-	var WorkQueue = require('mule').WorkQueue;
+	
 	var procQueue = new WorkQueue('./resize.js');
 	
     var redditSettings = settings.reddit;
@@ -116,8 +119,6 @@ app.use(function(err, req, res, next) {
 
 console.log("Number of kioskUrls: "+kioskUrls.length);
 
-checkReddit();
-
 io.on('connection', function(socket){
 	
     console.log("Client connected...");
@@ -154,9 +155,6 @@ io.on('connection', function(socket){
     });
 });
 
-// Interval to change the page on the kiosk
-var watchdog = watchdogInterval();
-
 // Interval to check the weather
 if(features.weather){
 	setTimeout(function(){
@@ -170,14 +168,18 @@ if(features.weather){
 
 //Interval to check reddit for pics
 if(features.reddit){
+	checkReddit();
 	setTimeout(function(){
 		getReddit();
-	},30*1000);
+	},20*1000);
 	
     setInterval(function(){
         getReddit();   
     },redditSettings.refresh*1000);//1000000 is about 16 minutes.
 }
+
+// Interval to change the page on the kiosk
+var watchdog = watchdogInterval();
 
 // Interrupts for button presses.
 if(features.rpi){
@@ -311,14 +313,14 @@ function changeReddit(){
     if(features.reddit){
         if(redditUrls.length){
             var url = randElement(redditUrls);
-            if(reddit){
+            if(kioskUrls.length !== settings.urls.length){
                 kioskUrls.splice(0,1,url);
                 console.log("Replacing first kioskUrls element with new random Reddit pic. "+url);
             } else {
 
                 console.log("Inserting random Reddit pic at beginning of kioskUrls array. " +url);
                 kioskUrls.splice(0,0,url);
-                reddit = true;
+            
             }
         }
     }
@@ -340,8 +342,6 @@ function checkReddit(){
 							changeReddit();
 						}
 					}
-				} else {
-					getReddit();
 				}
 			} else {
 				console.error(err);
