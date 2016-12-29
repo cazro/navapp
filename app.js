@@ -330,6 +330,7 @@ function changeReddit(){
             }
 			
 			if(redditData[file] && features.speech){
+				console.log("Converting the following to speech: "+redditData[file] );
 				say.speak(redditData[file]);
 			}
         }
@@ -542,6 +543,7 @@ function getReddit(){
 								} // if link is from imgur
 							} // if result is a link
 						} // for(res.children)
+						console.log(redditData);
 						setTimeout(function(){
 							fs.readdir(redditStore,function(err,files){
 								if(!err){
