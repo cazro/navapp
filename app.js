@@ -543,8 +543,9 @@ function getReddit(){
 								} // if link is from imgur
 							} // if result is a link
 						} // for(res.children)
-						console.log(redditData);
+						
 						setTimeout(function(){
+							console.log(redditData);
 							fs.readdir(redditStore,function(err,files){
 								if(!err){
 									for(var f in files){
