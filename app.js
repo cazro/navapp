@@ -313,14 +313,14 @@ function changeReddit(){
     if(features.reddit){
         if(redditUrls.length){
             var url = randElement(redditUrls);
-            if(kioskUrls.length != settings.urls.length){
+            if(reddit){
                 kioskUrls.splice(0,1,url);
                 console.log("Replacing first kioskUrls element with new random Reddit pic. "+url);
             } else {
 
                 console.log("Inserting random Reddit pic at beginning of kioskUrls array. " +url);
                 kioskUrls.splice(0,0,url);
-            
+				reddit = true;
             }
         }
     }
