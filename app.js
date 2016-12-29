@@ -712,7 +712,7 @@ function resize(path,fn){
 	});
 }
 function sendSource(data){
-    console.log("Sending url "+data.url+" at index "+ind);
+    console.log("Sending url "+data.url+" at index "+ind+" out of "+kioskUrls.length);
     io.emit('sourceChange',data);
 }
 
