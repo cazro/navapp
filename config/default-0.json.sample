@@ -1,8 +1,9 @@
 {
     "features":{
-        "rpi": true,
+        "rpi": false,
         "weather": false,
-        "reddit": true
+        "reddit": false,
+		"speech": false
     },
     "settings":{
         "urls": [
@@ -13,8 +14,8 @@
         "_deletedUrls": [
             "http://www.yahoo.com"
         ],
-        "seconds": 60,              
-        "gpio": {		
+        "seconds": 60,
+        "gpio": {	
             "buttonForward": 9,
             "buttonPause": 10,
             "buttonBack": 11,
@@ -35,9 +36,12 @@
             "subreddit": "osha",
             "clientId": "",
             "secret": "",
-			"limit":10,
+			"limit":20,
 			"listing":"hot",
             "refresh": 1820
-        }
+        },
+		"speech":{
+			"voice": "default"
+		}
     }
 }

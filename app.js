@@ -12,6 +12,7 @@ var routes = require('./routes/index');
 var http = require('http');
 var httpReq = require('http-request');
 
+var say = require('say');
 var rawjs = require('raw.js');
 var WorkQueue = require('mule').WorkQueue;
 
@@ -58,15 +59,12 @@ if(features.weather){
 if(features.reddit){
     console.log("Reddit is enabled");
 	
-    
 	var redditApp = new rawjs("IBA Reddit pic grabber");
-	
-	
 	var procQueue = new WorkQueue('./resize.js');
-	
     var redditSettings = settings.reddit;
     var redditStore = imgStore+redditSettings.directory;
     var redditUrls = [];
+	var redditData = {};
 	var redditListings = ['hot','top','new','controversial','random'];
 	
 	var imgClientID = "264c7647c10eaaa";
@@ -79,6 +77,11 @@ if(features.reddit){
 	console.log("Reddit is disabled");
 }
 
+if(features.speech){
+	console.log("Text-to-Speech is enabled");
+	
+	var speechSettings = settings.speech;
+}
 var seconds = settings.seconds;
 var kioskUrls = settings.urls;
 var ind = 0;
@@ -313,6 +316,9 @@ function changeReddit(){
     if(features.reddit){
         if(redditUrls.length){
             var url = randElement(redditUrls);
+			var splitUrl = url.split('/');
+			var file = splitUrl[splitUrl.length-1];
+			
             if(reddit){
                 kioskUrls.splice(0,1,url);
                 console.log("Replacing first kioskUrls element with new random Reddit pic. "+url);
@@ -322,6 +328,10 @@ function changeReddit(){
                 kioskUrls.splice(0,0,url);
 				reddit = true;
             }
+			
+			if(redditData[file] && features.speech){
+				say.speak(redditData[file]);
+			}
         }
     }
 }
@@ -396,6 +406,7 @@ function getImg(data,dir,file,callback){
 function getReddit(){
 
 	var fileNames = [];
+	redditData = {};
 	
     busy = true;
 
@@ -446,7 +457,7 @@ function getReddit(){
 												
 												getImg({url:url},redditStore,fileName,function(file){
 													fileNames.push(file);
-													
+													redditData[file] = data.title;
 												});
 											}
 										});
@@ -467,6 +478,7 @@ function getReddit(){
 												getImg({url:url},redditStore,fileName,function(file)
 												{
 													fileNames.push(file);
+													redditData[file] = data.title;
 												});
 											}
 										});
@@ -479,6 +491,7 @@ function getReddit(){
 										}
 										getImg(data,redditStore,fileName,function(file){
 											fileNames.push(file);
+											redditData[file] = data.title;
 											
 										});
 										
@@ -497,7 +510,7 @@ function getReddit(){
 													}
 													getImg({url:url},redditStore,fileName,function(file){
 														fileNames.push(file);
-
+														redditData[file] = data.title;
 													});
 												} else {
 													imgur.album(data.url,function(urls){
@@ -514,7 +527,7 @@ function getReddit(){
 																}
 																getImg({url:url},redditStore,fileName,function(file){
 																	fileNames.push(file);
-
+																	redditData[file] = data.title;
 																});
 															}
 														}
@@ -552,6 +565,7 @@ function getReddit(){
 			busy = false;
 		});
 	} else {
+		busy = false;
 		console.log("Bad Reddit listing type. Must be one of:");
 		console.log(redditListings);
 	}
@@ -574,11 +588,11 @@ function getWeather(){
 			res.resume();
 			return;
 		}
+		
         res.on('data',function(chunk){
             body += chunk;
         });
 
-		
         res.on('end',function(){
 
             console.log("Received response from wunderground");
@@ -606,9 +620,13 @@ function getWeather(){
 
                 weatherInfo = info;
 
-                console.log(info);
+                console.log(weatherInfo);
 				
 				sendWeather({bad:true,info:weatherInfo});
+				
+				if(features.speech){
+					say.speak(weatherInfo);
+				}
 				
                 if(needMap){
 					
