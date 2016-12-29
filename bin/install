@@ -12,30 +12,10 @@ echo "NAVAPP_DIR=$NAVAPP_DIR" >> /etc/environment
 
 source /etc/environment
 
-#if [ $(dirname $0) == '.' ]
-#then 
-#	echo "Going to parent dir"
-#	cd ../
-#else
-	echo "Going to bootstrap dir" $BOOTSTRAP_DIR
-	cd $BOOTSTRAP_DIR
-#fi
-
-#if [ ! -f /etc/profile.d/kiosk.sh ]
-#  then
-	
-#	echo "Copying kiosk.sh to /etc/profile.d"
-#	sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
-	
-#  else
-#	num=`diff /etc/profile.d/kiosk.sh ../etc/profile.d/kiosk.sh | wc -l`
-#	if [ $num -gt 0 ]
-#	  then
-#		echo "The script kiosk.sh is different from the one found"
-#		echo "Copying kiosk.sh to /etc/profile.d"
-#		sudo cp ../etc/profile.d/kiosk.sh /etc/profile.d/
-#	fi
-#fi
+if [ ! -f ../config/default-0.json ]
+  then
+	sudo cp ../config/default-0.json.sample ../config/default-0.json
+fi
 
 if [ -f /usr/bin/startkiosk ]
   then
@@ -50,11 +30,13 @@ if [ -f /usr/bin/startkiosk ]
 	echo "Copying startkiosk"
 	sudo cp ../bin/startkiosk /usr/bin/
 fi
+
 if [ -f ~/.config/lxsession/LXDE-pi/autostart ]
   then
     echo "Copying the autostart script"
     sudo cp -f ../bin/autostart ~/.config/lxsession/LXDE-pi/
 fi
+
 if [ ! -d /etc/nginx/ ]
   then
 	echo "Installing nginx"
@@ -72,7 +54,7 @@ if [ -d /etc/nginx/sites-available/ ]
 	if [ ! -f /etc/nginx/sites-available/navapp ]
 	  then
 		echo "Copying nginx config"
-		sudo cp etc/nginx/navapp /etc/nginx/sites-available/
+		sudo cp ../etc/nginx/navapp /etc/nginx/sites-available/
 	  else
 		num=`diff /etc/nginx/sites-available/navapp ../etc/nginx/navapp | wc -l`
 		if [ $num -gt 0 ]
@@ -98,7 +80,7 @@ if [ -d /etc/nginx/sites-available/ ]
 	sudo service nginx reload
 fi
 
-sudo apt-get install -y x11vnc unclutter GraphicsMagick
+sudo apt-get install -y unclutter GraphicsMagick festival festvox-kallpc16k
 
 if [ -f /usr/bin/pm2 ]
   then
@@ -120,6 +102,7 @@ if [ -f /usr/bin/pm2 ]
     sudo npm install -g pm2
     cd ../
     pm2 start app.js --name navapp
+	pm2 save
     pm2 startup systemd
 fi
 
