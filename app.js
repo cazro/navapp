@@ -386,6 +386,7 @@ function getImg(data,dir,file,callback){
 				}
 			});
 		} else {
+			busy = false;
 			console.log(dest+" already exists.  Not downloading.");
 			if(callback) callback(file);
 			return file;
@@ -560,13 +561,24 @@ function getWeather(){
     busy = true;
         
     http.get("http://api.wunderground.com/api/"+weatherSettings.key+"/geolookup/alerts/q/"+weatherSettings.state+"/"+weatherSettings.city+".json",function(res){
-
+		var statusCode = res.statusCode;
         var body='';
-
+		var error;
+		
+		if (statusCode !== 200){
+			error = new Error('Request Failed.\n Status Code: '+statusCode);
+		}
+		
+		if(error){
+			console.error(error.message);
+			res.resume();
+			return;
+		}
         res.on('data',function(chunk){
             body += chunk;
         });
 
+		
         res.on('end',function(){
 
             console.log("Received response from wunderground");
@@ -674,8 +686,8 @@ function getWeather(){
             busy = false;
         });
 		
-		
     }).on('error',function(e){
+		busy = false;
 		console.error('ERROR: '+e.message);
 	});
 }
