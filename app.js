@@ -162,7 +162,7 @@ io.on('connection', function(socket){
 if(features.weather){
 	setTimeout(function(){
 		getWeather();
-	},15*1000);
+	},25*1000);
 	
     setInterval(function(){
         getWeather(); 
@@ -174,7 +174,7 @@ if(features.reddit){
 	checkReddit();
 	setTimeout(function(){
 		getReddit();
-	},20*1000);
+	},10*1000);
 	
     setInterval(function(){
         getReddit();   
@@ -474,7 +474,7 @@ function getReddit(){
 												getImg({url:url},redditStore,fileName,function(file){
 													fileNames.push(file);
 													redditData[file] = thisdata.title;
-													if(thisdata.last){
+													if(thisdata.last && u == urls.length-1){
 														cleanReddit(fileNames);
 													}
 												});
@@ -498,7 +498,7 @@ function getReddit(){
 												{
 													fileNames.push(file);
 													redditData[file] = thisdata.title;
-													if(thisdata.last){
+													if(thisdata.last && u == urls.length-1){
 														cleanReddit(fileNames);
 													}
 												});
@@ -556,7 +556,7 @@ function getReddit(){
 																getImg({url:url},redditStore,fileName,function(file){
 																	fileNames.push(file);
 																	redditData[file] = thisdata.title;
-																	if(thisdata.last){
+																	if(thisdata.last && u == urls.length-1){
 																		cleanReddit(fileNames);
 																	}
 																});
