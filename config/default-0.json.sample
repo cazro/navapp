@@ -41,7 +41,8 @@
             "refresh": 1820
         },
 		"speech":{
-			"voice": "default"
+			"voice": "default",
+			"speed": .9
 		}
     }
 }

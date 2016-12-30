@@ -162,7 +162,7 @@ io.on('connection', function(socket){
 if(features.weather){
 	setTimeout(function(){
 		getWeather();
-	},25*1000);
+	},15*1000);
 	
     setInterval(function(){
         getWeather(); 
@@ -174,7 +174,7 @@ if(features.reddit){
 	checkReddit();
 	setTimeout(function(){
 		getReddit();
-	},10*1000);
+	},20*1000);
 	
     setInterval(function(){
         getReddit();   
@@ -474,9 +474,6 @@ function getReddit(){
 												getImg({url:url},redditStore,fileName,function(file){
 													fileNames.push(file);
 													redditData[file] = thisdata.title;
-													if(thisdata.last && u == urls.length-1){
-														cleanReddit(fileNames);
-													}
 												});
 											}
 										});
@@ -498,9 +495,6 @@ function getReddit(){
 												{
 													fileNames.push(file);
 													redditData[file] = thisdata.title;
-													if(thisdata.last && u == urls.length-1){
-														cleanReddit(fileNames);
-													}
 												});
 											}
 										});
@@ -514,9 +508,6 @@ function getReddit(){
 										getImg(data,redditStore,fileName,function(file,thisdata){
 											fileNames.push(file);
 											redditData[file] = thisdata.title;
-											if(thisdata.last){
-												cleanReddit(fileNames);
-											}
 											
 										});
 										
@@ -536,9 +527,6 @@ function getReddit(){
 													getImg({url:url},redditStore,fileName,function(file){
 														fileNames.push(file);
 														redditData[file] = thisdata.title;
-														if(thisdata.last){
-															cleanReddit(fileNames);
-														}
 													});
 												} else {
 													imgAlbum(data,function(urls,thisdata){
@@ -556,9 +544,6 @@ function getReddit(){
 																getImg({url:url},redditStore,fileName,function(file){
 																	fileNames.push(file);
 																	redditData[file] = thisdata.title;
-																	if(thisdata.last && u == urls.length-1){
-																		cleanReddit(fileNames);
-																	}
 																});
 															}
 														}
@@ -574,20 +559,10 @@ function getReddit(){
 							} // if result is a link
 						} // for(res.children)
 						
-//						setTimeout(function(){
-//							console.log(redditData);
-//							fs.readdir(redditStore,function(err,files){
-//								if(!err){
-//									for(var f in files){
-//										if(fileNames.indexOf(files[f]) < 0){
-//											console.log("Old file: "+redditStore+files[f]+". Removing...");
-//											fs.unlink(redditStore+files[f]);
-//										}
-//									}
-//									checkReddit();
-//								}
-//							});
-//						},60000);	
+						setTimeout(function(){
+							console.log(redditData);
+							cleanReddit(fileNames);
+						},seconds*1000*2);	
 					}
 				});           
 
