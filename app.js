@@ -360,6 +360,20 @@ function checkReddit(){
 		});
 	}
 }
+
+function cleanReddit(fileNames){
+	fs.readdir(redditStore,function(err,files){
+		if(!err){
+			for(var f in files){
+				if(fileNames.indexOf(files[f]) < 0){
+					console.log("Old file: "+redditStore+files[f]+". Removing...");
+					fs.unlink(redditStore+files[f]);
+				}
+			}
+			checkReddit();
+		}
+	});
+}
 function getImg(data,dir,file,callback){
 	var dest = dir+file;
 	//var data = {};
@@ -436,7 +450,9 @@ function getReddit(){
 								var data = res.children[i].data;
 
 								if(imgurDoms.indexOf(data.domain) !== -1){
-
+									if(i == res.children.length-1){
+										data.last = true;
+									}
 									var splitUrl = data.url.split('/');
 									var fileName = splitUrl[splitUrl.length-1];
 									var splitFile = fileName.split('.');
@@ -458,6 +474,9 @@ function getReddit(){
 												getImg({url:url},redditStore,fileName,function(file){
 													fileNames.push(file);
 													redditData[file] = thisdata.title;
+													if(thisdata.last){
+														cleanReddit(fileNames);
+													}
 												});
 											}
 										});
@@ -479,6 +498,9 @@ function getReddit(){
 												{
 													fileNames.push(file);
 													redditData[file] = thisdata.title;
+													if(thisdata.last){
+														cleanReddit(fileNames);
+													}
 												});
 											}
 										});
@@ -492,6 +514,9 @@ function getReddit(){
 										getImg(data,redditStore,fileName,function(file,thisdata){
 											fileNames.push(file);
 											redditData[file] = thisdata.title;
+											if(thisdata.last){
+												cleanReddit(fileNames);
+											}
 											
 										});
 										
@@ -511,6 +536,9 @@ function getReddit(){
 													getImg({url:url},redditStore,fileName,function(file){
 														fileNames.push(file);
 														redditData[file] = thisdata.title;
+														if(thisdata.last){
+															cleanReddit(fileNames);
+														}
 													});
 												} else {
 													imgAlbum(data,function(urls,thisdata){
@@ -528,6 +556,9 @@ function getReddit(){
 																getImg({url:url},redditStore,fileName,function(file){
 																	fileNames.push(file);
 																	redditData[file] = thisdata.title;
+																	if(thisdata.last){
+																		cleanReddit(fileNames);
+																	}
 																});
 															}
 														}
@@ -543,20 +574,20 @@ function getReddit(){
 							} // if result is a link
 						} // for(res.children)
 						
-						setTimeout(function(){
-							console.log(redditData);
-							fs.readdir(redditStore,function(err,files){
-								if(!err){
-									for(var f in files){
-										if(fileNames.indexOf(files[f]) < 0){
-											console.log("Old file: "+redditStore+files[f]+". Removing...");
-											fs.unlink(redditStore+files[f]);
-										}
-									}
-									checkReddit();
-								}
-							});
-						},60000);	
+//						setTimeout(function(){
+//							console.log(redditData);
+//							fs.readdir(redditStore,function(err,files){
+//								if(!err){
+//									for(var f in files){
+//										if(fileNames.indexOf(files[f]) < 0){
+//											console.log("Old file: "+redditStore+files[f]+". Removing...");
+//											fs.unlink(redditStore+files[f]);
+//										}
+//									}
+//									checkReddit();
+//								}
+//							});
+//						},60000);	
 					}
 				});           
 
