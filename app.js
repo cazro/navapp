@@ -349,9 +349,6 @@ function checkReddit(){
 						redditUrls.push('images/'+redditSettings.directory+files[i]);
 						console.log("Pushing images/"+redditSettings.directory+files[i]+" to redditUrls array");
 	
-						if(i == (files.length-1)){
-							changeReddit();
-						}
 					}
 				}
 			} else {
@@ -562,7 +559,7 @@ function getReddit(){
 						setTimeout(function(){
 							console.log(redditData);
 							cleanReddit(fileNames);
-						},seconds*1000*2);	
+						},seconds*1000*(kioskUrls.length/2));	
 					}
 				});           
 
