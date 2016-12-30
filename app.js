@@ -770,7 +770,7 @@ function sendWeather(data){
 }
 
 function speak(text){
-	say.speak(text,'voice_rab_diphone',.9);
+	say.speak(text,'voice_rab_diphone');
 }
 function watchdogInterval(){
     
