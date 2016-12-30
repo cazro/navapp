@@ -331,7 +331,7 @@ function changeReddit(){
 			
 			if(redditData[file] && features.speech){
 				console.log("Converting the following to speech: "+redditData[file] );
-				say.speak(redditData[file]);
+				speak(redditData[file]);
 			}
         }
     }
@@ -627,7 +627,7 @@ function getWeather(){
 				sendWeather({bad:true,info:weatherInfo});
 				
 				if(features.speech){
-					say.speak(weatherInfo);
+					speak(weatherInfo);
 				}
 				
                 if(needMap){
@@ -769,6 +769,9 @@ function sendWeather(data){
     io.emit('weatherInfo',data);
 }
 
+function speak(text){
+	say.speak(text,'voice_rab_diphone',.9);
+}
 function watchdogInterval(){
     
     return setInterval(function(){
