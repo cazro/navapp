@@ -329,7 +329,7 @@ function changeReddit(){
 				reddit = true;
             }
 			
-			if(redditData[file] && features.speech){
+			if(redditData[file] && features.speech && ind === 0){
 				console.log("Converting the following to speech: "+redditData[file] );
 				speak(redditData[file]);
 			}
