@@ -371,7 +371,7 @@ function getImg(data,dir,file,callback){
 				if(err){
 					console.error(err);
 					busy = false;
-					if(callback) callback(false);
+					if(callback) callback(false,data);
 					return false;
 				} else {
 
@@ -392,14 +392,14 @@ function getImg(data,dir,file,callback){
 					}
 					
 					busy = false;
-					if(callback) callback(resFile);
+					if(callback) callback(resFile,data);
 					return resFile;
 				}
 			});
 		} else {
 			busy = false;
 			console.log(dest+" already exists.  Not downloading.");
-			if(callback) callback(file);
+			if(callback) callback(file,data);
 			return file;
 		}
 	});
@@ -443,8 +443,7 @@ function getReddit(){
 									
 									if(splitUrl.indexOf('a') !== -1 || splitUrl.indexOf('album') !== -1){ // Submission is an album
 										
-										imgur.album(data.url,function(urls){
-											
+										imgAlbum(data,function(urls,thisdata){
 											for(var u in urls){
 												var url = urls[u];
 												var splitUrl = url.split('/');
@@ -458,14 +457,14 @@ function getReddit(){
 												
 												getImg({url:url},redditStore,fileName,function(file){
 													fileNames.push(file);
-													redditData[file] = data.title;
+													redditData[file] = thisdata.title;
 												});
 											}
 										});
 										
 									} else if(splitUrl.indexOf('gallery') !== -1){ // Submission is a gallery.
 										
-										imgur.gallery(data.url,function(urls){
+										imgGal(data,function(urls,thisdata){
 											for (var u in urls){
 												var url = urls[u];
 												var splitUrl = url.split('/');
@@ -479,7 +478,7 @@ function getReddit(){
 												getImg({url:url},redditStore,fileName,function(file)
 												{
 													fileNames.push(file);
-													redditData[file] = data.title;
+													redditData[file] = thisdata.title;
 												});
 											}
 										});
@@ -490,15 +489,15 @@ function getReddit(){
 											splitUrl[splitUrl.length-1] = fileName;
 											data.url = splitUrl.join('/');
 										}
-										getImg(data,redditStore,fileName,function(file){
+										getImg(data,redditStore,fileName,function(file,thisdata){
 											fileNames.push(file);
-											redditData[file] = data.title;
+											redditData[file] = thisdata.title;
 											
 										});
 										
 									} else if(splitFile.length === 1){ // Link just has imgur id
 										
-										imgur.image(data.url,function(url){
+										imgSing(data,function(url,thisdata){
 											if(url){
 												var splitUrl = url.split('/');
 												var fileName = splitUrl[splitUrl.length-1];
@@ -511,10 +510,10 @@ function getReddit(){
 													}
 													getImg({url:url},redditStore,fileName,function(file){
 														fileNames.push(file);
-														redditData[file] = data.title;
+														redditData[file] = thisdata.title;
 													});
 												} else {
-													imgur.album(data.url,function(urls){
+													imgAlbum(data,function(urls,thisdata){
 														for (var u in urls){
 															var url = urls[u];
 															var splitUrl = url.split('/');
@@ -528,7 +527,7 @@ function getReddit(){
 																}
 																getImg({url:url},redditStore,fileName,function(file){
 																	fileNames.push(file);
-																	redditData[file] = data.title;
+																	redditData[file] = thisdata.title;
 																});
 															}
 														}
@@ -719,6 +718,23 @@ function inArray(element,array){
 		}
 	}
 	return false;
+}
+function imgAlbum(data,cb){
+	imgur.album(data.url,function(urls){
+											
+		if(cb)cb(urls,data);
+	});
+}
+function imgGal(data,cb){
+	imgur.gallery(data.url,function(urls){
+											
+		if(cb)cb(urls,data);
+	});
+}
+function imgSing(data,cb){
+	imgur.image(data.url,function(url){
+		if(cb)cb(url,data);
+	});
 }
 
 function pause(){
