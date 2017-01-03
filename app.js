@@ -520,9 +520,9 @@ function getReddit(){
 					console.log(body);
 					console.error(body);
 				}
-		
+				busy = false;
 			});
-					
+			busy = false;
 		}).on('error',function(e){
 			busy = false;
 			console.error('ERROR: '+e.message);
