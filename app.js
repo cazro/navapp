@@ -512,6 +512,7 @@ function getReddit(){
 										}
 									} else {
 										console.error('Data in child doesn\'t contain images.');
+										console.dir(data);
 									}
 								}
 							}
