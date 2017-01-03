@@ -465,9 +465,11 @@ function getReddit(){
 			res.on('end',function(){
 
 				console.log("Received response from Reddit");
+				var json = body;
 				try{
 					body = JSON.parse(body);
 				} catch (e){
+					console.log(json);
 					console.error(e);
 				}
 				if(body.data && body.data.children){
@@ -515,6 +517,7 @@ function getReddit(){
 						busy = false;
 					});
 				} else {
+					console.log(body);
 					console.error(body);
 				}
 		
