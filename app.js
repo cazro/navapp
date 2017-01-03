@@ -436,29 +436,27 @@ function getReddit(){
 		var options = {
 			hostname : "www.reddit.com",
 			port : 80,
-			path : "/r/"+redditSettings.subreddit+"/"+redditSettings.listing+".json?limit="+redditSettings.limit,
+			method: 'GET',
+			path : "/r/"+redditSettings.subreddit+"/"+redditSettings.listing+"/.json?limit="+redditSettings.limit,
 			headers: {
 				'Content-Type':'applications/json'
-			}
+			},
+			family:4
 		};
 		
-		var url = options.hostname+options.path;
-		http.get(options,function(res){
+		var url = "http://"+options.hostname+options.path;
+		http.get(url,function(res){
 			var statusCode = res.statusCode;
 			var body = '';
-			var error;
 
-			if(statusCode != 200){
-				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
-			}
+//			if(statusCode != 200){
+//				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
+//			}
 
-			if(error){
-				console.error(error.message);
-				res.resume();
-				busy = false;
-				return;
-				
-			}
+			res.on('error',function(err){
+				console.error(err);
+				busy = false;				
+			});
 
 			res.on('data',function(chunk){
 				body += chunk;
@@ -472,39 +470,61 @@ function getReddit(){
 				} catch (e){
 					console.error(e);
 				}
-			});
-			
-			
-			console.log("Reddit success!");
-			console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
-			fs.readdir(redditStore,function(err,files){
+				console.log("Reddit success!");
+				console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
+				fs.readdir(redditStore,function(err,files){
 
-				if(!err){
+					if(!err){
 
-					for(var i in body.data.children){
-						var child = body.data.children[i];
-						if(child.kind === 't3'){
+						for(var i in body.data.children){
+							var child = body.data.children[i];
+							if(child.kind === 't3'){
 
-							var data = child.data;
+								var data = child.data;
 
-							for(var img in data.preview.images){
-								var image = data.preview.images[img];
-								var imageType = '';
-								var url = '';
-								
-								if(image.variants && image.variants.gif){
-									imageType='.gif';
-									url = image.variants.gif.source.url;
-								} else {
-									imageType='.jpg';
-									url = image.source.url;
+								for(var img in data.preview.images){
+									var image = data.preview.images[img];
+									var imageType = '';
+									var url = '';
+
+									if(image.variants && image.variants.gif){
+										imageType='.gif';
+										url = image.variants.gif.source.url;
+									} else {
+										imageType='.jpg';
+										url = image.source.url;
+									}
+									getImg({title:data.title,url:url},redditStore,image.id+imageType,function(file,obj){
+										fileNames.push(file);
+										redditData[file] = obj.title;
+
+									});
 								}
-								getImg({title:data.title,url:url},redditStore,image.id+imageType,function(file,obj){
-									fileNames.push(file);
-									redditData[file] = obj.title;
-
-								});
 							}
+						}
+						setTimeout(function(){
+							console.log(redditData);
+							cleanReddit(fileNames);
+						},seconds*1000*(kioskUrls.length/2));
+					} else {
+						console.log("Reddit storage error");
+						console.error(err);
+					}
+					
+					busy = false;
+				});
+		
+			});
+					
+		}).on('error',function(e){
+			busy = false;
+			console.error('ERROR: '+e.message);
+		}).end();
+	} else {
+		busy = false;
+		console.log("Bad Reddit listing type. Must be one of:");
+		console.log(redditListings);
+	}	
 //							if(imgurDoms.indexOf(data.domain) !== -1){
 //								if(i == res.children.length-1){
 //									data.last = true;
@@ -610,32 +630,8 @@ function getReddit(){
 //
 //								} 								
 //							} // if link is from imgur
-						} // if result is a link
-					} // for(res.children)
-						
-					setTimeout(function(){
-						console.log(redditData);
-						cleanReddit(fileNames);
-					},seconds*1000*(kioskUrls.length/2));	
-				}
-			});           
 
-//			} else {
-//				console.log("Reddit error");
-//				console.error(err);
-//			}
-
-			busy = false;
-			
-		}).on('error',function(e){
-			busy = false;
-			console.error('ERROR: '+e.message);
-		});;
-	} else {
-		busy = false;
-		console.log("Bad Reddit listing type. Must be one of:");
-		console.log(redditListings);
-	}
+	
 }
 
 function getWeather(){
