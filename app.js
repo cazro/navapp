@@ -447,6 +447,7 @@ function getReddit(){
 		var url = "http://"+options.hostname+options.path;
 		http.get(url,function(res){
 			var statusCode = res.statusCode;
+			var contentType = res.headers['content-type'];
 			var body = '';
 
 //			if(statusCode != 200){
@@ -472,7 +473,8 @@ function getReddit(){
 				//	console.log(json);
 				//	console.error(e);
 				//}
-				console.log(body);
+				console.dir(body);
+				console.dir(res);
 				if(body.data && body.data.children){
 					console.log("Reddit success!");
 					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
@@ -518,7 +520,7 @@ function getReddit(){
 						busy = false;
 					});
 				} else {
-					console.log(body);
+					
 					console.error(body);
 				}
 				busy = false;
