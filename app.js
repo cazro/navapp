@@ -435,7 +435,7 @@ function getReddit(){
 //		redditApp[redditSettings.listing](rOptions,function(err,res){
 //			if(!err){
 		var options = {
-			hostname : "oauth.reddit.com",
+			hostname : "www.reddit.com",
 			port : 80,
 			method: 'GET',
 			path : "/r/"+redditSettings.subreddit+"/"+redditSettings.listing+"/.json?limit="+redditSettings.limit,
@@ -486,7 +486,7 @@ function getReddit(){
 					console.error(e);
 				}
 				
-				console.dir(res);
+				
 				if(body.data && body.data.children){
 					console.log("Reddit success!");
 					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
