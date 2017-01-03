@@ -433,19 +433,22 @@ function getReddit(){
 	if(redditListings.indexOf(redditSettings.listing) !== -1){
 //		redditApp[redditSettings.listing](rOptions,function(err,res){
 //			if(!err){
-		http.get("http://www.reddit.com/r/"+redditSettings.subreddit+"/"+redditSettings.listing+".json?limit="+redditSettings.limit,function(res){
+		var url = "http://www.reddit.com/r/"+redditSettings.subreddit+"/"+redditSettings.listing+".json?limit="+redditSettings.limit;
+		http.get(url,function(res){
 			var statusCode = res.statusCode;
 			var body = '';
 			var error;
 
 			if(statusCode != 200){
-				error = new Error('Request Failed.\n Status Code: '+statusCode);
+				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Response: '+res);
 			}
 
 			if(error){
 				console.error(error.message);
 				res.resume();
+				busy = false;
 				return;
+				
 			}
 
 			res.on('data',function(chunk){
