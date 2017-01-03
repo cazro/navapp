@@ -465,13 +465,14 @@ function getReddit(){
 			res.on('end',function(){
 
 				console.log("Received response from Reddit");
-				var json = body;
-				try{
-					body = JSON.parse(body);
-				} catch (e){
-					console.log(json);
-					console.error(e);
-				}
+				
+				//try{
+				//	body = JSON.parse(body);
+				//} catch (e){
+				//	console.log(json);
+				//	console.error(e);
+				//}
+				console.log(body);
 				if(body.data && body.data.children){
 					console.log("Reddit success!");
 					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
