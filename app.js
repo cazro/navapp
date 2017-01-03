@@ -423,17 +423,8 @@ function getReddit(){
 	
     busy = true;
 
-//    redditApp = new rawjs("IBA picture grabber");
-//    redditApp.setupOAuth2(redditSettings.clientId, redditSettings.secret, "http://www.iba-protontherapy.com");
-//
-//    var rOptions = {
-//        r: redditSettings.subreddit,
-//        all:true,
-//        limit:redditSettings.limit
-//    };
 	if(redditListings.indexOf(redditSettings.listing) !== -1){
-//		redditApp[redditSettings.listing](rOptions,function(err,res){
-//			if(!err){
+
 		var options = {
 			hostname : "www.reddit.com",
 			port : 80,
@@ -446,9 +437,10 @@ function getReddit(){
 		};
 		
 		var url = "https://"+options.hostname+options.path;
+		
 		https.get(url,function(res){
+			
 			var statusCode = res.statusCode;
-			var contentType = res.headers['content-type'];
 			var body = '';
 			var error;
 
@@ -464,7 +456,9 @@ function getReddit(){
 			res.on('data',function(chunk){
 				body += chunk;
 			});
+			
 			if (error) {
+				
 				console.log(error.message);
 				console.dir(res);
 				// consume response data to free up memory
@@ -483,7 +477,6 @@ function getReddit(){
 					console.error(e);
 				}
 				
-				
 				if(body.data && body.data.children){
 					console.log("Reddit success!");
 					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
@@ -497,7 +490,7 @@ function getReddit(){
 								if(child.kind === 't3'){
 
 									var data = child.data;
-									console.dir(data);
+									
 									if(data.preview && data.preview.images){
 										for(var img in data.preview.images){
 											var image = data.preview.images[img];
@@ -523,12 +516,16 @@ function getReddit(){
 								}
 							}
 							setTimeout(function(){
+								
 								console.log(redditData);
 								cleanReddit(fileNames);
+								
 							},seconds*1000*(kioskUrls.length/2));
 						} else {
+							
 							console.log("Reddit storage error");
 							console.error(err);
+							
 						}
 
 						busy = false;
@@ -537,124 +534,26 @@ function getReddit(){
 					
 					console.error('No Data returned.');
 				}
+				
 				busy = false;
 			});
+			
 			busy = false;
+			
 		}).on('error',function(e){
+			
 			busy = false;
 			console.error('ERROR: '+e.message);
+			
 		}).end();
+		
 	} else {
+		
 		busy = false;
 		console.log("Bad Reddit listing type. Must be one of:");
 		console.log(redditListings);
-	}	
-//							if(imgurDoms.indexOf(data.domain) !== -1){
-//								if(i == res.children.length-1){
-//									data.last = true;
-//								}
-//								var splitUrl = data.url.split('/');
-//								var fileName = splitUrl[splitUrl.length-1];
-//								var splitFile = fileName.split('.');
-//
-//								if(splitUrl.indexOf('a') !== -1 || splitUrl.indexOf('album') !== -1){ // Submission is an album
-//
-//									imgAlbum(data,function(urls,thisdata){
-//										for(var u in urls){
-//											var url = urls[u];
-//											var splitUrl = url.split('/');
-//											var fileName = splitUrl[splitUrl.length-1];
-//											var splitFile = fileName.split('.');
-//											if(splitFile[1] === 'gifv'){
-//												fileName = splitFile[0]+'.gif';
-//												splitUrl[splitUrl.length-1] = fileName;
-//												url = splitUrl.join('/');
-//											}
-//
-//											getImg({url:url},redditStore,fileName,function(file){
-//												fileNames.push(file);
-//												redditData[file] = thisdata.title;
-//											});
-//										}
-//									});
-//
-//								} else if(splitUrl.indexOf('gallery') !== -1){ // Submission is a gallery.
-//
-//									imgGal(data,function(urls,thisdata){
-//										for (var u in urls){
-//											var url = urls[u];
-//											var splitUrl = url.split('/');
-//											var fileName = splitUrl[splitUrl.length-1];
-//											var splitFile = fileName.split('.');
-//											if(splitFile[1] === 'gifv'){
-//												fileName = splitFile[0]+'.gif';
-//												splitUrl[splitUrl.length-1] = fileName;
-//												url = splitUrl.join('/');
-//											}
-//											getImg({url:url},redditStore,fileName,function(file)
-//											{
-//												fileNames.push(file);
-//												redditData[file] = thisdata.title;
-//											});
-//										}
-//									});
-//
-//								} else if(splitFile.length === 2){  //Reddit submission is a direct link to a picture.
-//									if(splitFile[1] === 'gifv'){
-//										fileName = splitFile[0]+'.gif';
-//										splitUrl[splitUrl.length-1] = fileName;
-//										data.url = splitUrl.join('/');
-//									}
-//									getImg(data,redditStore,fileName,function(file,thisdata){
-//										fileNames.push(file);
-//										redditData[file] = thisdata.title;
-//
-//									});
-//
-//								} else if(splitFile.length === 1){ // Link just has imgur id
-//
-//									imgSing(data,function(url,thisdata){
-//										if(url){
-//											var splitUrl = url.split('/');
-//											var fileName = splitUrl[splitUrl.length-1];
-//											var splitFile = fileName.split('.');
-//											if(splitFile.length > 1){
-//												if(splitFile[1] === 'gifv'){
-//													fileName = splitFile[0]+'.gif';
-//													splitUrl[splitUrl.length-1] = fileName;
-//													url = splitUrl.join('/');
-//												}
-//												getImg({url:url},redditStore,fileName,function(file){
-//													fileNames.push(file);
-//													redditData[file] = thisdata.title;
-//												});
-//											} else {
-//												imgAlbum(data,function(urls,thisdata){
-//													for (var u in urls){
-//														var url = urls[u];
-//														var splitUrl = url.split('/');
-//														var fileName = splitUrl[splitUrl.length-1];
-//														var splitFile = fileName.split('.');
-//														if(splitFile.length > 1){
-//															if(splitFile[1] === 'gifv'){
-//																fileName = splitFile[0]+'.gif';
-//																splitUrl[splitUrl.length-1] = fileName;
-//																url = splitUrl.join('/');
-//															}
-//															getImg({url:url},redditStore,fileName,function(file){
-//																fileNames.push(file);
-//																redditData[file] = thisdata.title;
-//															});
-//														}
-//													}
-//												});
-//											}
-//										}
-//									});
-//
-//								} 								
-//							} // if link is from imgur
-
+		
+	}						
 	
 }
 

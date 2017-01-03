@@ -34,8 +34,6 @@
         "reddit":{
             "directory": "osha/",
             "subreddit": "osha",
-            "clientId": "",
-            "secret": "",
 			"limit":20,
 			"listing":"hot",
             "refresh": 1820
