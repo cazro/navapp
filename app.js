@@ -487,7 +487,7 @@ function getReddit(){
 				if(body.data && body.data.children){
 					console.log("Reddit success!");
 					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
-					console.dir(body);
+					
 					fs.readdir(redditStore,function(err,files){
 
 						if(!err){
@@ -497,24 +497,28 @@ function getReddit(){
 								if(child.kind === 't3'){
 
 									var data = child.data;
+									console.dir(data);
+									if(data.preview && data.preview.images){
+										for(var img in data.preview.images){
+											var image = data.preview.images[img];
+											var imageType = '';
+											var url = '';
 
-									for(var img in data.preview.images){
-										var image = data.preview.images[img];
-										var imageType = '';
-										var url = '';
+											if(image.variants && image.variants.gif){
+												imageType='.gif';
+												url = image.variants.gif.source.url;
+											} else {
+												imageType='.jpg';
+												url = image.source.url;
+											}
+											getImg({title:data.title,url:url},redditStore,image.id+imageType,function(file,obj){
+												fileNames.push(file);
+												redditData[file] = obj.title;
 
-										if(image.variants && image.variants.gif){
-											imageType='.gif';
-											url = image.variants.gif.source.url;
-										} else {
-											imageType='.jpg';
-											url = image.source.url;
+											});
 										}
-										getImg({title:data.title,url:url},redditStore,image.id+imageType,function(file,obj){
-											fileNames.push(file);
-											redditData[file] = obj.title;
-
-										});
+									} else {
+										console.error('Data in child doesn\'t contain images.');
 									}
 								}
 							}
