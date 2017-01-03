@@ -444,7 +444,7 @@ function getReddit(){
 			family:4
 		};
 		
-		var url = "https://"+options.hostname+options.path;
+		var url = "http://"+options.hostname+options.path;
 		http.get(url,function(res){
 			var statusCode = res.statusCode;
 			var contentType = res.headers['content-type'];
@@ -453,7 +453,7 @@ function getReddit(){
 
 			if(statusCode != 200){
 				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
-			}else if (!/^application\/json/.test(contentType)) {
+			}else if (contentType !== 'application/json') {
 				error = new Error('Invalid content-type.\n' +
 					'Expected application/json but received '+ contentType);
 			}
