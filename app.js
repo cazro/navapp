@@ -434,7 +434,7 @@ function getReddit(){
 //		redditApp[redditSettings.listing](rOptions,function(err,res){
 //			if(!err){
 		var options = {
-			hostname : "www.reddit.com",
+			hostname : "oauth.reddit.com",
 			port : 80,
 			method: 'GET',
 			path : "/r/"+redditSettings.subreddit+"/"+redditSettings.listing+"/.json?limit="+redditSettings.limit,
@@ -444,36 +444,45 @@ function getReddit(){
 			family:4
 		};
 		
-		var url = "http://"+options.hostname+options.path;
+		var url = "https://"+options.hostname+options.path;
 		http.get(url,function(res){
 			var statusCode = res.statusCode;
 			var contentType = res.headers['content-type'];
 			var body = '';
+			var error;
 
-//			if(statusCode != 200){
-//				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
-//			}
+			if(statusCode != 200){
+				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
+			}else if (!/^application\/json/.test(contentType)) {
+				error = new Error('Invalid content-type.\n' +
+					'Expected application/json but received '+ contentType);
+			}
 
 			res.on('error',function(err){
-				console.error(err);
+				console.error(err.message);
 				busy = false;				
 			});
 
 			res.on('data',function(chunk){
 				body += chunk;
 			});
-
+			if (error) {
+				console.log(error.message);
+				// consume response data to free up memory
+				res.resume();
+				return;
+			}
 			res.on('end',function(){
 
 				console.log("Received response from Reddit");
 				
-				//try{
-				//	body = JSON.parse(body);
-				//} catch (e){
-				//	console.log(json);
-				//	console.error(e);
-				//}
-				console.dir(body);
+				try{
+					body = JSON.parse(body);
+				} catch (e){
+					console.dir(body);
+					console.error(e);
+				}
+				
 				console.dir(res);
 				if(body.data && body.data.children){
 					console.log("Reddit success!");
@@ -521,7 +530,7 @@ function getReddit(){
 					});
 				} else {
 					
-					console.error(body);
+					console.error('No Data returned.');
 				}
 				busy = false;
 			});
