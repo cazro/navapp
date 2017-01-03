@@ -454,9 +454,6 @@ function getReddit(){
 
 			if(statusCode != 200){
 				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
-			}else if (contentType !== 'application/json') {
-				error = new Error('Invalid content-type.\n' +
-					'Expected application/json but received '+ contentType);
 			}
 
 			res.on('error',function(err){
