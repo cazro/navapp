@@ -11,6 +11,7 @@ var fs = require('fs');
 var routes = require('./routes/index');
 var http = require('http');
 var httpReq = require('http-request');
+var https = require('https');
 
 var say = require('say');
 var rawjs = require('raw.js');
@@ -444,8 +445,8 @@ function getReddit(){
 			family:4
 		};
 		
-		var url = "http://"+options.hostname+options.path;
-		http.get(url,function(res){
+		var url = "https://"+options.hostname+options.path;
+		https.get(url,function(res){
 			var statusCode = res.statusCode;
 			var contentType = res.headers['content-type'];
 			var body = '';
@@ -468,8 +469,10 @@ function getReddit(){
 			});
 			if (error) {
 				console.log(error.message);
+				console.dir(res);
 				// consume response data to free up memory
 				res.resume();
+				busy = false;
 				return;
 			}
 			res.on('end',function(){
