@@ -487,6 +487,7 @@ function getReddit(){
 				if(body.data && body.data.children){
 					console.log("Reddit success!");
 					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
+					console.dir(body);
 					fs.readdir(redditStore,function(err,files){
 
 						if(!err){
