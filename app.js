@@ -442,7 +442,7 @@ function getReddit(){
 			}
 		};
 		
-
+		var url = options.hostname+options.path;
 		http.get(options,function(res){
 			var statusCode = res.statusCode;
 			var body = '';
