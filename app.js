@@ -470,49 +470,53 @@ function getReddit(){
 				} catch (e){
 					console.error(e);
 				}
-				console.log("Reddit success!");
-				console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
-				fs.readdir(redditStore,function(err,files){
+				if(body.data && body.data.children){
+					console.log("Reddit success!");
+					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
+					fs.readdir(redditStore,function(err,files){
 
-					if(!err && body.data && body.data.children){
+						if(!err){
 
-						for(var i in body.data.children){
-							var child = body.data.children[i];
-							if(child.kind === 't3'){
+							for(var i in body.data.children){
+								var child = body.data.children[i];
+								if(child.kind === 't3'){
 
-								var data = child.data;
+									var data = child.data;
 
-								for(var img in data.preview.images){
-									var image = data.preview.images[img];
-									var imageType = '';
-									var url = '';
+									for(var img in data.preview.images){
+										var image = data.preview.images[img];
+										var imageType = '';
+										var url = '';
 
-									if(image.variants && image.variants.gif){
-										imageType='.gif';
-										url = image.variants.gif.source.url;
-									} else {
-										imageType='.jpg';
-										url = image.source.url;
+										if(image.variants && image.variants.gif){
+											imageType='.gif';
+											url = image.variants.gif.source.url;
+										} else {
+											imageType='.jpg';
+											url = image.source.url;
+										}
+										getImg({title:data.title,url:url},redditStore,image.id+imageType,function(file,obj){
+											fileNames.push(file);
+											redditData[file] = obj.title;
+
+										});
 									}
-									getImg({title:data.title,url:url},redditStore,image.id+imageType,function(file,obj){
-										fileNames.push(file);
-										redditData[file] = obj.title;
-
-									});
 								}
 							}
+							setTimeout(function(){
+								console.log(redditData);
+								cleanReddit(fileNames);
+							},seconds*1000*(kioskUrls.length/2));
+						} else {
+							console.log("Reddit storage error");
+							console.error(err);
 						}
-						setTimeout(function(){
-							console.log(redditData);
-							cleanReddit(fileNames);
-						},seconds*1000*(kioskUrls.length/2));
-					} else {
-						console.log("Reddit storage error");
-						console.error(err);
-					}
-					
-					busy = false;
-				});
+
+						busy = false;
+					});
+				} else {
+					console.error(body);
+				}
 		
 			});
 					
