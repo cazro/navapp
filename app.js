@@ -433,14 +433,23 @@ function getReddit(){
 	if(redditListings.indexOf(redditSettings.listing) !== -1){
 //		redditApp[redditSettings.listing](rOptions,function(err,res){
 //			if(!err){
-		var url = "http://www.reddit.com/r/"+redditSettings.subreddit+"/"+redditSettings.listing+".json?limit="+redditSettings.limit;
-		http.get(url,function(res){
+		var options = {
+			hostname : "www.reddit.com",
+			port : 80,
+			path : "/r/"+redditSettings.subreddit+"/"+redditSettings.listing+".json?limit="+redditSettings.limit,
+			headers: {
+				'Content-Type':'applications/json'
+			}
+		};
+		
+
+		http.get(options,function(res){
 			var statusCode = res.statusCode;
 			var body = '';
 			var error;
 
 			if(statusCode != 200){
-				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Response: '+res);
+				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
 			}
 
 			if(error){
