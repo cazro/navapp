@@ -521,6 +521,7 @@ function getReddit(){
 											imgAlbum(data,function(urls,thisdata){
 												if(urls){
 													for(var u in urls){
+														console.log(urls[u]);
 														getImg({title:thisdata.title,url:urls[u]},function(file,obj){
 															fileNames.push(file);
 															redditData[file] = obj.title;
@@ -528,6 +529,7 @@ function getReddit(){
 													}
 												} else {
 													imgSing(data,function(url,thisdata){
+														console.log(url);
 														getImg({title:thisdata.title,url:url},function(file,obj){
 															fileNames.push(file);
 															redditData[file] = obj.title;
@@ -536,20 +538,21 @@ function getReddit(){
 												}
 											});
 											
-										} else {
-											if( fileSplit.length === 2){
-												var ext = fileSplit[fileSplit.length-1];
-												var name = fileSplit[0];
-												if(ext === 'gif' || ext === 'jpg' || ext === 'png'){
-													getImg(data,redditStore,name+'.'+ext,function(file,obj){
-														fileNames.push(file);
-														redditData[file] = obj.title;
-													});
-												}
-											} else {
-												
-											}
-										}
+										} 
+//										else {
+//											if( fileSplit.length === 2){
+//												var ext = fileSplit[fileSplit.length-1];
+//												var name = fileSplit[0];
+//												if(ext === 'gif' || ext === 'jpg' || ext === 'png'){
+//													getImg(data,redditStore,name+'.'+ext,function(file,obj){
+//														fileNames.push(file);
+//														redditData[file] = obj.title;
+//													});
+//												}
+//											} else {
+//												
+//											}
+//										}
 									}
 								}
 							}
