@@ -518,16 +518,16 @@ function getReddit(){
 										var fileSplit = urlSplitEnd.split('.');
 										if(imgurDoms.indexOf(data.domain) !== -1){
 											
-											imgAlbum(data,function(urls,thisdata){
-												if(urls){
-													for(var u in urls){
-														console.log(urls[u]);
-														getImg({title:thisdata.title,url:urls[u]},function(file,obj){
-															fileNames.push(file);
-															redditData[file] = obj.title;
-														});
-													}
-												} else {
+//											imgAlbum(data,function(urls,thisdata){
+//												if(urls){
+//													for(var u in urls){
+//														console.log(urls[u]);
+//														getImg({title:thisdata.title,url:urls[u]},function(file,obj){
+//															fileNames.push(file);
+//															redditData[file] = obj.title;
+//														});
+//													}
+//												} else {
 													imgSing(data,function(url,thisdata){
 														console.log(url);
 														getImg({title:thisdata.title,url:url},function(file,obj){
@@ -535,8 +535,8 @@ function getReddit(){
 															redditData[file] = obj.title;
 														});
 													});
-												}
-											});
+												//}
+											//});
 											
 										} 
 //										else {
