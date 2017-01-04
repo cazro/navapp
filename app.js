@@ -541,7 +541,7 @@ function getReddit(){
 												var ext = fileSplit[fileSplit.length-1];
 												var name = fileSplit[0];
 												if(ext === 'gif' || ext === 'jpg' || ext === 'png'){
-													getImg({title:data.title,url:data.url},redditStore,name+'.'+ext,function(file,obj){
+													getImg(data,redditStore,name+'.'+ext,function(file,obj){
 														fileNames.push(file);
 														redditData[file] = obj.title;
 													});
