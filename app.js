@@ -90,6 +90,7 @@ var badWeather = false;
 var weatherInfo = '';
 var reddit = false;
 var busy = false;
+
 var clientHeight = 1600;
 var clientWidth = 1080;
 
@@ -127,7 +128,6 @@ io.on('connection', function(socket){
 	
     console.log("Client connected...");
     
-	
     socket.emit('test', 
     {
         paused:paused,
