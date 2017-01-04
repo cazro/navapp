@@ -1,6 +1,6 @@
 {
   "name": "navapp",
-  "description": "Node server for a Kiosk screen that loops through a customizable list of URLs. Can also grab weather alerts and pictures from any Reddit subreddit.",
+  "description": "Node server for a Kiosk screen. Can grab weather alerts and pictures from any Reddit subreddit.",
   "main": "app.js",
   "authors": [
     "Eric King"
@@ -25,7 +25,11 @@
     "test",
     "tests"
   ],
-  "devDependencies": {
-    "jQuery": "^3.1.1"
+  "dependencies": {
+    "jQuery": "^3.1.1",
+    "angular": "^1.6.1",
+    "angular-messages": "^1.6.1",
+    "angular-resource": "^1.6.1",
+    "angular-ui-router": "^0.3.2"
   }
 }
