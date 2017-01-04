@@ -1,0 +1,35 @@
+{
+  "name": "navapp",
+  "description": "Node server for a Kiosk screen. Can grab weather alerts and pictures from any Reddit subreddit.",
+  "main": "app.js",
+  "authors": [
+    "Eric King"
+  ],
+  "license": "GPL",
+  "keywords": [
+    "Raspberry",
+    "Pi",
+    "rpi",
+    "kiosk",
+    "gpio",
+    "navapp",
+    "raspberry",
+    "pi"
+  ],
+  "homepage": "https://github.com/cazro/navapp",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jQuery": "^3.1.1",
+    "angular": "^1.6.1",
+    "angular-messages": "^1.6.1",
+    "angular-resource": "^1.6.1",
+    "angular-ui-router": "^0.3.2"
+  }
+}

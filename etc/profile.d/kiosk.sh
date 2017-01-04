@@ -1,1 +1,3 @@
-/etc/profile.d/kiosk.sh
+#!/bin/sh
+
+sudo xinit /usr/bin/startkiosk.sh

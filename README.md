@@ -47,7 +47,7 @@ Make sure your normal user account has r/w access to the navapp folder.
 
 ```
 cd /opt/navapp
-npm install
+sudo npm install
 ```
 
 After installing the node modules, an extra script is run that will install some required

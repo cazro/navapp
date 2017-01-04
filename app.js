@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-var cp = require('child_process');
+
 require( "console-stamp" )( console, { pattern : "dd/mm/yyyy HH:MM:ss.l" } );
 
 var io = require('socket.io')(server);
@@ -11,15 +11,25 @@ var fs = require('fs');
 var routes = require('./routes/index');
 var http = require('http');
 var httpReq = require('http-request');
+var https = require('https');
+
+var say = require('say');
+var rawjs = require('raw.js');
+var WorkQueue = require('mule').WorkQueue;
 
 var config = require('config');
-console.log("CWD: "+process.cwd());
-console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
+
 var features = config.get('features');
 var settings = config.get('settings');
+
 var appPath = process.cwd()+'/';
 var imgStore = appPath+'public/images/';
 
+var fwDir = true;
+var paused = false;
+
+console.log("CWD: "+process.cwd());
+console.log('NODE_CONFIG_DIR: ' + config.util.getEnv('NODE_CONFIG_DIR'));
 console.log(settings);
 
 if(features.rpi){
@@ -33,37 +43,57 @@ if(features.rpi){
         ledLeft =           new GPIO(gpio.ledBack, 'out'),
         ledPause =          new GPIO(gpio.ledPause, 'out'),
         ledRight =          new GPIO(gpio.ledForward, 'in');
-    var fwDir = true;
-    var paused = false;
+    
+} else {
+	console.log("Raspberry Pi features are disabled");
 }
 
 if(features.weather){
     console.log("Weather checking is enabled");
     var weatherSettings = settings.weather;
     var gifStore = imgStore+weatherSettings.directory;
-   
+	var visualAlerts = ['HUR','TOR','TOW','WRN','SEW','WIN','FLO','WAT','SVR','SPE','HWW'];
+} else {
+	console.log("Weather checking is disabled");
 }
 
 if(features.reddit){
     console.log("Reddit is enabled");
-    var rawjs = require('raw.js');
-    var gm = require('gm');
-    var redditApp = new rawjs("IBA Reddit pic grabber");
+	
+	var redditApp = new rawjs("IBA Reddit pic grabber");
+	var procQueue = new WorkQueue('./resize.js');
     var redditSettings = settings.reddit;
     var redditStore = imgStore+redditSettings.directory;
     var redditUrls = [];
+	var redditData = {};
+	var redditListings = ['hot','top','new','controversial','random'];
+	
+	var imgClientID = "264c7647c10eaaa";
+	
+	var validExt = ['jpg','jpeg','png','gif'];
+	var imgurDoms = ['imgur.com','i.imgur.com'];
+	
+	var imgur = require('imgur')(imgClientID);
+} else {
+	console.log("Reddit is disabled");
 }
 
+if(features.speech){
+	console.log("Text-to-Speech is enabled");
+	
+	var speechSettings = settings.speech;
+}
 var seconds = settings.seconds;
-var urls = settings.urls;
+var kioskUrls = settings.urls;
 var ind = 0;
 var badWeather = false;
 var weatherInfo = '';
 var reddit = false;
 var busy = false;
-var clientHeight;
-var clientWidth;
-var clients = [];
+
+var clientHeight = 1600;
+var clientWidth = 1080;
+
 
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -93,19 +123,12 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
 });
 
-console.log("Number of urls: "+urls.length);
-
-checkReddit();
+console.log("Number of kioskUrls: "+kioskUrls.length);
 
 io.on('connection', function(socket){
 	
     console.log("Client connected...");
     
-	clients.push({
-		'id':socket.id,
-		'watchdogInterval':watchdogInterval
-	});
-	
     socket.emit('test', 
     {
         paused:paused,
@@ -128,20 +151,21 @@ io.on('connection', function(socket){
         console.log('Client has frame height of '+data.height+' and a width of '+data.width);
         clientHeight = ''+data.height;
         clientWidth = ''+data.width;
-        sendSource({but:"No",url:urls[ind]});
+        sendSource({but:"No",url:kioskUrls[ind]});
     });
     
     socket.on('sourceRequest',function(fn){
         console.log("Source Requested");
-        sendSource({but:"No",url:urls[ind]});
+        sendSource({but:"No",url:kioskUrls[ind]});
     });
 });
 
-// Interval to change the page on the kiosk
-var watchdog = watchdogInterval();
-
 // Interval to check the weather
 if(features.weather){
+	setTimeout(function(){
+		getWeather();
+	},15*1000);
+	
     setInterval(function(){
         getWeather(); 
     },weatherSettings.refresh*1000);
@@ -149,14 +173,18 @@ if(features.weather){
 
 //Interval to check reddit for pics
 if(features.reddit){
+	checkReddit();
 	setTimeout(function(){
 		getReddit();
-	},30*1000);
+	},20*1000);
 	
     setInterval(function(){
         getReddit();   
     },redditSettings.refresh*1000);//1000000 is about 16 minutes.
 }
+
+// Interval to change the page on the kiosk
+var watchdog = watchdogInterval();
 
 // Interrupts for button presses.
 if(features.rpi){
@@ -171,10 +199,10 @@ if(features.rpi){
             fwDir = false;
             
             ind--;
-            if(ind === urls.length){
+            if(ind === kioskUrls.length){
                 ind = 0;
             } else if(ind === -1){
-                ind = urls.length-1;
+                ind = kioskUrls.length-1;
             }
             if(ind === 0){
                 changeReddit();
@@ -185,7 +213,7 @@ if(features.rpi){
             ledPause.setDirection('out');
             
             clearInterval(watchdog);
-            sendSource({but:'Left',url:urls[ind]});
+            sendSource({but:'Left',url:kioskUrls[ind]});
             watchdog = watchdogInterval();
 
         }
@@ -201,10 +229,10 @@ if(features.rpi){
             fwDir = true;
             
             ind++;
-            if(ind === urls.length){
-                    ind = 0;
+            if(ind === kioskUrls.length){
+				ind = 0;
             } else if(ind === -1){
-                    ind = urls.length-1;
+				ind = kioskUrls.length-1;
             }
             
             if(ind === 0){
@@ -216,7 +244,7 @@ if(features.rpi){
             ledPause.setDirection('out');
             
             clearInterval(watchdog);
-            sendSource({but:'Right',url:urls[ind]});
+            sendSource({but:'Right',url:kioskUrls[ind]});
             watchdog = watchdogInterval();
         }
     });
@@ -242,10 +270,10 @@ if(features.rpi){
                 ledLeft.setDirection('out');
                 ledRight.setDirection('in');
                 ledPause.setDirection('out');
-                if(ind >= urls.length){
+                if(ind >= kioskUrls.length){
                     ind = 0;
                 } else if(ind <= -1){
-                    ind = urls.length-1;
+                    ind = kioskUrls.length-1;
                 }
                 if(ind === 0){
 
@@ -253,16 +281,16 @@ if(features.rpi){
 
                 }
                 
-                sendSource({but:'Unpause',url:urls[ind]});
+                sendSource({but:'Unpause',url:kioskUrls[ind]});
                 
             }
             else if(!paused && !fwDir){
                 
                 ind--;
-                if(ind >= urls.length){
+                if(ind >= kioskUrls.length){
                     ind = 0;
                 } else if(ind <= -1){
-                    ind = urls.length-1;
+                    ind = kioskUrls.length-1;
                 }
                 if(ind === 0){
 
@@ -274,7 +302,7 @@ if(features.rpi){
                 ledPause.setDirection('out');
                 
                 
-                sendSource({but:'Unpause',url:urls[ind]});
+                sendSource({but:'Unpause',url:kioskUrls[ind]});
                 
             } else if(paused){
                 
@@ -290,15 +318,23 @@ function changeReddit(){
     if(features.reddit){
         if(redditUrls.length){
             var url = randElement(redditUrls);
+			var splitUrl = url.split('/');
+			var file = splitUrl[splitUrl.length-1];
+			
             if(reddit){
-                urls.splice(0,1,url);
-                console.log("Replacing first urls element with new random Reddit pic. "+url);
+                kioskUrls.splice(0,1,url);
+                console.log("Replacing first kioskUrls element with new random Reddit pic. "+url);
             } else {
 
-                console.log("Inserting random Reddit pic at beginning of urls array. " +url);
-                urls.splice(0,0,url);
-                reddit = true;
+                console.log("Inserting random Reddit pic at beginning of kioskUrls array. " +url);
+                kioskUrls.splice(0,0,url);
+				reddit = true;
             }
+			
+			if(redditData[file] && features.speech && ind === 0){
+				console.log("Converting the following to speech: "+redditData[file] );
+				speak(redditData[file]);
+			}
         }
     }
 }
@@ -309,17 +345,13 @@ function checkReddit(){
 			if(!err){
 				if(files.length){
 					console.log("Found Reddit pics in directory." +redditStore);
+					redditUrls = [];
 					for(var i in files){
 
 						redditUrls.push('images/'+redditSettings.directory+files[i]);
 						console.log("Pushing images/"+redditSettings.directory+files[i]+" to redditUrls array");
 	
-						if(i == (files.length-1)){
-							changeReddit();
-						}
 					}
-				} else {
-					getReddit();
 				}
 			} else {
 				console.error(err);
@@ -327,8 +359,24 @@ function checkReddit(){
 		});
 	}
 }
-function getImg(data,dest,type){
-	
+
+function cleanReddit(fileNames){
+	fs.readdir(redditStore,function(err,files){
+		if(!err){
+			for(var f in files){
+				if(fileNames.indexOf(files[f]) < 0){
+					console.log("Old file: "+redditStore+files[f]+". Removing...");
+					fs.unlink(redditStore+files[f]);
+				}
+			}
+			checkReddit();
+		}
+	});
+}
+function getImg(data,dir,file,callback){
+	var dest = dir+file;
+	//var data = {};
+	//data.url = url;
 	fs.access(dest, fs.F_OK,function(err){
 		
 		if(err){
@@ -336,196 +384,200 @@ function getImg(data,dest,type){
 				if(err){
 					console.error(err);
 					busy = false;
+					if(callback) callback(false,data);
 					return false;
 				} else {
 
 					console.log("Downloaded file "+res.file);
 
-					var imgFile = res.file.split('/');
-					imgFile = imgFile[imgFile.length-1];
+					var resFile = res.file.split('/');
+					resFile = resFile[resFile.length-1];
 
-					if(type === 'jpg'){
+					var contentType = res.stream.headers['content-type'];
+					var splitCT = contentType.split('/');
 
-						resize(res.file);
-
-					} else if(type ==='unknown'){
-
-						var contentType = res.stream.headers['content-type'];
-						var splitCT = contentType.split('/');
-
-						if(splitCT.length >= 2){
-							if(splitCT[0] === 'image'){
-								if(splitCT[1] === 'gif'){
-
-									fs.rename(res.file,res.file.split('.')[0]+'.gif',function(){
-
-										console.log("Changed to .gif from .jpg");
-
-										resize(res.file.split('.')[0]+'.gif');
-										
-										return true;
-
-									});
-									
-								} else {
-
-									resize(res.file);
-									return true;
-								}
-							} else {
-
-								fs.unlink(res.file);
-								return false;
+					if(splitCT.length >= 2){
+						if(splitCT[0] === 'image'){
+							if(splitCT[1] !== 'gif'){	
+								resize(res.file);								
 							}
-						} else {
-							return false;
 						}
 					}
 					
 					busy = false;
-					return true;
+					if(callback) callback(resFile,data);
+					return resFile;
 				}
 			});
 		} else {
+			busy = false;
 			console.log(dest+" already exists.  Not downloading.");
-			return true;
+			if(callback) callback(file,data);
+			return file;
 		}
 	});
 }
 function getReddit(){
-    var temp = [];
+
 	var fileNames = [];
+	redditData = {};
+	
     busy = true;
 
-    redditApp = new rawjs("IBA picture grabber");
-    redditApp.setupOAuth2(redditSettings.clientId, redditSettings.secret, "http://www.iba-protontherapy.com");
+	if(redditListings.indexOf(redditSettings.listing) !== -1){
 
-    var rOptions = {
-        r: redditSettings.subreddit,
-        all:true,
-        limit:30
-    };
-    redditApp.hot(rOptions,function(err,res){
-        if(!err){
-
-            console.log("Reddit success!");
+		var options = {
+			hostname : "www.reddit.com",
+			port : 80,
+			method: 'GET',
+			path : "/r/"+redditSettings.subreddit+"/"+redditSettings.listing+"/.json?limit="+redditSettings.limit,
+			headers: {
+				'Content-Type':'applications/json'
+			},
+			family:4
+		};
+		
+		var url = "https://"+options.hostname+options.path;
+		
+		https.get(url,function(res){
 			
-			fs.readdir(redditStore,function(err,files){
+			var statusCode = res.statusCode;
+			var body = '';
+			var error;
+
+			if(statusCode != 200){
+				error = new Error('Request Failed.\n Status Code: '+statusCode+'\n URL: '+url+'\n Headers: '+JSON.stringify(res.headers));
+			}
+
+			res.on('error',function(err){
+				console.error(err.message);
+				busy = false;				
+			});
+
+			res.on('data',function(chunk){
+				body += chunk;
+			});
+			
+			if (error) {
 				
-				if(!err){
+				console.log(error.message);
+				console.dir(res);
+				// consume response data to free up memory
+				res.resume();
+				busy = false;
+				return;
+			}
+			res.on('end',function(){
+
+				console.log("Received response from Reddit");
+				
+				try{
+					body = JSON.parse(body);
+				} catch (e){
+					console.dir(body);
+					console.error(e);
+				}
+				
+				if(body.data && body.data.children){
+					console.log("Reddit success!");
+					console.log("Getting the "+redditSettings.listing+" listings from subreddit "+redditSettings.subreddit);
 					
-					for(var i in res.children){
-						
-						if(res.children[i].kind === 't3'){
-							
-							var data = res.children[i].data;
-							
-							if(data.domain === 'imgur.com' || data.domain === 'i.imgur.com'){
-
-								var splitUrl = data.url.split('/');
-
-								for(var s in splitUrl){
-
-									if(splitUrl[s] === 'a' || splitUrl[s] === 'gallery'){
-
-										break;
-									}
-
-									var len = splitUrl.length - 1;
-
-									if(len == s){
-
-										var fileName = splitUrl[splitUrl.length-1];
-										
-										
-										var splitFile = fileName.split('.');
-										
-										if(splitFile.length === 1){
-
-											data.url = data.url+'.jpg';
-											
-											fileName = fileName+'.jpg';
-											fileNames.push(fileName);
-										
-											temp.push('images/'+redditSettings.directory+fileName);
-											
-											if(!inArray(fileName,files)){
-												getImg(data,redditStore+fileName,'unknown');
-											} else {
-												console.log("Reddit image already downloaded. "+fileName);
-											}
-											
-										} else if(splitFile.length === 2){
-
-											var extension = splitFile[1];
-
-											if(extension === 'jpg' || extension === 'jpeg' || extension === 'png'){
-
-												fileNames.push(fileName);
-												
-												temp.push("images/"+redditSettings.directory+fileName);
-												
-												if(!inArray(fileName,files)){
-													getImg(data,redditStore+splitUrl[splitUrl.length-1],'jpg');
-												}else {
-													console.log("Reddit image already downloaded. "+fileName);
-												}
-												
-//											} else if(extension === 'gifv'){
-//
-//												var urlNoExt = data.url.split('gifv')[0];
-//												
-//												data.url = urlNoExt+'gif'; 
-//												
-//												fileName = splitFile[0]+'.gif';
-//												fileNames.push(fileName);
-//												
-//												temp.push("images/"+redditSettings.directory+fileName);
-//												
-//												if(!inArray(fileName,files)){
-//													getImg(data,redditStore+splitFile[0]+'.gif','gif');
-//												}else {
-//													console.log("Reddit image already downloaded. "+fileName);
-//												}
-											}
-										} else {
-											console.log("Don't know what to do with the URL");
-										} // Check is link is a direct link to the picture
-									
-								
-									} // if loop on the last url segment
-								} // Loop through the url split by '/'	
-							} // if link is from imgur
-						} // if result is a link
-					} // for(res.children)
 					fs.readdir(redditStore,function(err,files){
+
 						if(!err){
-							for(var f in files){
-								if(!inArray(files[f],fileNames)){
-									fs.unlink(redditStore+files[f]);
+
+							for(var i in body.data.children){
+								var child = body.data.children[i];
+								if(child.kind === 't3'){
+
+									var data = child.data;
+									
+									if(data.preview && data.preview.images){
+										for(var img in data.preview.images){
+											var image = data.preview.images[img];
+											var imageType = '';
+											var url = '';
+
+											if(image.variants && image.variants.gif){
+												imageType='.gif';
+												url = image.variants.gif.source.url;
+											} else {
+												imageType='.jpg';
+												url = image.source.url;
+											}
+											getImg({title:data.title,url:url},redditStore,image.id+imageType,function(file,obj){
+												fileNames.push(file);
+												redditData[file] = obj.title;
+
+											});
+										}
+									} else {
+										console.error('Data Object in child doesn\'t contain preview image urls.');
+										console.dir(data);
+										
+									}
 								}
 							}
+							setTimeout(function(){
+								
+								console.log(redditData);
+								cleanReddit(fileNames);
+								
+							},seconds*1000*(kioskUrls.length/2));
+						} else {
+							
+							console.log("Reddit storage error");
+							console.error(err);
+							
 						}
+
+						busy = false;
 					});
+				} else {
+					
+					console.error('No Data returned.');
 				}
-				redditUrls = temp;
-			});           
-            
-        } else {
-            console.log("Reddit error");
-            console.error(err);
-        }
-        busy = false;
-    });
+				
+				busy = false;
+			});
+			
+			busy = false;
+			
+		}).on('error',function(e){
+			
+			busy = false;
+			console.error('ERROR: '+e.message);
+			
+		}).end();
+		
+	} else {
+		
+		busy = false;
+		console.log("Bad Reddit listing type. Must be one of:");
+		console.log(redditListings);
+		
+	}						
+	
 }
 
 function getWeather(){
     busy = true;
-        
-    http.get("http://api.wunderground.com/api/"+weatherSettings.key+"/geolookup/alerts/q/"+weatherSettings.zipcode+".json",function(res){
-
+	
+    http.get("http://api.wunderground.com/api/"+weatherSettings.key+"/geolookup/alerts/q/"+weatherSettings.state+"/"+weatherSettings.city+".json",function(res){
+		var statusCode = res.statusCode;
         var body='';
-
+		var error;
+		
+		if (statusCode !== 200){
+			error = new Error('Request Failed.\n Status Code: '+statusCode);
+		}
+		
+		if(error){
+			console.error(error.message);
+			res.resume();
+			return;
+		}
+		
         res.on('data',function(chunk){
             body += chunk;
         });
@@ -533,8 +585,11 @@ function getWeather(){
         res.on('end',function(){
 
             console.log("Received response from wunderground");
-
-            body = JSON.parse(body);
+			try{
+				body = JSON.parse(body);
+			} catch (e){
+				console.error(e);
+			}
             var alerts = body.alerts;
             var needMap = false;
 
@@ -547,20 +602,28 @@ function getWeather(){
                 for(var i in body.alerts){
                     info += (i>0?', ':'')+body.alerts[i].description;
                     var type = body.alerts[i].type;
-                    if(type === 'HUR' || type === 'TOR' || type === 'TOW' || type === 'WRN' || type === 'SEW' || type === 'WIN' || type === 'FLO' || type === 'WAT' || type === 'SVR' || type === 'SPE' || type === 'HWW'){
+                    if(visualAlerts.indexOf(type) !== -1){
                         needMap = true;
                     }
                 }
 
                 weatherInfo = info;
 
-                console.log(info);
+                console.log(weatherInfo);
 				
 				sendWeather({bad:true,info:weatherInfo});
 				
+				if(features.speech){
+					speak(weatherInfo);
+				}
+				
                 if(needMap){
-
+					
                     console.log("Downloading weather gif");
+					fs.access(gifStore+'weather.gif',function(err){
+						if(!err) fs.unlink(gifStore+'weather.gif');
+					});
+					
 
                     var data = {
                         url:"http://api.wunderground.com/api/"+weatherSettings.key+"/animatedradar/q/"+weatherSettings.zipcode+".gif?newmaps=1&smooth=1&width="+clientHeight+"&height="+clientHeight+"&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20",
@@ -571,18 +634,18 @@ function getWeather(){
                         }
                     };
 
-                    if(getImg(data,gifStore+'weather.gif','weather')){
-					
-						if(!badWeather){
+                    getImg(data,gifStore,'weather.gif',function(file){
+						if(!badWeather && file){
 
-							console.log("Pushing weather gif onto urls array");
+							console.log("Pushing weather gif onto kioskUrls array");
 
-							urls.push('images/'+weatherSettings.directory+'weather.gif');
+							kioskUrls.push('images/'+weatherSettings.directory+file);
 
 							badWeather = true;
 
 						} 
-					}
+					});
+		
                 } else {
 
                     busy = false;
@@ -592,9 +655,13 @@ function getWeather(){
                     if(badWeather){
                         console.log("Removing weather gif.");
 
+						fs.access(gifStore+'weather.gif',function(err){
+							if(!err) fs.unlink(gifStore+'weather.gif');
+						});
+						
                         badWeather = false;
 
-                        urls.pop();
+                        kioskUrls.pop();
                     }
                 }
 
@@ -606,10 +673,14 @@ function getWeather(){
 
                     console.log("Bad weather has passed.");
                     console.log("Removing weather gif");
-
+					
+					fs.access(gifStore+'weather.gif',function(err){
+						if(!err) fs.unlink(gifStore+'weather.gif');
+					});
+					
                     badWeather = false;
 
-                    urls.pop();
+                    kioskUrls.pop();
 
                     weatherInfo = '';
 
@@ -621,7 +692,11 @@ function getWeather(){
             }
             busy = false;
         });
-    });
+		
+    }).on('error',function(e){
+		busy = false;
+		console.error('ERROR: '+e.message);
+	});
 }
 function inArray(element,array){
 	for(var i in array){
@@ -630,6 +705,23 @@ function inArray(element,array){
 		}
 	}
 	return false;
+}
+function imgAlbum(data,cb){
+	imgur.album(data.url,function(urls){
+											
+		if(cb)cb(urls,data);
+	});
+}
+function imgGal(data,cb){
+	imgur.gallery(data.url,function(urls){
+											
+		if(cb)cb(urls,data);
+	});
+}
+function imgSing(data,cb){
+	imgur.image(data.url,function(url){
+		if(cb)cb(url,data);
+	});
 }
 
 function pause(){
@@ -644,22 +736,19 @@ function randElement(arr){
 }
 
 function resize(path,fn){
-	var fork = cp.fork('./resize');
-	fork.send({'path':path});
 
-	fork.on('message',function(m){
-		if(m){
+	procQueue.enqueue({'path':path,'width':clientWidth},function(result){
+		
+		if(result){
 			if(fn) fn(true,path);
-			fork.kill();
 		} else {
 			if(fn) fn(false,path);
-			fork.kill();
 		}
 		
 	});
 }
 function sendSource(data){
-    console.log("Sending url "+data.url+" at index "+ind);
+    console.log("Sending url "+data.url+" at index "+ind+" out of "+kioskUrls.length);
     io.emit('sourceChange',data);
 }
 
@@ -667,6 +756,9 @@ function sendWeather(data){
     io.emit('weatherInfo',data);
 }
 
+function speak(text){
+	say.speak(text,speechSettings.voice,speechSettings.speed);
+}
 function watchdogInterval(){
     
     return setInterval(function(){
@@ -683,27 +775,11 @@ function watchdogInterval(){
             } else {
                 ind--;
             }
-
-            if(ind >= urls.length || ind <= -1){
-//                fs.readdir(redditStore,function(err,files){
-//                    if(!err){
-//                        console.log("Clearing redditUrls array.");
-//                        
-//                        redditUrls.splice(0,redditUrls.length);
-//                        redditUrls.length = 0;
-//                        
-//                        for(var f in files){
-//                            redditUrls.push('images/'+redditSettings.directory+files[f]);
-//                            console.log("Pushing "+files[f]+" to redditUrls array");
-//                        }
-//                    }
-//                });
-            }
-            //checkInd(urls,ind);
-            if(ind >= urls.length){
+           
+            if(ind >= kioskUrls.length){
                 ind = 0;
             } else if(ind <= -1){
-                ind = urls.length-1;
+                ind = kioskUrls.length-1;
             }
             if(ind === 0){
                 
@@ -711,17 +787,12 @@ function watchdogInterval(){
                 
             }
             
-            sendSource({but:"No",url:urls[ind]});
+            sendSource({but:"No",url:kioskUrls[ind]});
             
         }else{
 
         }
     },seconds * 1000);
-}
-
-function checkInd(array,index){
-    
-    
 }
 
 function exit(err){
