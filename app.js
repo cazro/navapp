@@ -513,46 +513,7 @@ function getReddit(){
 									} else {
 										console.error('Data Object in child doesn\'t contain preview image urls.');
 										console.dir(data);
-										var urlSplit = data.url.split('/');
-										var urlSplitEnd = urlSplit[urlSplit.length-1];
-										var fileSplit = urlSplitEnd.split('.');
-										if(imgurDoms.indexOf(data.domain) !== -1){
-											
-//											imgAlbum(data,function(urls,thisdata){
-//												if(urls){
-//													for(var u in urls){
-//														console.log(urls[u]);
-//														getImg({title:thisdata.title,url:urls[u]},function(file,obj){
-//															fileNames.push(file);
-//															redditData[file] = obj.title;
-//														});
-//													}
-//												} else {
-													imgSing(data,function(url,thisdata){
-														console.log(url);
-														getImg({title:thisdata.title,url:url},function(file,obj){
-															fileNames.push(file);
-															redditData[file] = obj.title;
-														});
-													});
-												//}
-											//});
-											
-										} 
-//										else {
-//											if( fileSplit.length === 2){
-//												var ext = fileSplit[fileSplit.length-1];
-//												var name = fileSplit[0];
-//												if(ext === 'gif' || ext === 'jpg' || ext === 'png'){
-//													getImg(data,redditStore,name+'.'+ext,function(file,obj){
-//														fileNames.push(file);
-//														redditData[file] = obj.title;
-//													});
-//												}
-//											} else {
-//												
-//											}
-//										}
+										
 									}
 								}
 							}
