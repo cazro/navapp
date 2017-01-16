@@ -241,7 +241,7 @@ var getImages = function(subreddit,limit,listing,cb){
                                     imageType:imageType,
 									file:image.id+imageType,
 									sourceType:'image',
-									source:'../../public/images/reddit/'+data.subreddit+'/'+image.id+imageType,
+									source:'../../public/images/reddit/'+data.subreddit.toLowerCase()+'/'+image.id+imageType,
 									subreddit:data.subreddit,
                                     name:data.title,
                                     url:url
