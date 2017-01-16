@@ -16,6 +16,7 @@ function reddit(conf){
 		this.getImages(this.subreddit,this.limit,this.listing,function(data,raw){
 			t.redditData = data;
 			t.rawRedditData = raw;
+			console.dir(data);
 			t.download();
 			if(cb && data)cb(true);
 			if(cb && !data)cb(false);
@@ -151,7 +152,7 @@ var getImages = function(subreddit,limit,listing,cb){
     if(Array.isArray(subreddit)){
 		subreddit = subreddit.join('+');
 	}
-	console.log("reddit.getImages - subreddit:"+subreddit+", listing: "+listing);
+
     var options = {
         hostname : "www.reddit.com",
         port : 443,

@@ -5,7 +5,7 @@ var Weather = require('./features/weather');
 function NavApp(config){
 	
 	this.config = config;
-	console.log(this.config.getSettings("features"));
+	console.dir(this.config.getSettings("features"));
 	
 	if(this.config.getFeatures('reddit'))
 		this.reddit = new Reddit(this.config.getSettings("features").reddit);
