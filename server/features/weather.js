@@ -4,7 +4,6 @@ var request = require('http-request');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
-util.inherits(weather, EventEmitter);
 var weather = function(conf){
 	var t = this;
 	t.alerts = {alerts:[]};
@@ -21,6 +20,8 @@ var weather = function(conf){
 	t.interval = t.startRefresh();
 	
 };
+
+util.inherits(weather, EventEmitter);
 
 weather.prototype.download = function(){
 	var t = this;
