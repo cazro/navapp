@@ -10,10 +10,22 @@ function reddit(conf){
 	this.listing = conf.listing;
 	this.limit = conf.limit;
 	this.refresh = conf.refresh;
+	this.getImages = getImages;
+	this.refreshData = function(cb){
+		var t = this;
+		this.getImages(this.subreddit,this.limit,this.listing,function(data,raw){
+			t.redditData = data;
+			t.rawRedditData = raw;
+			t.download();
+			if(cb && data)cb(true);
+			if(cb && !data)cb(false);
+		});
+	};
+	this.refreshData(function(res){
+		this.interval = setInterval(this.refreshData,this.refresh);
+	});
 	
-	this.refreshData();
 	
-	this.interval = this.startRefresh();
 };
 
 reddit.prototype.getImageData = function(filename,cb){
@@ -132,26 +144,6 @@ reddit.prototype.download = function(cb){
 	}
 };
 
-reddit.prototype.startRefresh = function(cb){
-	var t = this;
-	if(cb){
-		cb(setInterval(t.refreshData,t.refresh));
-	} else {
-		return setInterval(t.refreshData,t.refresh);
-	}
-};
-
-reddit.prototype.refreshData = function(cb){
-	var t = this;
-	getImages(t.subreddit,t.limit,t.listing,function(data,raw){
-		t.redditData = data;
-		t.rawRedditData = raw;
-		t.download();
-		if(cb && data)cb(true);
-		if(cb && !data)cb(false);
-	});
-};
-
 var getImages = function(subreddit,limit,listing,cb){
     var redditData = {images:[]};
     var rawRedditData = {};
@@ -184,8 +176,7 @@ var getImages = function(subreddit,limit,listing,cb){
         }
 
         res.on('error',function(err){
-            console.error(err.message);
-            busy = false;				
+            console.error(err.message);			
         });
 
         res.on('data',function(chunk){
