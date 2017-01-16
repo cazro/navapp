@@ -145,7 +145,9 @@ reddit.prototype.download = function(cb){
 				if(err){
 					request.get(image,dest,function(err,res){
 						if(err){
+							console.error("ERROR with Reddit request.get")
 							console.error(err);
+							console.error(image);
 							
 						} else {
 
@@ -171,13 +173,7 @@ var getImages = function(subreddit,limit,listing,cb){
 
     var options = {
         hostname : "www.reddit.com",
-        port : 443,
-        method: 'GET',
-        path : "/r/"+subreddit+"/"+listing+"/.json?limit="+limit,
-        headers: {
-            'Content-Type':'applications/json'
-        },
-        family:4
+        path : "/r/"+subreddit+"/"+listing+"/.json?limit="+limit
     };
 		
     var url = "https://"+options.hostname+options.path;
@@ -257,7 +253,7 @@ var getImages = function(subreddit,limit,listing,cb){
                             }
                         } else {
                             console.error('Data Object in child doesn\'t contain preview image urls.');
-                            console.dir(data.url);
+                            console.error(data.url);
 
                         }
                     }
