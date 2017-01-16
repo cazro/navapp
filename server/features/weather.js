@@ -26,7 +26,7 @@ util.inherits(weather, EventEmitter);
 weather.prototype.download = function(){
 	var t = this;
 	console.log("Downloading weather gif");
-	var dest = 'public/images/weather.gif';
+	var dest = '../../public/images/weather.gif';
 	fs.access(dest,function(err){
 		if(!err) fs.unlink('../../public/images/weather.gif');
 	});
@@ -104,6 +104,7 @@ weather.prototype.getAlerts = function(cb){
                 }
 				t.emit('alert',t.alerts);
             } else {
+				console.log("No bad weather.");
 				if(cb){
 					cb(false);
 				} else {
@@ -137,10 +138,11 @@ weather.prototype.refreshData = function(cb){
 	t.getAlerts(function(alerts){
 		if(alerts){
 			t.alerts = alerts;
+			t.download();
 		} else {
 			t.alerts = {alerts:[]};
 		}
-		t.download();
+		
 		if(cb)cb(t.alerts);
 	});
 };
