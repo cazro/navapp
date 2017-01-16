@@ -79,7 +79,7 @@ var weather = function(conf){
 	};
 	
 	this.download = function(){
-
+		var t = this;
 		console.log("Downloading weather gif");
 		var dest = '../../public/images/weather.gif';
 		fs.access(dest,function(err){
@@ -118,6 +118,7 @@ var weather = function(conf){
 	this.refreshData = function(cb){
 		var t = this.t;
 		t.getAlerts(function(alerts){
+			console.log("Weather alerts: "+ alerts);
 			if(alerts){
 				t.alerts = alerts;
 				t.download(t);
@@ -134,8 +135,6 @@ var weather = function(conf){
 		
 		this.interval = setInterval(this.refreshData,this.refresh);
 	});
-	
-	
 	
 };
 

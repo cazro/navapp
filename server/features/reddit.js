@@ -11,12 +11,28 @@ function reddit(conf){
 	this.limit = conf.limit;
 	this.refresh = conf.refresh;
 	this.getImages = getImages;
+	
+	if (!fs.existsSync('../../public/images/reddit')){
+		fs.mkdirSync('../../public/images/reddit');
+	}
+	
+	if(Array.isArray(this.subreddit)){
+		for(var s in this.subreddit){
+			if (!fs.existsSync('../../public/images/reddit/'+this.subreddit[s])){
+				fs.mkdirSync('../../public/images/reddit/'+this.subreddit[s]);
+			}
+		}
+	} else {
+		if (!fs.existsSync('../../public/images/reddit/'+this.subreddit)){
+				fs.mkdirSync('../../public/images/reddit/'+this.subreddit);
+			}
+	}
 	this.refreshData = function(cb){
 		var t = this;
 		this.getImages(this.subreddit,this.limit,this.listing,function(data,raw){
 			t.redditData = data;
 			t.rawRedditData = raw;
-			console.dir(data);
+		
 			t.download();
 			if(cb && data)cb(true);
 			if(cb && !data)cb(false);
@@ -123,7 +139,7 @@ reddit.prototype.download = function(cb){
 	if(t.redditData.images){
 		for(var i in t.redditData.images){
 			var image = t.redditData.images[i];
-			var dest = 'public/images/'+image.subreddit.toLowerCase()+'/'+image.file;
+			var dest = '../../public/images/'+image.subreddit+'/'+image.file;
 			fs.access(dest, fs.F_OK,function(err){
 		
 				if(err){
@@ -233,8 +249,8 @@ var getImages = function(subreddit,limit,listing,cb){
                                     imageType:imageType,
 									file:image.id+imageType,
 									sourceType:'image',
-									source:'../../public/images/reddit/'+data.subreddit.toLowerCase()+'/'+image.id+imageType,
-									subreddit:data.subreddit,
+									source:'images/reddit/'+data.subreddit.toLowerCase()+'/'+image.id+imageType,
+									subreddit:data.subreddit.toLowerCase(),
                                     name:data.title,
                                     url:url
                                 });
