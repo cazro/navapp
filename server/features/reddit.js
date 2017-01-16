@@ -38,9 +38,8 @@ function reddit(conf){
 			if(cb && !data)cb(false);
 		});
 	};
-	this.refreshData(function(res){
-		this.interval = setInterval(this.refreshData(),this.refresh);
-	});
+	
+	this.interval = setInterval(this.refreshData(),this.refresh);
 	
 };
 
