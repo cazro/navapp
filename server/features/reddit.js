@@ -4,6 +4,7 @@ var request = require('http-request');
 
 function reddit(conf){
 	this.t = this;
+	var t = this;
 	this.redditData = {};
 	this.rawRedditData = {};
 	this.subreddit = conf.subreddit.toLowerCase();
@@ -43,7 +44,7 @@ function reddit(conf){
 	};
 	
 	this.interval = setInterval(function(){
-		this.refreshData();
+		t.refreshData();
 	},this.refresh);
 	
 };
