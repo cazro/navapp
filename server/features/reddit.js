@@ -142,7 +142,7 @@ reddit.prototype.startRefresh = function(cb){
 };
 
 reddit.prototype.refreshData = function(cb){
-	var t = this;
+	var t = this.t;
 	getImages(t.subreddit,t.limit,t.listing,function(data,raw){
 		t.redditData = data;
 		t.rawRedditData = raw;
@@ -159,10 +159,10 @@ var getImages = function(subreddit,limit,listing,cb){
     if(Array.isArray(subreddit)){
 		subreddit = subreddit.join('+');
 	}
-	
+	console.log("reddit.getImages - subreddit:"+subreddit+", listing: "+listing);
     var options = {
         hostname : "www.reddit.com",
-        port : 80,
+        port : 443,
         method: 'GET',
         path : "/r/"+subreddit+"/"+listing+"/.json?limit="+limit,
         headers: {
