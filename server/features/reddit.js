@@ -12,8 +12,8 @@ function reddit(conf){
 	this.refresh = conf.refresh;
 	this.getImages = getImages;
 	
-	if (!fs.existsSync('../../public/images/reddit')){
-		fs.mkdirSync('../../public/images/reddit');
+	if (!fs.existsSync('public/images/reddit')){
+		fs.mkdirSync('public/images/reddit');
 	}
 	
 	if(Array.isArray(this.subreddit)){
