@@ -145,7 +145,7 @@ reddit.prototype.download = function(cb){
 				if(err){
 					request.get(image,dest,function(err,res){
 						if(err){
-							console.error("ERROR with Reddit request.get")
+							console.error("ERROR with Reddit request.get");
 							console.error(err);
 							console.error(image);
 							
