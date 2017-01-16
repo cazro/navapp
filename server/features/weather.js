@@ -11,8 +11,8 @@ var weather = function(conf){
 	this.state = conf.state;
 	this.city = conf.city;
 	this.zipcode = conf.zipcode;
-	this.mapUrl = "http://api.wunderground.com/api/"+t.key+"/animatedradar/q/"+t.zipcode+".gif?newmaps=1&smooth=1&width=1080&height=1080&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20";
-	this.alertJsonUrl = "http://api.wunderground.com/api/"+t.key+"/geolookup/alerts/q/"+t.state+"/"+t.city+".json";
+	this.mapUrl = "http://api.wunderground.com/api/"+this.key+"/animatedradar/q/"+this.zipcode+".gif?newmaps=1&smooth=1&width=1080&height=1080&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20";
+	this.alertJsonUrl = "http://api.wunderground.com/api/"+this.key+"/geolookup/alerts/q/"+this.state+"/"+this.city+".json";
 	this.refresh = conf.refresh;
 	this.getAlerts = function(t,cb){
 
