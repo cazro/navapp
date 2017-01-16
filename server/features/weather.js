@@ -14,9 +14,9 @@ var weather = function(conf){
 	this.mapUrl = "http://api.wunderground.com/api/"+this.key+"/animatedradar/q/"+this.zipcode+".gif?newmaps=1&smooth=1&width=1080&height=1080&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20";
 	this.alertJsonUrl = "http://api.wunderground.com/api/"+this.key+"/geolookup/alerts/q/"+this.state+"/"+this.city+".json";
 	this.refresh = conf.refresh;
-	this.getAlerts = function(cb){
+	this.getAlerts = function(t,cb){
 
-		http.get(this.alertJsonUrl,function(res){
+		http.get(t.alertJsonUrl,function(res){
 			var statusCode = res.statusCode;
 			var body='';
 			var error;
@@ -46,17 +46,17 @@ var weather = function(conf){
 
 				if(body.alerts && body.alerts.length){
 
-					this.alerts.alerts = body.alerts;
+					t.alerts.alerts = body.alerts;
 
 					console.log("Detected bad weather");
 					console.log("There "+(body.alerts.length===1?"is ":"are ")+body.alerts.length+" weather "+(body.alerts.length===1?"alert.":"alerts."));
 
 					if(cb){
-						cb(this.alerts);
+						cb(t.alerts);
 					} else {
-						return this.alerts;
+						return t.alerts;
 					}
-					this.emit('alert',this.alerts);
+					t.emit('alert',t.alerts);
 				} else {
 					console.log("No bad weather.");
 					if(cb){
@@ -117,7 +117,7 @@ var weather = function(conf){
 	};
 	this.refreshData = function(cb){
 		var t = this.t;
-		t.getAlerts(function(alerts){
+		t.getAlerts(t,function(alerts){
 			console.log("Weather alerts: "+ alerts);
 			if(alerts){
 				t.alerts = alerts;
