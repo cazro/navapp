@@ -8,7 +8,7 @@
     },
 	"settings":{
 		"kiosk":{
-			"name": "IBA OKC",
+			"name": "OKC",
 			"seconds": 60,
 			"slides": [
             {
@@ -47,16 +47,7 @@
 			"port":3000
 		},
 		"features":{
-			"gpio": {	
-				"buttonForward": 9,
-				"buttonPause": 10,
-				"buttonBack": 11,
-				"ledForward": 3,
-				"ledPause": 2,
-				"ledBack": 4 
-			},
 			"weather":{
-				"directory": "gif/",
 				"key": "",
 				"zipcode": 90210,
 				"state": "CA",
@@ -64,7 +55,6 @@
 				"refresh": 920
 			},
 			"reddit":{
-				"directory": "osha/",
 				"subreddit": "osha",
 				"limit":20,
 				"listing":"hot",

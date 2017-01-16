@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "start": "node app.js",
-    "postinstall": "./bin/install",
 	"install-server": "./bin/install-server",
 	"install-client": "./bin/install-client",
 	"install-navclient": "./bin/install-navclient"
