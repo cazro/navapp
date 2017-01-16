@@ -27,6 +27,7 @@ function reddit(conf){
 				fs.mkdirSync('public/images/reddit/'+this.subreddit);
 			}
 	}
+	
 	this.refreshData = function(cb){
 		var t = this;
 		t.getImages(function(data,raw){
@@ -36,10 +37,14 @@ function reddit(conf){
 			t.download();
 			if(cb && data)cb(true);
 			if(cb && !data)cb(false);
+			if(!cb && data)return true;
+			if(!cb && !data)return false;
 		});
 	};
 	
-	this.interval = setInterval(this.refreshData(),this.refresh);
+	this.interval = setInterval(function(){
+		this.refreshData();
+	},this.refresh);
 	
 };
 
