@@ -69,11 +69,7 @@ var weather = function(conf){
 		});
 	};
 
-	this.refreshData(function(alerts){
-		var t = this.t;
-		
-		this.interval = setInterval(refreshData(),refresh);
-	});
+	this.interval = setInterval(this.refreshData(),refresh);
 	
 };
 var getAlerts = function(t,cb){
