@@ -18,13 +18,13 @@ function reddit(conf){
 	
 	if(Array.isArray(this.subreddit)){
 		for(var s in this.subreddit){
-			if (!fs.existsSync('../../public/images/reddit/'+this.subreddit[s])){
-				fs.mkdirSync('../../public/images/reddit/'+this.subreddit[s]);
+			if (!fs.existsSync('public/images/reddit/'+this.subreddit[s])){
+				fs.mkdirSync('public/images/reddit/'+this.subreddit[s]);
 			}
 		}
 	} else {
-		if (!fs.existsSync('../../public/images/reddit/'+this.subreddit)){
-				fs.mkdirSync('../../public/images/reddit/'+this.subreddit);
+		if (!fs.existsSync('public/images/reddit/'+this.subreddit)){
+				fs.mkdirSync('public/images/reddit/'+this.subreddit);
 			}
 	}
 	this.refreshData = function(cb){
@@ -139,7 +139,7 @@ reddit.prototype.download = function(cb){
 	if(t.redditData.images){
 		for(var i in t.redditData.images){
 			var image = t.redditData.images[i];
-			var dest = '../../public/images/'+image.subreddit+'/'+image.file;
+			var dest = 'public/images/'+image.subreddit+'/'+image.file;
 			fs.access(dest, fs.F_OK,function(err){
 		
 				if(err){

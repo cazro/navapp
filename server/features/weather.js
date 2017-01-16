@@ -81,9 +81,9 @@ var weather = function(conf){
 	this.download = function(){
 		var t = this;
 		console.log("Downloading weather gif");
-		var dest = '../../public/images/weather.gif';
+		var dest = 'public/images/weather.gif';
 		fs.access(dest,function(err){
-			if(!err) fs.unlink('../../public/images/weather.gif');
+			if(!err) fs.unlink('public/images/weather.gif');
 		});
 
 
