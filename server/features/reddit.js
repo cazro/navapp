@@ -195,7 +195,7 @@ var getImages = function(subreddit,limit,listing,cb){
         if (error) {
 
             console.log(error.message);
-            console.dir(res);
+            //console.dir(res);
             res.resume();
             return;
         }
@@ -206,7 +206,7 @@ var getImages = function(subreddit,limit,listing,cb){
             try{
                 body = JSON.parse(body);
             } catch (e){
-                console.dir(body);
+               // console.dir(body);
                 console.error(e);
             }
 
