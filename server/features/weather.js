@@ -60,8 +60,8 @@ weather.prototype.download = function(){
 	});
 		
 };
-weather.prototype.getAlerts = function(cb){
-	var t = this;
+var getAlerts = function(t,cb){
+
     http.get(t.alertJsonUrl,function(res){
 		var statusCode = res.statusCode;
         var body='';
@@ -135,7 +135,7 @@ weather.prototype.getMapUrl = function(cb){
 
 weather.prototype.refreshData = function(cb){
 	var t = this;
-	weather.getAlerts(function(alerts){
+	getAlerts(t,function(alerts){
 		if(alerts){
 			t.alerts = alerts;
 			t.download();
