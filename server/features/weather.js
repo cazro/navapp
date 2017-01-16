@@ -6,6 +6,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var weather = function(conf){
 	this.t = this;
+	var t = this;
 	this.alerts = {alerts:[]};
 	this.key = conf.key;
 	this.state = conf.state;
@@ -70,7 +71,7 @@ var weather = function(conf){
 	};
 
 	this.interval = setInterval(function(){
-		this.refreshData();
+		t.refreshData();
 	},this.refresh);
 	
 };

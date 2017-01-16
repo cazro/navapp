@@ -24,7 +24,9 @@ var features = db.getFeatures();
 var settings = db.getSettings();
 
 var navapp = new NavApp(db);
+
 server.listen(settings.server.port || 3000);
+
 io.on('connection',navapp.sockHandler);
 
 app.use('/user_images',express.static(path.join(__dirname,'user_images')));
