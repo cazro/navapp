@@ -29,7 +29,7 @@ function reddit(conf){
 	}
 	this.refreshData = function(cb){
 		var t = this;
-		this.getImages(this.subreddit,this.limit,this.listing,function(data,raw){
+		t.getImages(function(data,raw){
 			t.redditData = data;
 			t.rawRedditData = raw;
 		
@@ -41,7 +41,6 @@ function reddit(conf){
 	this.refreshData(function(res){
 		this.interval = setInterval(this.refreshData(),this.refresh);
 	});
-	
 	
 };
 
@@ -59,6 +58,7 @@ reddit.prototype.getImageData = function(filename,cb){
 	if(cb)cb({});
 	return {};
 };
+
 reddit.prototype.getRandomImage = function(cb){
 	if(this.redditData.images){
 		var image = this.redditData.images[Math.floor(Math.random()*this.redditData.images.length)];
@@ -69,6 +69,7 @@ reddit.prototype.getRandomImage = function(cb){
 		return {};
 	}
 };
+
 reddit.prototype.getHotImages = function(cb){
 	var t = this;
     getImages(this.subreddit,this.limit,'hot',function(data,raw){
@@ -155,6 +156,7 @@ reddit.prototype.download = function(cb){
 						}
 					});
 				} else {
+					
 					console.log(dest+" already exists.  Not downloading.");
 									
 				}
@@ -163,17 +165,20 @@ reddit.prototype.download = function(cb){
 	}
 };
 
-var getImages = function(subreddit,limit,listing,cb){
+var getImages = function(cb){
     var redditData = {images:[]};
     var rawRedditData = {};
+	var sub;
 	
-    if(Array.isArray(subreddit)){
-		subreddit = subreddit.join('+');
+    if(Array.isArray(this.subreddit)){
+		sub = this.subreddit.join('+');
+	} else {
+		sub = this.subreddit;
 	}
 
     var options = {
         hostname : "www.reddit.com",
-        path : "/r/"+subreddit+"/"+listing+"/.json?limit="+limit
+        path : "/r/"+sub+"/"+this.listing+"/.json?limit="+this.limit
     };
 		
     var url = "https://"+options.hostname+options.path;
