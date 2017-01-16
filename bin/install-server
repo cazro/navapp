@@ -1,0 +1,8 @@
+#!/bin/bash
+# npm install - will need to remove the postinstall from package.json
+# run node script to copy config values to mongodb if so configured in config file.
+# If user doesn't want to use mongodb then they won't have the ability to change
+# the configuration from a web browser on the fly.
+# Fall back to using config file and having to manually reload in pm2.
+#
+# Don't install the browser and such. 

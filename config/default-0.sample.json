@@ -1,0 +1,86 @@
+{
+    "features":{
+        "rpi": false,
+        "weather": false,
+        "reddit": false,
+        "speech": false,
+        "webAdmin":false
+    },
+	"settings":{
+		"kiosk":{
+			"name": "IBA OKC",
+			"seconds": 60,
+			"slides": [
+            {
+                "name": "Google",
+				"sourceType": "url",
+                "source": "https://www.google.com/#q=news&tbm=nws"
+            },
+            {
+                "name": "NPR",
+				"sourceType": "url",
+                "source":"http://www.npr.org/sections/news/"
+            },
+            {
+                "name": "Tech News",
+				"sourceType": "url",
+                "source":"http://www.theverge.com/tech"
+            },
+			{
+				"name": "Reddit",
+				"sourceType": "reddit",
+				"source": "osha"
+			},
+			{
+				"name": "Funny Pics 1",
+				"sourceType": "folder",
+				"source": "funny1"
+			}
+			],
+			"_deletedUrls": [
+            {
+                "name": "Yahoo",
+                "url": "https://www.yahoo.com"
+            }]
+		},
+		"server":{
+			"port":3000
+		},
+		"features":{
+			"gpio": {	
+				"buttonForward": 9,
+				"buttonPause": 10,
+				"buttonBack": 11,
+				"ledForward": 3,
+				"ledPause": 2,
+				"ledBack": 4 
+			},
+			"weather":{
+				"directory": "gif/",
+				"key": "",
+				"zipcode": 90210,
+				"state": "CA",
+				"city": "LA",
+				"refresh": 920
+			},
+			"reddit":{
+				"directory": "osha/",
+				"subreddit": "osha",
+				"limit":20,
+				"listing":"hot",
+				"refresh": 1820  
+			},
+			"speech":{
+				"voice": "default",
+				"speed": 0.9
+			},
+			"webAdmin":{
+				"db": {
+					"host": "localhost",
+					"port":  27017,
+					"db": "navapp"
+				}
+			}
+		}
+    }
+}

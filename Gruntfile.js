@@ -1,13 +1,16 @@
 module.exports = function(grunt) {
 
-	var jsVendorFiles = [
-		'bower_components/jQuery/dist/jquery.js'
+	var angularFiles = [
+		'**/*.min.js',
+		'!**/*slim*',
+		'!**/sizzle*'
 	];
 	var jsAppFiles = [
-		'src/js/socketEvents.js'
+		'src/js/ng/**/*.js',
+		'src/js/ng/*.js'
 	];
 	
-	var jsSrcFiles = jsVendorFiles.concat(jsAppFiles);
+	var jsSrcFiles = angularFiles.concat(jsAppFiles);
 	
 	// Project configuration.
 	grunt.initConfig({
@@ -19,15 +22,55 @@ module.exports = function(grunt) {
 				banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
 			},
 			prod:{
-				src: 'build/<%= pkg.name %>.js',
-				dest: 'public/javascripts/<%= pkg.name %>.min.js'
+				files:[
+					{
+						src: 'build/<%= pkg.name %>.js',
+						dest: 'public/javascripts/ng/<%= pkg.name %>.min.js'
+					},
+					{
+						src: 'build/angular.js',
+						dest: 'public/javascripts/ng/angular.min.js'
+					}
+				]
+				
 			}
 		},
 
 		concat: {
 			dev:{
-				src: jsSrcFiles,
-				dest: 'build/<%= pkg.name %>.js'
+				files:[
+					{
+						src: jsAppFiles,
+						dest: 'build/<%= pkg.name %>.js'
+					},
+					{
+						src: angularFiles,
+						dest: 'build/angular.js'
+					}
+				]
+			}
+		},
+		
+		copy: {
+			dist:{
+				files:[
+					
+					{
+						expand: true,
+						flatten:true,
+						cwd:'bower_components',
+						src:['**/*.min.js','!**/*slim*','!**/sizzle*'],
+						dest:'public/javascripts/lib/',
+						
+					},
+					{
+						expand: true,
+						flatten:true,
+						cwd:'bower_components',
+						src:['**/*.min.js','!**/*slim*','!**/sizzle*'],
+						dest:'src/js/lib/',
+					}
+				]
 			}
 		}
 	});
@@ -35,7 +78,8 @@ module.exports = function(grunt) {
 	// Load the plugin that provides the "uglify" task.
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	// Default task(s).
-	grunt.registerTask('default', ['concat:dev','uglify:prod']);
+	grunt.registerTask('default', ['concat:dev','uglify:prod','copy:dist']);
 	grunt.registerTask('build-prod',['uglify:prod']);
 };

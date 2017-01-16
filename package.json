@@ -12,7 +12,10 @@
   ],
   "scripts": {
     "start": "node app.js",
-    "postinstall": "./bin/install"
+    "postinstall": "./bin/install",
+	"install-server": "./bin/install-server",
+	"install-client": "./bin/install-client",
+	"install-navclient": "./bin/install-navclient"
   },
   "repository": {
     "type": "git",
@@ -54,6 +57,7 @@
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0"
   }
 }

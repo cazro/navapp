@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
             console.log(err);
             res.status(err.status).end();
         } else {
-        console.log('Sent:', fileName);
+			console.log('Sent:', fileName);
         }
     });
 });

@@ -1,0 +1,5 @@
+#!/bin/bash
+# 
+# It will prep a rpi with buttons connected and act as client.
+# Does everything install-client which is assumed an rpi-like device
+# but without buttons so there's no nav.
