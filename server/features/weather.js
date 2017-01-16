@@ -135,7 +135,7 @@ weather.prototype.getMapUrl = function(cb){
 
 weather.prototype.refreshData = function(cb){
 	var t = this;
-	t.getAlerts(function(alerts){
+	getAlerts(function(alerts){
 		if(alerts){
 			t.alerts = alerts;
 			t.download();
