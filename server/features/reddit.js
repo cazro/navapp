@@ -142,7 +142,7 @@ reddit.prototype.startRefresh = function(cb){
 };
 
 reddit.prototype.refreshData = function(cb){
-	var t = this.t;
+	var t = this;
 	getImages(t.subreddit,t.limit,t.listing,function(data,raw){
 		t.redditData = data;
 		t.rawRedditData = raw;
