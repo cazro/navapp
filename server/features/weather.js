@@ -133,7 +133,7 @@ var weather = function(conf){
 	this.refreshData(function(alerts){
 		var t = this.t;
 		
-		this.interval = setInterval(this.refreshData,this.refresh);
+		this.interval = setInterval(this.refreshData(),this.refresh);
 	});
 	
 };

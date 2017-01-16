@@ -39,7 +39,7 @@ function reddit(conf){
 		});
 	};
 	this.refreshData(function(res){
-		this.interval = setInterval(this.refreshData,this.refresh);
+		this.interval = setInterval(this.refreshData(),this.refresh);
 	});
 	
 	
