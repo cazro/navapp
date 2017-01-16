@@ -3,17 +3,17 @@ var fs = require('fs');
 var request = require('http-request');
 
 function reddit(conf){
-	var t = this;
-	t.redditData = {};
-	t.rawRedditData = {};
-	t.subreddit = conf.subreddit;
-	t.listing = conf.listing;
-	t.limit = conf.limit;
-	t.refresh = conf.refresh;
+	this.t = this;
+	this.redditData = {};
+	this.rawRedditData = {};
+	this.subreddit = conf.subreddit.toLowerCase();
+	this.listing = conf.listing;
+	this.limit = conf.limit;
+	this.refresh = conf.refresh;
 	
-	t.refreshData();
+	this.refreshData();
 	
-	t.interval = t.startRefresh();
+	this.interval = this.startRefresh();
 };
 
 reddit.prototype.getImageData = function(filename,cb){
@@ -110,7 +110,7 @@ reddit.prototype.download = function(cb){
 	if(t.redditData.images){
 		for(var i in t.redditData.images){
 			var image = t.redditData.images[i];
-			var dest = 'public/images/'+image.subreddit+'/'+image.file;
+			var dest = 'public/images/'+image.subreddit.toLowerCase()+'/'+image.file;
 			fs.access(dest, fs.F_OK,function(err){
 		
 				if(err){

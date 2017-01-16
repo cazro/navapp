@@ -7,10 +7,10 @@ function NavApp(config){
 	this.config = config;
 	
 	if(this.config.getFeatures('reddit'))
-		this.reddit = new Reddit(this.config.getSettings("features").reddit);
+		this.reddit = new Reddit(this.config.getSettings("features"));
 
 	if(this.config.getFeatures('weather'))
-		this.weather = new Weather(this.config.getSettings('features').weather);
+		this.weather = new Weather(this.config.getSettings('features'));
 
 };
 NavApp.prototype.sockHandler = function(socket){
