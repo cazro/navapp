@@ -14,7 +14,8 @@ var weather = function(conf){
 	t.mapUrl = "http://api.wunderground.com/api/"+t.key+"/animatedradar/q/"+t.zipcode+".gif?newmaps=1&smooth=1&width=1080&height=1080&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20";
 	t.alertJsonUrl = "http://api.wunderground.com/api/"+t.key+"/geolookup/alerts/q/"+t.state+"/"+t.city+".json";
 	t.refresh = conf.refresh;
-	
+	t.getAlerts = getAlerts;
+	t.download = download;
 	t.refreshData();
 	
 	t.interval = t.startRefresh();
@@ -23,8 +24,8 @@ var weather = function(conf){
 
 util.inherits(weather, EventEmitter);
 
-weather.prototype.download = function(){
-	var t = this;
+var download = function(t){
+
 	console.log("Downloading weather gif");
 	var dest = '../../public/images/weather.gif';
 	fs.access(dest,function(err){
@@ -135,10 +136,10 @@ weather.prototype.getMapUrl = function(cb){
 
 weather.prototype.refreshData = function(cb){
 	var t = this;
-	getAlerts(t,function(alerts){
+	t.getAlerts(t,function(alerts){
 		if(alerts){
 			t.alerts = alerts;
-			t.download();
+			t.download(t);
 		} else {
 			t.alerts = {alerts:[]};
 		}
