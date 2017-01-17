@@ -8,7 +8,7 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 	$scope.slideData = {};
 	$scope.alert = "";
 	$scope.alerts = {};
-	$scope.time = new Date();
+	$scope.time = new Date().toString();
 	function refreshScope(data){
 		$scope.header = data.kiosk.name;
 		$scope.seconds = data.kiosk.seconds;
