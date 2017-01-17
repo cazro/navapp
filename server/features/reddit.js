@@ -146,6 +146,7 @@ function checkFile(image,dest,cb){
 		if(err){
 			if(cb)cb(image,dest);
 		} else {
+			console.log(dest+" already exists.  Not downloading.");
 			if(cb)cb(false);
 		}
 	});
@@ -176,10 +177,6 @@ reddit.prototype.download = function(cb){
 							console.log("Downloaded file "+res.file);
 						}
 					});
-				} else {
-					
-					console.log(dest+" already exists.  Not downloading.");
-									
 				}
 			});
 		}
