@@ -176,6 +176,7 @@ var getImages = function(cb){
     var redditData = {images:[]};
     var rawRedditData = {};
 	var sub;
+	var t = this;
 	
     if(Array.isArray(this.subreddit)){
 		sub = this.subreddit.join('+');
@@ -230,7 +231,7 @@ var getImages = function(cb){
 			
             if(body.data && body.data.children){
                 console.log("Reddit success!");
-                console.log("Getting the "+this.listing+" listings from subreddit "+sub);
+                console.log("Getting the "+t.listing+" listings from subreddit "+sub);
 
                 for(var i in body.data.children){
                     var child = body.data.children[i];
