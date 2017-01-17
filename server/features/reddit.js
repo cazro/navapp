@@ -154,7 +154,7 @@ reddit.prototype.download = function(cb){
 			
 			image.maxRedirects = 30;
 			
-			var dest = '../../public/images/'+image.subreddit+'/'+image.file;
+			var dest = '../../public/images/reddit/'+image.subreddit+'/'+image.file;
 			fs.access(dest, fs.F_OK,function(err){
 		
 				if(err){
@@ -259,9 +259,6 @@ var getImages = function(cb){
                                     imageType='.jpg';
                                     url = image.source.url;
                                 }
-								var splitUrl = url.split('://');
-								splitUrl[0] = "http";
-								url = splitUrl.join('://');
 								
                                 redditData.images.push(
                                 {
