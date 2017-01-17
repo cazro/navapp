@@ -91,21 +91,26 @@ Mongo.prototype.getFeatures = function(section,cb){
 
 function File(config){
 	var t = this;
-	
+	t.slideLength = function(cb){
+		t.getSlides(function(slides){
+			if(cb)cb(slides.length);
+			return slides.length;
+		});
+	};
 	t.config = config;
 };
 
 File.prototype.getSlides = function(callback){
-		if(callback){
-			callback(this.config.get("settings.kiosk.slides"));
-		} else {
-			return this.config.get("settings.kiosk.slides");
-		}
+	if(callback){
+		callback(this.config.get("settings.kiosk.slides"));
+	} else {
+		return this.config.get("settings.kiosk.slides");
+	}
 	
 };
 
 File.prototype.getSlide = function(index,callback){
-	getSlides(function(slides){
+	this.getSlides(function(slides){
 		if(slides){
 			if(callback){
 				callback(slides[index]);

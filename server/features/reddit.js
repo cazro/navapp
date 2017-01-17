@@ -116,7 +116,7 @@ reddit.prototype.getTopImages = function(cb){
     });
 };
 
-reddit.prototype.getRandomImage = function(cb){
+reddit.prototype.getRandomImages = function(cb){
 	var t = this;
     getImages(this.subreddit,this.limit,'random',function(data,raw){
 		t.redditData = data;
@@ -269,7 +269,7 @@ var getImages = function(cb){
                                     id:image.id,
                                     imageType:imageType,
 									file:image.id+imageType,
-									sourceType:'image',
+									sourceType:'reddit',
 									source:'images/reddit/'+data.subreddit.toLowerCase()+'/'+image.id+imageType,
 									subreddit:data.subreddit.toLowerCase(),
                                     name:data.title,

@@ -7,33 +7,42 @@
 	</head>
 	<body ng-app="navApp">
 		<div ng-controller="NavControl" class="container-fluid main">
-			<div class="row">
-				<div class="col-xs-12">
-					<header class="header">
-						<h1 class="headerText" ng-bind="header"></h1>
-					</header>
-				</div>
-			</div>
-			<div class="row">
+			
+			<header class="header">
+				<h1 class="headerText" ng-bind="header"></h1>
+			</header>
+				
+			<div class="row" ng-if="alerts.alerts">
 				<div class="col-xs-12">
 					<div class="alert">
 						<p class="alertText" ng-bind="alert"></p>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-xs-12">
-					<div class="slide" ng-bind-html="slideHtml(currentSlide)"></div>
-				</div>
+			
+			<div class="slide" ng-if="slideData.sourceType === 'url'">
+				
+				<iframe class="slideUrl" ng-src="{{slideData.trustedSource}}"></iframe>
+				
 			</div>
-			<div class="row">
-				<div class="col-xs-8">
-					<p class="description" ng-bind="currentSlide.name"></p>
+			
+			<div class="slide" ng-if="slideData.sourceType === 'reddit' || slideData.sourceType === 'folder'">
+				
+				<div class="slideImg" ng-style="{'background':'url('+slideData.source+')'}"> 
+					<p><br></p>
 				</div>
-				<div class="col-xs-4">
-					<p class="time" ng-bind="time"></p>
-				</div>
+				
 			</div>
+			<footer>
+				<div class="row">
+					<div class="col-xs-8">
+						<p class="description" ng-bind="slideData.name"></p>
+					</div>
+					<div class="col-xs-4">
+						<p class="time" ng-bind="time"></p>
+					</div>
+				</div>
+			</footer>
 		</div>
 		
 		<script src="javascripts/lib/jquery.min.js"></script>

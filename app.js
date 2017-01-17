@@ -4,8 +4,6 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var path = require('path');
 var logger = require('morgan');
-var say = require('say');
-var WorkQueue = require('mule').WorkQueue;
 var config = require('config');
 require( "console-stamp" )( console, { pattern : "dd/mm/yyyy HH:MM:ss.l" } );
 
@@ -20,16 +18,15 @@ if(config.get('features.webAdmin')){
 	db = new DB.File(config);
 }
 
-var features = db.getFeatures();
 var settings = db.getSettings();
 
-var navapp = new NavApp(db);
+var navapp = new NavApp(db,io);
 
 server.listen(settings.server.port || 3000);
 
-io.on('connection',navapp.sockHandler);
+//io.on('connection',new NavApp(db).sockHandler);
 
-app.use('/user_images',express.static(path.join(__dirname,'user_images')));
+app.use('/user_images',express.static('user_images'));
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
@@ -48,16 +45,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   console.log(err);
 });
-
-if(features.speech){
-	console.log("Text-to-Speech is enabled");
-	
-	var speechSettings = settings.speech;
-}
-
-function speak(text){
-	say.speak(text,speechSettings.voice,speechSettings.speed);
-}
 
 function exit(err){
     console.log(err);

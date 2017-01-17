@@ -5,30 +5,26 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 	
 	$scope.header = "";
 	$scope.seconds = 60;
-	$scope.currentSlide = {};
+	$scope.slideData = {};
 	$scope.alert = "";
 	$scope.alerts = {};
-	
-	function interval(){
-		sockFactory.emit('getNextSlide', {});
-	};
 	
 	function refreshScope(data){
 		$scope.header = data.kiosk.name;
 		$scope.seconds = data.kiosk.seconds;
-		$scope.currentSlide = data.slide.data;
-		$scope.slideHtml = function(slideData){
-			if(slideData.sourceType === 'url'){
-				return '<iframe ng-src="{{slideData.source}}"></iframe>';
-			} else if(slideData.sourceType === 'folder' || slideData.sourceType === 'reddit'){
-				return '<div class="slideImage" style="background-image:'+slideData.source+'"></div>';
-			}
-		};
+		$scope.slideData = data.slide.data;
+		$scope.slideData.trustedSource = $sce.trustAsResourceUrl($scope.slideData.source);
+		
 	}
     sockFactory.on('init',function(data){
         // Start loop to switch slide view with next url from server
+		console.log("Initializing client with: ");
+		console.log(data);
+		
 		refreshScope(data);
-		$scope.slideInterval = setInterval(interval,$scope.seconds);
+		$scope.slideInterval = setInterval(function(){
+			sockFactory.emit('getNextSlide', {});
+		},$scope.seconds*1000);
     });
 	
 	sockFactory.on('alert',function(data){
@@ -43,7 +39,13 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 	});
 	
 	sockFactory.on('nextSlide', function(data){
-		refreshScope(data);
+		console.log("Retrieved next slide.");
+		console.log(data);
+		if(!data.slide.data.source){
+			sockFactory.emit('getNextSlide',{});
+		} else {
+			refreshScope(data);
+		}
 	});
 	
 	sockFactory.on('prevSlide', function(data){
