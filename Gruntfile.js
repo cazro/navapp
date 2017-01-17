@@ -54,13 +54,12 @@ module.exports = function(grunt) {
 		copy: {
 			dist:{
 				files:[
-					
 					{
 						expand: true,
 						flatten:true,
 						cwd:'bower_components',
-						src:['**/*.min.js','!**/*slim*','!**/sizzle*'],
-						dest:'public/javascripts/lib/',
+						src:['**/*.min.css','!**/*theme*','!**/*map'],
+						dest:'public/stylesheets/lib/'
 						
 					},
 					{
@@ -68,7 +67,15 @@ module.exports = function(grunt) {
 						flatten:true,
 						cwd:'bower_components',
 						src:['**/*.min.js','!**/*slim*','!**/sizzle*'],
-						dest:'src/js/lib/',
+						dest:'public/javascripts/lib/'
+						
+					},
+					{
+						expand: true,
+						flatten:true,
+						cwd:'bower_components',
+						src:['**/*.min.js','!**/*slim*','!**/sizzle*'],
+						dest:'src/js/lib/'
 					}
 				]
 			}

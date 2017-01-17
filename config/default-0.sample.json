@@ -36,12 +36,7 @@
 				"sourceType": "folder",
 				"source": "funny1"
 			}
-			],
-			"_deletedUrls": [
-            {
-                "name": "Yahoo",
-                "url": "https://www.yahoo.com"
-            }]
+			]
 		},
 		"server":{
 			"port":3000
