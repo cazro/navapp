@@ -3,12 +3,12 @@ var fs = require('fs');
 var request = require('http-request');
 
 function reddit(conf){
-	this.t = this;
 	var t = this;
+	this.t = this;
 	this.redditData = {};
 	this.rawRedditData = {};
 	this.subreddit = conf.subreddit.toLowerCase();
-	this.listing = conf.listing;
+	this.listing = conf.listing.toLowerCase();
 	this.limit = conf.limit;
 	this.refresh = conf.refresh;
 	this.getImages = getImages;
@@ -25,13 +25,13 @@ function reddit(conf){
 		}
 	} else {
 		if (!fs.existsSync('public/images/reddit/'+this.subreddit)){
-				fs.mkdirSync('public/images/reddit/'+this.subreddit);
-			}
+			fs.mkdirSync('public/images/reddit/'+this.subreddit);
+		}
 	}
 	
 	this.refreshData = function(cb){
 		var t = this;
-		t.getImages(function(data,raw){
+		this.getImages(function(data,raw){
 			t.redditData = data;
 			t.rawRedditData = raw;
 		
@@ -152,6 +152,8 @@ reddit.prototype.download = function(cb){
 				accept: '*/*'
 			};
 			
+			image.maxRedirects = 30;
+			
 			var dest = '../../public/images/'+image.subreddit+'/'+image.file;
 			fs.access(dest, fs.F_OK,function(err){
 		
@@ -257,6 +259,10 @@ var getImages = function(cb){
                                     imageType='.jpg';
                                     url = image.source.url;
                                 }
+								var splitUrl = url.split('://');
+								splitUrl[0] = "http";
+								url = splitUrl.join('://');
+								
                                 redditData.images.push(
                                 {
                                     id:image.id,
