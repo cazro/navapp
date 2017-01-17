@@ -43,6 +43,8 @@ function reddit(conf){
 		});
 	};
 	
+	this.refreshData();
+	
 	this.interval = setInterval(function(){
 		t.refreshData();
 	},this.refresh*1000);
