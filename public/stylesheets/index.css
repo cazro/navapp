@@ -1,11 +1,19 @@
+body{
+	background-color:black;
+}
 .main{
 
 }
-.description{
-	
+.headerText{
+	color:#DDD;
 }
-.time{
+.description{
+	color:#DDD;
+}
 
+.time{
+	color:#DDD;
+	right:1em;
 }
 .slide{
 	position:absolute;

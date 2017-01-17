@@ -36,7 +36,7 @@
 			<footer>
 				<div class="row">
 					<div class="col-xs-8">
-						<p class="description" ng-bind="slideData.name"></p>
+						<h4 class="description" >{{slideData.subreddit?slideData.subreddit.toUpperCase()+' - ':''}}{{slideData.name}}</h4>
 					</div>
 					<div class="col-xs-4">
 						<p class="time" ng-bind="time"></p>
