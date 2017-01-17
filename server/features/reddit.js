@@ -141,7 +141,17 @@ reddit.prototype.getControversialImages = function(cb){
         }
     });
 };
+function checkFile(image,dest,cb){
+	fs.access(dest, fs.F_OK,function(err){
+		if(err){
+			if(cb)cb(image,dest);
+		} else {
 
+			console.log(dest+" already exists.  Not downloading.");
+			if(cb)cb(false);
+		}
+	});
+}
 reddit.prototype.download = function(cb){
 	var t = this;
 	if(t.redditData.images){
@@ -154,10 +164,9 @@ reddit.prototype.download = function(cb){
 			
 			image.maxRedirects = 30;
 			
-			var dest = '../../public/images/reddit/'+image.subreddit+'/'+image.file;
-			fs.access(dest, fs.F_OK,function(err){
-		
-				if(err){
+			var dest = 'public/images/reddit/'+image.subreddit+'/'+image.file;
+			checkFile(image,dest,function(image,dest){
+				if(image){
 					request.get(image,dest,function(err,res){
 						if(err){
 							console.error("ERROR with Reddit request.get");
