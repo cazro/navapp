@@ -45,7 +45,7 @@ function reddit(conf){
 	
 	this.interval = setInterval(function(){
 		t.refreshData();
-	},this.refresh);
+	},this.refresh*1000);
 	
 };
 
@@ -228,7 +228,7 @@ var getImages = function(cb){
 			
             if(body.data && body.data.children){
                 console.log("Reddit success!");
-                console.log("Getting the "+this.listing+" listings from subreddit "+subreddit);
+                console.log("Getting the "+this.listing+" listings from subreddit "+sub);
 
                 for(var i in body.data.children){
                     var child = body.data.children[i];

@@ -72,7 +72,7 @@ var weather = function(conf){
 
 	this.interval = setInterval(function(){
 		t.refreshData();
-	},this.refresh);
+	},this.refresh*1000);
 	
 };
 var getAlerts = function(t,cb){
