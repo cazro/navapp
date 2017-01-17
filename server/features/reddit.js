@@ -152,7 +152,7 @@ reddit.prototype.download = function(cb){
 				accept: '*/*'
 			};
 			
-			var dest = __dirname+'/public/images/'+image.subreddit+'/'+image.file;
+			var dest = '../../public/images/'+image.subreddit+'/'+image.file;
 			fs.access(dest, fs.F_OK,function(err){
 		
 				if(err){
