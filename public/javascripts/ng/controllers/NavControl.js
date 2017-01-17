@@ -9,6 +9,10 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 	$scope.alert = "";
 	$scope.alerts = {};
 	$scope.time = new Date().toString();
+	setInterval(function(){
+		$scope.time = new Date().toString();
+	},1000);
+	
 	function refreshScope(data){
 		$scope.header = data.kiosk.name;
 		$scope.seconds = data.kiosk.seconds;
