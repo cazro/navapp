@@ -26,9 +26,16 @@
 				
 			</div>
 			
-			<div class="slide" ng-if="slideData.sourceType === 'reddit' || slideData.sourceType === 'folder'">
+			<div class="slide" ng-if="slideData.sourceType === 'folder'">
 				
 				<div class="slideImg" ng-style="{'background':'url('+slideData.source+')'}"> 
+					<p><br></p>
+				</div>
+				
+			</div>
+			<div class="slide" ng-if="slideData.sourceType === 'reddit'">
+				
+				<div class="slideReddit" ng-style="{'background':'url('+slideData.source+')'}"> 
 					<p><br></p>
 				</div>
 				

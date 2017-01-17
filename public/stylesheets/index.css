@@ -35,6 +35,14 @@ iframe{
 	background-position:center center !important;
 	background-repeat:no-repeat !important;
 }
+.slideReddit{
+	
+	width:100%;
+	height:100%;
+	background-size:80% !important;
+	background-position:center center !important;
+	background-repeat:no-repeat !important;
+}
 .alertText{
 	color: red;
 	font-family: sans-serif;
