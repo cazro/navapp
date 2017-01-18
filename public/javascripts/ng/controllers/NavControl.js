@@ -21,7 +21,6 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 	updateTime();
 	$interval(updateTime,1000);
 	
-	
 	function refreshScope(data){
 		$scope.header = data.kiosk.name;
 		$scope.seconds = data.kiosk.seconds;
