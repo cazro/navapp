@@ -14,9 +14,11 @@
 				
 			<div class="row" ng-if="alerts.alerts">
 				<div class="col-xs-12">
-					<div class="alert">
-						<p class="alertText" ng-bind="alert"></p>
-					</div>
+					
+					<marquee behavior="scroll" direction="left" scrollamount="8">
+						<h2 class="alertText" ng-bind="alert"></h2>
+					</marquee>
+					
 				</div>
 			</div>
 			

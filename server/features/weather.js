@@ -7,60 +7,36 @@ var EventEmitter = require('events').EventEmitter;
 var weather = function(conf){
 	this.t = this;
 	var t = this;
-	this.alerts = {alerts:[]};
+	this.alerts = 
+	{
+		slide:{}
+	};
 	this.key = conf.key;
 	this.state = conf.state;
 	this.city = conf.city;
-	this.zipcode = conf.zipcode;
-	this.mapUrl = "http://api.wunderground.com/api/"+this.key+"/animatedradar/q/"+this.zipcode+".gif?newmaps=1&smooth=1&width=1080&height=1080&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20";
+	this.mapUrl = "http://api.wunderground.com/api/"+this.key+"/animatedradar/q/"+this.state+"/"+this.city+".gif?newmaps=1&smooth=1&width=1080&height=1080&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20";
 	this.alertJsonUrl = "http://api.wunderground.com/api/"+this.key+"/geolookup/alerts/q/"+this.state+"/"+this.city+".json";
 	this.refresh = conf.refresh;
 	this.getAlerts = getAlerts;
-	
-	this.download = function(){
-		var t = this;
-		console.log("Downloading weather gif");
-		var dest = 'public/images/weather.gif';
-		fs.access(dest,function(err){
-			if(!err) fs.unlink('public/images/weather.gif');
-		});
 
-
-		var data = {
-			url:t.mapUrl,
-			progress: function(current,total){
-
-				console.log("Downloaded "+current+" out of "+total);
-
-			}
-		};
-
-		fs.access(dest, fs.F_OK,function(err){
-
-			if(err){
-				request.get(data,dest,function(err,res){
-					if(err){
-						console.error(err);
-
-					} else {
-
-						console.log("Downloaded file "+res.file);
-					}
-				});
-			} else {
-				console.log(dest+" already exists.  Not downloading.");
-
-			}
-		});
-
-	};
 	this.refreshData = function(cb){
-		var t = this.t;
-		t.getAlerts(t,function(alerts){
+		var t = this;
+		this.getAlerts(function(alerts){
 			console.log("Weather alerts: "+ alerts);
 			if(alerts){
-				t.alerts = alerts;
-				t.download(t);
+				t.alerts.alerts = alerts;
+				t.download(function(res){
+					if(res){
+						t.alerts.slide.data = {
+							name: 'Weather Radar Map',
+							sourceType: 'reddit',
+							source:'images/weather.gif'
+						};
+					} else {
+						t.alerts.slide.data = {};
+					}
+					t.emit('alert',t.alerts);
+				});
 			} else {
 				t.alerts = {alerts:[]};
 			}
@@ -77,8 +53,8 @@ var weather = function(conf){
 	},this.refresh*1000);
 	
 };
-var getAlerts = function(t,cb){
-
+var getAlerts = function(cb){
+	var t = this;
 	http.get(t.alertJsonUrl,function(res){
 		var statusCode = res.statusCode;
 		var body='';
@@ -109,19 +85,20 @@ var getAlerts = function(t,cb){
 
 			if(body.alerts && body.alerts.length){
 
-				t.alerts.alerts = body.alerts;
-
 				console.log("Detected bad weather");
 				console.log("There "+(body.alerts.length===1?"is ":"are ")+body.alerts.length+" weather "+(body.alerts.length===1?"alert.":"alerts."));
 
 				if(cb){
-					cb(t.alerts);
+					cb(body.alerts);
 				} else {
-					return t.alerts;
+					return body.alerts;
 				}
-				t.emit('alert',t.alerts);
+				
 			} else {
 				console.log("No bad weather.");
+				fs.access('public/images/weather.gif',function(err){
+					if(!err) fs.unlink('public/images/weather.gif');
+				});
 				if(cb){
 					cb(false);
 				} else {
@@ -140,6 +117,30 @@ var getAlerts = function(t,cb){
 		}
 	});
 };
+
+weather.prototype.download = function(cb){
+	var t = this;
+	console.log("Downloading weather gif");
+	var dest = 'public/images/weather.gif';
+
+	var data = {
+		url:t.mapUrl,
+		progress: function(current,total){
+			console.log("Downloaded "+current+" out of "+total);
+		}
+	};
+
+	request.get(data,dest,function(err,res){
+		if(err){
+			console.error(err);
+			if(cb)cb(false);
+		} else {
+			console.log("Downloaded file "+res.file);
+			if(cb)cb(true);
+		}
+	});
+};
+
 util.inherits(weather, EventEmitter);
 
 module.exports = weather;
