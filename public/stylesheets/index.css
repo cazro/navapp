@@ -17,6 +17,7 @@ body{
 	
 }
 .slide{
+	background-color:white;
 	position:absolute;
 	top:8em;
 	bottom:6em;
@@ -37,7 +38,7 @@ iframe{
 	background-repeat:no-repeat !important;
 }
 .slideReddit{
-	
+	background-color:black;
 	width:100%;
 	height:100%;
 	background-size:90% !important;
