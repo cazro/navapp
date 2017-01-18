@@ -33,6 +33,13 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		console.log("Initializing client with: ");
 		console.log(data);
 		
+		sockFactory.emit('clientInfo',{
+			browser:{
+				height:$("#main").height(),
+				width:$("#main").width()
+			}
+		});
+		
 		refreshScope(data);
 		
 		setInterval(function(){

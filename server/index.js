@@ -69,6 +69,12 @@ var sockHandler = function(socket){
 		});
 	}
 
+	socket.on('clientInfo',function(data){
+		clients[socket.id].clientInfo = data;
+		console.log("Received client info from "+socket.id+". Data:");
+		console.dir(data);
+	});
+	
 	socket.on('getNextSlide',function(data){
 		currentSlide.index += 1;
 		currentSlide.refreshData(function(){
