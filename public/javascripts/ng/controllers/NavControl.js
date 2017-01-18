@@ -36,7 +36,9 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		
 		refreshScope(data);
 		
-		$interval(updateSlide,$scope.seconds*1000);
+		setInterval(function(){
+			sockFactory.emit('getNextSlide', {});
+		},$scope.seconds*1000);
     });
 	
 	sockFactory.on('alert',function(data){
