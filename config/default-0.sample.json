@@ -44,7 +44,6 @@
 		"features":{
 			"weather":{
 				"key": "",
-				"zipcode": 90210,
 				"state": "CA",
 				"city": "LA",
 				"refresh": 920
