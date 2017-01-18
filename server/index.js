@@ -1,6 +1,7 @@
 var fs = require('fs');
 var Reddit = require('./features/reddit');
 var Weather = require('./features/weather');
+var clients = {};
 var scope;
 
 function NavApp(config,io){
@@ -20,11 +21,15 @@ function NavApp(config,io){
 	this.sockHandler = sockHandler;
 	
 	io.on('connection',this.sockHandler);
+	
+	io.sockets.setMaxListeners(100);
 }
 
 var sockHandler = function(socket){
 	var t = scope;
 	console.log("Client connected to socket...");
+	
+	clients[socket.id] = socket;
 	
 	var currentSlide = {
 		index: 0
@@ -80,6 +85,7 @@ var sockHandler = function(socket){
 	
 	 socket.on('disconnect', function () {
 		scope.io.emit('user disconnected');
+		delete clients[socket.id];
 	 });
 };
 
