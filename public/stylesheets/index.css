@@ -6,14 +6,14 @@ html,body{
 #main{
 	height:90vh;
 }
-.headerText{
+#headerText{
 	color:#81b935;
 }
-.description{
+#slideName{
 	color:#DDD;
 }
 
-.time{
+#time{
 	
 	color:#DDD;
 	
@@ -22,12 +22,12 @@ html,body{
 	background-color:white;
 	height:100%;
 }
-iframe{
+#slideUrl{
 	border: 0px;
 	width:100%;
 	height:100%;
 }
-.slideImg{
+#slideImg{
 	
 	width:100%;
 	height:100%;
@@ -35,7 +35,7 @@ iframe{
 	background-position:center center !important;
 	background-repeat:no-repeat !important;
 }
-.slideReddit{
+#slideReddit{
 	background-color:black;
 	width:100%;
 	height:100%;
@@ -43,14 +43,9 @@ iframe{
 	background-position:center center !important;
 	background-repeat:no-repeat !important;
 }
-.alert{
-	padding: 0px;
-}
-.alertText{
+
+#alertText{
 	color: red;
 	font-family: sans-serif;
 	margin-top: 0px;
-}
-footer{
-
 }
