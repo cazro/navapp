@@ -49,12 +49,15 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 	
 	sockFactory.on('alert',function(data){
 		$scope.alerts = data;
+		$scope.alert = "";
+		
 		for(var i in data.alerts){
 			$scope.alert += (i>0?', ':'')+data.alerts[i].description;
 			var type = data.alerts[i].type;
 			if(visualAlerts.indexOf(type) !== -1){
 				needMap = true;
 			}
+			
 		}
 	});
 	
