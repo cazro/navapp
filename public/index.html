@@ -5,8 +5,8 @@
 		<link rel="stylesheet" type="text/css" href="stylesheets/lib/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="stylesheets/index.css">
 	</head>
-	<body ng-app="navApp">
-		<div ng-controller="NavControl" id="main" class="container-fluid">
+	<body ng-app="navApp" ng-controller="NavControl">
+		<div id="main" class="container-fluid">
 			
 			<header class="header">
 				<h1 class="headerText" ng-bind="header"></h1>
@@ -53,7 +53,7 @@
 				</div>
 			</footer>
 		</div>
-		
+	
 		<script src="javascripts/lib/jquery.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="javascripts/lib/angular.min.js"></script>
