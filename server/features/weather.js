@@ -39,6 +39,7 @@ var weather = function(conf){
 				});
 			} else {
 				t.alerts = {alerts:[]};
+				t.emit('alert',t.alerts);
 			}
 
 			if(cb)cb(t.alerts);
