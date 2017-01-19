@@ -5,18 +5,18 @@
 		<link rel="stylesheet" type="text/css" href="stylesheets/lib/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="stylesheets/index.css">
 	</head>
-	<body ng-app="navApp">
-		<div ng-controller="NavControl" id="main" class="container-fluid">
+	<body ng-app="navApp" ng-controller="NavControl">
+		<div id="main" class="container-fluid">
 			
-			<header class="header">
-				<h1 class="headerText" ng-bind="header"></h1>
+			<header id="header">
+				<h1 id="headerText" ng-bind="header"></h1>
 			</header>
 				
 			<div class="row" ng-if="alerts.alerts">
 				<div class="col-xs-12">
 					
 					<marquee behavior="scroll" direction="left" scrollamount="8">
-						<h2 class="alertText" ng-bind="alert"></h2>
+						<h2 id="alertText" ng-bind="alert"></h2>
 					</marquee>
 					
 				</div>
@@ -24,20 +24,20 @@
 			
 			<div class="slide" ng-if="slideData.sourceType === 'url'">
 				
-				<iframe class="slideUrl" ng-src="{{slideData.trustedSource}}"></iframe>
+				<iframe id="slideUrl" ng-src="{{slideData.trustedSource}}"></iframe>
 				
 			</div>
 			
 			<div class="slide" ng-if="slideData.sourceType === 'folder'">
 				
-				<div class="slideImg" ng-style="{'background':'url('+slideData.source+')'}"> 
+				<div id="slideImg" ng-style="{'background':'url('+slideData.source+')'}"> 
 					<p><br></p>
 				</div>
 				
 			</div>
 			<div class="slide" ng-if="slideData.sourceType === 'reddit'">
 				
-				<div class="slideReddit" ng-style="{'background':'url('+slideData.source+')'}"> 
+				<div id="slideReddit" ng-style="{'background':'url('+slideData.source+')'}"> 
 					<p><br></p>
 				</div>
 				
@@ -45,15 +45,15 @@
 			<footer>
 				<div class="row">
 					<div class="col-xs-6">
-						<h2 class="description" >{{slideData.subreddit?slideData.subreddit.toUpperCase()+' - ':''}}{{slideData.name}}</h2>
+						<h2 id="slideName" >{{slideData.subreddit?slideData.subreddit.toUpperCase()+' - ':''}}{{slideData.name}}</h2>
 					</div>
 					<div class="col-xs-6">
-						<h2 class="time" ng-bind="time | date: 'yyyy/M/d HH:mm:ss \'GMT\' Z'"></h2>
+						<h2 id="time" ng-bind="time | date: 'yyyy/M/d HH:mm:ss \'GMT\' Z'"></h2>
 					</div>
 				</div>
 			</footer>
 		</div>
-		
+	
 		<script src="javascripts/lib/jquery.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="javascripts/lib/angular.min.js"></script>

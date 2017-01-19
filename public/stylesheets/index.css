@@ -1,7 +1,7 @@
 html,body{
 	background-color:black;
 	height: 100%;
-    min-height: 100%;
+
 }
 #main{
 	height:90vh;
@@ -20,11 +20,7 @@ html,body{
 }
 .slide{
 	background-color:white;
-	position:absolute;
-	top:8em;
-	bottom:8em;
-	right:1em;
-	left:1em;
+	height:100%;
 }
 #slideUrl{
 	border: 0px;
