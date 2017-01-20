@@ -54,7 +54,8 @@ var sockHandler = function(socket){
 			name: t.config.getSettings("kiosk.name"),
 			seconds: t.config.getSettings("kiosk.seconds")
 		},
-		slide:currentSlide
+		slide:currentSlide,
+		alerts:(t.weather?t.weather.alerts:{alerts:[]})
 	};
 	
 	currentSlide.refreshData(function(){
@@ -65,6 +66,7 @@ var sockHandler = function(socket){
 	
 	if(t.weather){
 		t.weather.on('alert',function(data){
+			console.log("Caught weather alert emit.");
 			socket.broadcast.emit('alert',data);
 		});
 	}

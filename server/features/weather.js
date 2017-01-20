@@ -9,6 +9,7 @@ var weather = function(conf){
 	var t = this;
 	this.alerts = 
 	{
+		alerts:[],
 		slide:{}
 	};
 	this.key = conf.key;
@@ -23,7 +24,8 @@ var weather = function(conf){
 	this.refreshData = function(cb){
 		var t = this;
 		this.getAlerts(function(alerts){
-			console.log("Weather alerts: "+ alerts);
+			console.log("Weather alerts: ");
+			console.dir(alerts);
 			if(alerts){
 				t.alerts.alerts = alerts;
 				t.download(function(res){
