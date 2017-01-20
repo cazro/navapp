@@ -18,7 +18,8 @@ var weather = function(conf){
 	this.alertJsonUrl = "http://api.wunderground.com/api/"+this.key+"/geolookup/alerts/q/"+this.state+"/"+this.city+".json";
 	this.refresh = conf.refresh;
 	this.getAlerts = getAlerts;
-
+	this.download = download;
+	
 	this.refreshData = function(cb){
 		var t = this;
 		this.getAlerts(function(alerts){
@@ -119,7 +120,7 @@ var getAlerts = function(cb){
 	});
 };
 
-weather.prototype.download = function(cb){
+var download = function(cb){
 	var t = this;
 	console.log("Downloading weather gif");
 	var dest = 'public/images/weather.gif';
