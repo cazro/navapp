@@ -19,8 +19,13 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 	};
 	
 	updateTime();
+	
 	$interval(updateTime,1000);
 	
+	$interval(function(){
+		sockFactory.emit('getNextSlide', {});
+	},$scope.seconds*1000);
+		
 	function refreshScope(data){
 		$scope.header = data.kiosk.name;
 		$scope.seconds = data.kiosk.seconds;
@@ -42,9 +47,7 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		
 		refreshScope(data);
 		
-		$interval(function(){
-			sockFactory.emit('getNextSlide', {});
-		},$scope.seconds*1000);
+		
     });
 	
 	sockFactory.on('alert',function(data){
