@@ -34,7 +34,7 @@ var sockHandler = function(socket){
 	var currentSlide = {
 		index: 0
 	};
-	currentSlide.refreshData = function(cb){
+	var refreshData = function(cb){
 		t.config.slideLength(function(length){
 			if(currentSlide.index < 0) currentSlide.index = length-1;
 			if(currentSlide.index >= length) currentSlide.index = 0;
@@ -58,7 +58,7 @@ var sockHandler = function(socket){
 		alerts:(t.weather?t.weather.alerts:{alerts:[]})
 	};
 	
-	currentSlide.refreshData(function(){
+	refreshData(function(){
 		console.log("Sending initial info");
 		console.log(info);
 		socket.emit('init',info);
@@ -79,7 +79,7 @@ var sockHandler = function(socket){
 	
 	socket.on('getNextSlide',function(data){
 		currentSlide.index += 1;
-		currentSlide.refreshData(function(){
+		refreshData(function(){
 			console.log("Sending next slide");
 			console.dir(currentSlide);
 			socket.emit('nextSlide',info);

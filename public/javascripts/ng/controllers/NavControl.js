@@ -26,22 +26,7 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		$scope.seconds = data.kiosk.seconds;
 		$scope.slideData = data.slide.data;
 		$scope.slideData.trustedSource = $sce.trustAsResourceUrl($scope.slideData.source);
-		$scope.alerts = data.alerts;
-		$scope.alert = "";
-		if($scope.alerts.alerts){
-			$('#main').height('88vh');
-		} else {
-			$('#main').height('90vh');
-		}
-		
-		for(var i in $scope.alerts.alerts){
-			$scope.alert += (i>0?', ':'')+$scope.alerts.alerts[i].description;
-			var type = $scope.alerts.alerts[i].type;
-			if(visualAlerts.indexOf(type) !== -1){
-				needMap = true;
-			}
-			
-		}
+		handleAlerts(data.alerts);
 	}
     sockFactory.on('init',function(data){
         // Start loop to switch slide view with next url from server
@@ -57,30 +42,15 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		
 		refreshScope(data);
 		
-		setInterval(function(){
+		$interval(function(){
 			sockFactory.emit('getNextSlide', {});
 		},$scope.seconds*1000);
     });
 	
 	sockFactory.on('alert',function(data){
-		$scope.alerts = data;
-		$scope.alert = "";
 		console.log("Got weather alert.");
 		console.log(data);
-		if($scope.alerts.alerts){
-			$('#main').height('88vh');
-		} else {
-			$('#main').height('90vh');
-		}
-		
-		for(var i in data.alerts){
-			$scope.alert += (i>0?', ':'')+data.alerts[i].description;
-			var type = data.alerts[i].type;
-			if(visualAlerts.indexOf(type) !== -1){
-				needMap = true;
-			}
-			
-		}
+		handleAlerts(data);
 	});
 	
 	sockFactory.on('nextSlide', function(data){
@@ -97,4 +67,24 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		refreshScope(data);
 	});
 	
+	function handleAlerts(data){
+		$scope.alerts = data;
+		$scope.alert = "";
+		
+		if($scope.alerts.alerts){
+			$('#main').height('88vh');
+		} else {
+			$('#main').height('90vh');
+		}
+		
+		for(var i in data.alerts){
+			$scope.alert += (i>0?', ':'')+data.alerts[i].description;
+			var type = data.alerts[i].type;
+			if(visualAlerts.indexOf(type) !== -1){
+				needMap = true;
+			}
+			
+		}
+		
+	}
 }]);

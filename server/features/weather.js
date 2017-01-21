@@ -30,18 +30,21 @@ var weather = function(conf){
 				t.alerts.alerts = alerts;
 				t.download(function(res){
 					if(res){
-						t.alerts.slide.data = {
+						t.alerts.slide = {
 							name: 'Weather Radar Map',
 							sourceType: 'reddit',
 							source:'images/weather.gif'
 						};
 					} else {
-						t.alerts.slide.data = {};
+						t.alerts.slide = {};
 					}
 					t.emit('alert',t.alerts);
 				});
 			} else {
-				t.alerts = {alerts:[]};
+				t.alerts = {
+					alerts:[],
+					slide:{}
+				};
 				t.emit('alert',t.alerts);
 			}
 
