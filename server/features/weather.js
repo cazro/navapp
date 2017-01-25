@@ -38,6 +38,7 @@ var weather = function(conf){
 					} else {
 						t.alerts.slide = {};
 					}
+					console.log("Emitting weather alert from weather.js.");
 					t.emit('alert',t.alerts);
 				});
 			} else {
@@ -45,6 +46,8 @@ var weather = function(conf){
 					alerts:[],
 					slide:{}
 				};
+				console.log("Emitting weather alert from weather.js.");
+
 				t.emit('alert',t.alerts);
 			}
 

@@ -4,10 +4,11 @@ var Weather = require('./features/weather');
 var clients = {};
 var scope;
 
-function NavApp(config,io){
-	this.io = io;
+function NavApp(config){
 	this.config = config;
 	scope = this;
+	this.reddit;
+	this.weather;
 	
 	console.dir(this.config.getFeatures());
 	console.dir(this.config.getSettings("features"));
@@ -15,14 +16,12 @@ function NavApp(config,io){
 	if(this.config.getFeatures('reddit'))
 		this.reddit = new Reddit(this.config.getSettings("features").reddit);
 
-	if(this.config.getFeatures('weather'))
+	if(this.config.getFeatures('weather')){
 		this.weather = new Weather(this.config.getSettings('features').weather);
+		this.weather.setMaxListeners(0);
+	}
 	
 	this.sockHandler = sockHandler;
-	
-	io.on('connection',this.sockHandler);
-	
-	io.sockets.setMaxListeners(100);
 }
 
 var sockHandler = function(socket){
