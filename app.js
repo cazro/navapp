@@ -24,12 +24,6 @@ var navapp = new NavApp(db,io);
 
 server.listen(settings.server.port || 3000);
 
-io.on('connection',navapp.sockHandler);
-
-io.on('disconnect',function(socket){
-	io.removeListener('connection');
-});
-io.sockets.setMaxListeners(100);
 //io.on('connection',new NavApp(db).sockHandler);
 
 app.use('/user_images',express.static('user_images'));

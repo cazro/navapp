@@ -34,8 +34,31 @@ function reddit(conf){
 		this.getImages(function(data,raw){
 			t.redditData = data;
 			t.rawRedditData = raw;
+			
+			if(data.images){
+				for(var i in data.images){
+					var image = data.images[i];
+
+					image.headers = {
+						accept: '*/*'
+					};
+
+					image.maxRedirects = 30;
+
+					var dest = 'public/images/reddit/'+image.subreddit+'/'+image.file;
+					checkFile(image,dest,function(image,dest){
+						if(image){
+							download(image,dest,function(img,dst){
+								
+							});
+						}
+					});
+					
+				}
+				
+				cleanDir(data.images);
+			}
 		
-			t.download();
 			if(cb && data)cb(true);
 			if(cb && !data)cb(false);
 			if(!cb && data)return true;
@@ -50,7 +73,37 @@ function reddit(conf){
 	},this.refresh*1000);
 	
 };
+function cleanDir(images){
+	var dir,sub,image,file,old;
+	for(var i in images){
+		old = true;
+		image = images[i];
+		sub = image.subreddit;
+		dir = 'public/images/reddit/'+sub;
+		var files = fs.readdirSync(dir);
+		var cnt = 0;
+		if(files){
+			
+			for(var f in files){
+				file = files[f];
+				old = true;
+				var cnt2=0;
+				for(var a in images){
+					if(file === images[a].file){
+						old = false;
+					}
 
+					if(old && cnt2 == (images.length-1)){
+						console.log("Removing ye old file "+file);
+						fs.unlink(dir+'/'+file);
+					}
+					cnt2++;
+				}
+				cnt++;
+			}
+		}
+	}
+}
 reddit.prototype.getImageData = function(filename,cb){
 	var t = this;
 	if(t.redditData.images){
@@ -142,6 +195,7 @@ reddit.prototype.getControversialImages = function(cb){
     });
 };
 function checkFile(image,dest,cb){
+	
 	fs.access(dest, fs.F_OK,function(err){
 		if(err){
 			if(cb)cb(image,dest);
@@ -150,37 +204,23 @@ function checkFile(image,dest,cb){
 			if(cb)cb(false);
 		}
 	});
+	
 }
-reddit.prototype.download = function(cb){
-	var t = this;
-	if(t.redditData.images){
-		for(var i in t.redditData.images){
-			var image = t.redditData.images[i];
-			
-			image.headers = {
-				accept: '*/*'
-			};
-			
-			image.maxRedirects = 30;
-			
-			var dest = 'public/images/reddit/'+image.subreddit+'/'+image.file;
-			checkFile(image,dest,function(image,dest){
-				if(image){
-					request.get(image,dest,function(err,res){
-						if(err){
-							console.error("ERROR with Reddit request.get");
-							console.error(err);
-							console.error(image);
-							
-						} else {
+var download = function(image,dest,cb){
+	
+	request.get(image,dest,function(err,res){
+		if(err){
+			console.error("ERROR with Reddit request.get");
+			console.error(err);
+			console.error(image);
 
-							console.log("Downloaded file "+res.file);
-						}
-					});
-				}
-			});
+		} else {
+
+			console.log("Downloaded file "+res.file);
+			if(cb)cb(image,dest);
 		}
-	}
+	});
+
 };
 
 var getImages = function(cb){

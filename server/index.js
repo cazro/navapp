@@ -2,9 +2,11 @@ var fs = require('fs');
 var Reddit = require('./features/reddit');
 var Weather = require('./features/weather');
 var clients = {};
+var util = require('util');
 var scope;
 
-function NavApp(config){
+function NavApp(config,io){
+	this.io = io;
 	this.config = config;
 	scope = this;
 	this.reddit;
@@ -19,9 +21,22 @@ function NavApp(config){
 	if(this.config.getFeatures('weather')){
 		this.weather = new Weather(this.config.getSettings('features').weather);
 		this.weather.setMaxListeners(0);
+		this.weather.on('alert',function(data){
+			console.log("Caught weather alert emit.");
+			io.emit('alert',data);
+		});
 	}
 	
 	this.sockHandler = sockHandler;
+	io.on('connection',this.sockHandler);
+
+	io.on('disconnect',function(socket){
+		socket.removeListener('connection');
+		console.log("Received disconnect in app.js");
+	});
+	
+	io.sockets.setMaxListeners(100);
+	
 }
 
 var sockHandler = function(socket){
@@ -62,13 +77,6 @@ var sockHandler = function(socket){
 		console.log(info);
 		socket.emit('init',info);
 	});
-	
-	if(t.weather){
-		t.weather.on('alert',function(data){
-			console.log("Caught weather alert emit.");
-			socket.broadcast.emit('alert',data);
-		});
-	}
 
 	socket.on('clientInfo',function(data){
 		clients[socket.id].clientInfo = data;
@@ -79,7 +87,7 @@ var sockHandler = function(socket){
 	socket.on('getNextSlide',function(data){
 		currentSlide.index += 1;
 		refreshData(function(){
-			console.log("Sending next slide");
+			console.log("Sending next slide to "+socket.id);
 			console.dir(currentSlide);
 			socket.emit('nextSlide',info);
 		});
@@ -91,7 +99,8 @@ var sockHandler = function(socket){
 	});
 	
 	 socket.on('disconnect', function () {
-		scope.io.emit('user disconnected');
+		console.log('user disconnected - '+socket.id);
+	
 		delete clients[socket.id];
 	 });
 };
