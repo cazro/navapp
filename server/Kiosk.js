@@ -74,7 +74,7 @@ var sockHandler = function(socket){
 	
 	refreshData(function(){
 		console.log("Sending initial info");
-		console.log(info);
+		console.dir(info);
 		socket.emit('init',info);
 	});
 
@@ -88,7 +88,8 @@ var sockHandler = function(socket){
 		currentSlide.index += 1;
 		refreshData(function(){
 			console.log("Sending next slide to "+socket.id);
-			console.dir(info);
+			console.dir(info.slide);
+			console.dir(info.alerts.alerts);
 			socket.emit('nextSlide',info);
 		});
 	});
