@@ -93,7 +93,7 @@ var sockHandler = function(socket){
 			console.log("There "+(info.alerts.alerts.length===1?"is ":"are ")+info.alerts.alerts.length+" weather "+(info.alerts.alerts.length===1?"alert.":"alerts."));
 			if(info.alerts.alerts){
 				info.alerts.alerts.forEach(function(alert,ind,all){
-					console.log("Alert "+ind+1+": "+alert.description);
+					console.log("Alert "+(ind++)+": "+alert.description);
 					console.log(alert.message);
 				});
 			}
