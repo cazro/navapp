@@ -88,8 +88,9 @@ var sockHandler = function(socket){
 		currentSlide.index += 1;
 		refreshData(function(){
 			console.log("Sending next slide to "+socket.id);
+			console.log("Slide info");
 			console.dir(info.slide);
-			console.dir(info.alerts.alerts);
+			console.log("There "+(info.alerts.alerts.length===1?"is ":"are ")+info.alerts.alerts.length+" weather "+(info.alerts.alerts.length===1?"alert.":"alerts."));
 			socket.emit('nextSlide',info);
 		});
 	});
