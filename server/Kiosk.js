@@ -91,6 +91,12 @@ var sockHandler = function(socket){
 			console.log("Slide info");
 			console.dir(info.slide);
 			console.log("There "+(info.alerts.alerts.length===1?"is ":"are ")+info.alerts.alerts.length+" weather "+(info.alerts.alerts.length===1?"alert.":"alerts."));
+			if(info.alerts.alerts){
+				info.alerts.alerts.forEach(function(alert,ind,all){
+					console.log(alert.description);
+					console.log(alert.message);
+				});
+			}
 			socket.emit('nextSlide',info);
 		});
 	});
