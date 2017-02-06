@@ -8,7 +8,7 @@ var config = require('config');
 require( "console-stamp" )( console, { pattern : "dd/mm/yyyy HH:MM:ss.l" } );
 
 var routes = require('./server/routes/index');
-var NavApp = require('./server/index');
+var Kiosk = require('./server/Kiosk');
 var DB = require('./server/utils/db');
 var db = null;
 
@@ -20,7 +20,7 @@ if(config.get('features.webAdmin')){
 
 var settings = db.getSettings();
 
-var navapp = new NavApp(db,io);
+var kiosk = new Kiosk(db,io);
 
 server.listen(settings.server.port || 3000);
 
