@@ -11,6 +11,9 @@ function NavApp(config,io){
 	scope = this;
 	this.reddit;
 	this.weather;
+	this.sockHandler = sockHandler;
+	this.info;
+	this.currentSlide;
 	
 	console.dir(this.config.getFeatures());
 	console.dir(this.config.getSettings("features"));
@@ -24,10 +27,36 @@ function NavApp(config,io){
 		this.weather.on('alert',function(data){
 			console.log("Caught weather alert emit.");
 			io.emit('alert',data);
+			this.info.alerts.alerts = data;
 		});
 	}
+	this.currentSlide = {
+		index: 0
+	};
+	this.refreshData = function(cb){
+		config.slideLength(function(length){
+			if(currentSlide.index < 0) currentSlide.index = length-1;
+			if(currentSlide.index >= length) currentSlide.index = 0;
+			
+			config.getSlide(currentSlide.index,function(slide){
+				
+				scope.popSlide(slide,function(filledSlide){
+					currentSlide.data = filledSlide;
+					if(cb)cb();
+				});
+			});
+		});
+	};
 	
-	this.sockHandler = sockHandler;
+	this.info = {
+		kiosk: {
+			name: config.getSettings("kiosk.name"),
+			seconds: config.getSettings("kiosk.seconds")
+		},
+		slide:currentSlide,
+		alerts:(this.weather?this.weather.alerts:{alerts:[]})
+	};
+
 	io.on('connection',this.sockHandler);
 
 	io.on('disconnect',function(socket){
@@ -45,37 +74,10 @@ var sockHandler = function(socket){
 	
 	clients[socket.id] = socket;
 	
-	var currentSlide = {
-		index: 0
-	};
-	var refreshData = function(cb){
-		t.config.slideLength(function(length){
-			if(currentSlide.index < 0) currentSlide.index = length-1;
-			if(currentSlide.index >= length) currentSlide.index = 0;
-			
-			t.config.getSlide(currentSlide.index,function(slide){
-				
-				t.popSlide(slide,function(filledSlide){
-					currentSlide.data = filledSlide;
-					if(cb)cb();
-				});
-			});
-		});
-	};
-	
-	var info = {
-		kiosk: {
-			name: t.config.getSettings("kiosk.name"),
-			seconds: t.config.getSettings("kiosk.seconds")
-		},
-		slide:currentSlide,
-		alerts:(t.weather?t.weather.alerts:{alerts:[]})
-	};
-	
-	refreshData(function(){
+	t.refreshData(function(){
 		console.log("Sending initial info");
-		console.dir(info);
-		socket.emit('init',info);
+		console.dir(t.info);
+		socket.emit('init',t.info);
 	});
 
 	socket.on('clientInfo',function(data){
@@ -85,25 +87,25 @@ var sockHandler = function(socket){
 	});
 	
 	socket.on('getNextSlide',function(data){
-		currentSlide.index += 1;
+		t.currentSlide.index += 1;
 		refreshData(function(){
 			console.log("Sending next slide to "+socket.id);
 			console.log("Slide info");
-			console.dir(info.slide);
-			console.log("There "+(info.alerts.alerts.length===1?"is ":"are ")+info.alerts.alerts.length+" weather "+(info.alerts.alerts.length===1?"alert.":"alerts."));
-			if(info.alerts.alerts){
-				info.alerts.alerts.forEach(function(alert,ind,all){
+			console.dir(t.info.slide);
+			console.log("There "+(t.info.alerts.alerts.length===1?"is ":"are ")+t.info.alerts.alerts.length+" weather "+(t.info.alerts.alerts.length===1?"alert.":"alerts."));
+			if(t.info.alerts.alerts){
+				t.info.alerts.alerts.forEach(function(alert,ind,all){
 					console.log("Alert "+parseInt(ind+1)+": "+alert.description);
 				
 				});
 			}
-			socket.emit('nextSlide',info);
+			socket.emit('nextSlide',t.info);
 		});
 	});
 
 	socket.on('getPrevSlide',function(data){
-		currentSlide.index -= 1;
-		socket.emit('prevSlide',info);
+		t.currentSlide.index -= 1;
+		socket.emit('prevSlide',t.info);
 	});
 	
 	 socket.on('disconnect', function () {
