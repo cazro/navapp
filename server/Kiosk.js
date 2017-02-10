@@ -27,7 +27,7 @@ function NavApp(config,io){
 		this.weather.on('alert',function(data){
 			console.log("Caught weather alert emit.");
 			io.emit('alert',data);
-			this.info.alerts.alerts = data;
+			scope.info.alerts.alerts = data;
 		});
 	}
 	this.currentSlide = {
