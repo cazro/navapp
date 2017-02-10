@@ -35,13 +35,13 @@ function NavApp(config,io){
 	};
 	this.refreshData = function(cb){
 		config.slideLength(function(length){
-			if(currentSlide.index < 0) currentSlide.index = length-1;
-			if(currentSlide.index >= length) currentSlide.index = 0;
+			if(scope.currentSlide.index < 0) scope.currentSlide.index = length-1;
+			if(scope.currentSlide.index >= length) scope.currentSlide.index = 0;
 			
-			config.getSlide(currentSlide.index,function(slide){
+			config.getSlide(scope.currentSlide.index,function(slide){
 				
 				scope.popSlide(slide,function(filledSlide){
-					currentSlide.data = filledSlide;
+					scope.currentSlide.data = filledSlide;
 					if(cb)cb();
 				});
 			});
@@ -53,7 +53,7 @@ function NavApp(config,io){
 			name: config.getSettings("kiosk.name"),
 			seconds: config.getSettings("kiosk.seconds")
 		},
-		slide:currentSlide,
+		slide:scope.currentSlide,
 		alerts:(this.weather?this.weather.alerts:{alerts:[]})
 	};
 
