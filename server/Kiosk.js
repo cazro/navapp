@@ -88,7 +88,7 @@ var sockHandler = function(socket){
 	
 	socket.on('getNextSlide',function(data){
 		t.currentSlide.index += 1;
-		refreshData(function(){
+		t.refreshData(function(){
 			console.log("Sending next slide to "+socket.id);
 			console.log("Slide info");
 			console.dir(t.info.slide);
