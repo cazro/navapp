@@ -24,8 +24,6 @@ var weather = function(conf){
 	this.refreshData = function(cb){
 		var t = this;
 		this.getAlerts(function(alerts){
-			console.log("Weather alerts: ");
-			console.dir(alerts);
 			if(alerts){
 				t.alerts.alerts = alerts;
 				t.download(function(res){
@@ -97,7 +95,12 @@ var getAlerts = function(cb){
 
 				console.log("Detected bad weather");
 				console.log("There "+(body.alerts.length===1?"is ":"are ")+body.alerts.length+" weather "+(body.alerts.length===1?"alert.":"alerts."));
-
+				
+				body.alerts.forEach(function(alert,ind,all){
+					console.log("Alert "+parseInt(ind+1)+": "+alert.description);
+					console.log(alert.message);
+				});
+				
 				if(cb){
 					cb(body.alerts);
 				} else {

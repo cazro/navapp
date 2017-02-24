@@ -13,7 +13,6 @@ function NavApp(config,io){
 	this.weather;
 	this.sockHandler = sockHandler;
 	this.info;
-	this.currentSlide;
 	
 	console.dir(this.config.getFeatures());
 	console.dir(this.config.getSettings("features"));
@@ -37,7 +36,7 @@ function NavApp(config,io){
 			seconds: config.getSettings("kiosk.seconds")
 		},
 		
-		alerts:(this.weather?this.weather.alerts:{alerts:[]})
+		alerts:(scope.weather?scope.weather.alerts:{alerts:[]})
 	};
 
 	io.on('connection',this.sockHandler);
@@ -53,18 +52,18 @@ function NavApp(config,io){
 
 var sockHandler = function(socket){
 	clients[socket.id] = socket;
-	var t = scope;
 	console.log("Client connected to socket...");
 	
-	var currentSlide = this.currentSlide = {
+	var currentSlide = {
 		index: 0
 	};
 	
 	var info = {
 		kiosk: scope.info.kiosk,
-		alerts: scope.info.alerts,
+		alerts:(scope.weather?scope.weather.alerts:{alerts:[]}),
 		slide: currentSlide
 	};
+	
 	var refreshData = function(cb){
 		scope.config.slideLength(function(length){
 			if(currentSlide.index < 0) currentSlide.index = length-1;
@@ -99,13 +98,6 @@ var sockHandler = function(socket){
 			console.log("Sending next slide to "+socket.id);
 			console.log("Slide info");
 			console.dir(info.slide);
-			console.log("There "+(info.alerts.alerts.length===1?"is ":"are ")+info.alerts.alerts.length+" weather "+(info.alerts.alerts.length===1?"alert.":"alerts."));
-			if(info.alerts.alerts){
-				info.alerts.alerts.forEach(function(alert,ind,all){
-					console.log("Alert "+parseInt(ind+1)+": "+alert.description);
-				
-				});
-			}
 			socket.emit('nextSlide',info);
 		});
 	});
@@ -115,11 +107,11 @@ var sockHandler = function(socket){
 		socket.emit('prevSlide',info);
 	});
 	
-	 socket.on('disconnect', function () {
-		console.log('user disconnected - '+socket.id);
-	
-		delete clients[socket.id];
-	 });
+	socket.on('disconnect', function () {
+	   console.log('user disconnected - '+socket.id);
+
+	   delete clients[socket.id];
+	});
 };
 
 NavApp.prototype.popSlide = function(slide,cb){

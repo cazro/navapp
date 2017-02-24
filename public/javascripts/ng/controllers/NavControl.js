@@ -28,7 +28,7 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		$scope.seconds = data.kiosk.seconds;
 		$scope.slideData = data.slide.data;
 		$scope.slideData.trustedSource = $sce.trustAsResourceUrl($scope.slideData.source);
-		handleAlerts(data.alerts);
+		//handleAlerts(data.alerts);
 	}
     sockFactory.on('init',function(data){
         // Start loop to switch slide view with next url from server
@@ -43,6 +43,7 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		});
 		
 		refreshScope(data);
+		handleAlerts(data.alerts);
 		
 		if(!angular.isDefined(slideInterval)){
 			slideInterval = $interval(function(){
