@@ -318,16 +318,6 @@ var getImages = function(cb){
                             }
                         } else {
                             console.log('Data Object in child doesn\'t contain preview image urls.');
-//                            redditData.images.push({
-//								id: data.id,
-//								imageType: '.jpg',
-//								file:data.id+'.jpg',
-//								sourceType:'image',
-//								source:'images/reddit/'+data.subreddit.toLowerCase()+'/'+data.id+'.jpg',
-//								subreddit: data.subreddit.toLowerCase(),
-//								name:data.title,
-//								url:data.url
-//							});
                         }
                     }
                 }
