@@ -7,7 +7,7 @@ function reddit(conf){
 	this.t = this;
 	this.redditData = {};
 	this.rawRedditData = {};
-	this.subreddit;
+	this.subreddit = conf.subreddit;
 	this.listing = conf.listing.toLowerCase();
 	this.limit = conf.limit;
 	this.refresh = conf.refresh;
@@ -19,13 +19,13 @@ function reddit(conf){
 	
 	if(Array.isArray(this.subreddit)){
 		for(var s in this.subreddit){
-			if (!fs.existsSync('public/images/reddit/'+this.subreddit[s])){
-				fs.mkdirSync('public/images/reddit/'+this.subreddit[s]);
+			if (!fs.existsSync('public/images/reddit/'+this.subreddit[s].toLowerCase())){
+				fs.mkdirSync('public/images/reddit/'+this.subreddit[s].toLowerCase());
 			}
 		}
 	} else {
-		if (!fs.existsSync('public/images/reddit/'+this.subreddit)){
-			fs.mkdirSync('public/images/reddit/'+this.subreddit);
+		if (!fs.existsSync('public/images/reddit/'+this.subreddit.toLowerCase())){
+			fs.mkdirSync('public/images/reddit/'+this.subreddit.toLowerCase());
 		}
 	}
 	
