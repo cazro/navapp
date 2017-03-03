@@ -7,7 +7,7 @@ function reddit(conf){
 	this.t = this;
 	this.redditData = {};
 	this.rawRedditData = {};
-	this.subreddit = conf.subreddit.toLowerCase();
+	this.subreddit;
 	this.listing = conf.listing.toLowerCase();
 	this.limit = conf.limit;
 	this.refresh = conf.refresh;
