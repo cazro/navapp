@@ -145,7 +145,7 @@ NavApp.prototype.popSlide = function(slide,cb){
 		});
 	}
 	else if(slide.sourceType === 'reddit' && t.config.getFeatures('reddit')){
-		t.reddit.getRandomImage(function(slide){
+		t.reddit.getRandomImage(slide.source,function(slide){
 			if(cb)cb(slide);
 			return slide;
 		});

@@ -119,9 +119,13 @@ reddit.prototype.getImageData = function(filename,cb){
 	return {};
 };
 
-reddit.prototype.getRandomImage = function(cb){
+reddit.prototype.getRandomImage = function(sub,cb){
 	if(this.redditData.images){
 		var image = this.redditData.images[Math.floor(Math.random()*this.redditData.images.length)];
+		while(image.subreddit !== sub){
+			
+			image = this.redditData.images[Math.floor(Math.random()*this.redditData.images.length)];
+		}
 		if(cb)cb(image);
 		return image;
 	} else {
