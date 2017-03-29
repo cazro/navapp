@@ -3,7 +3,7 @@ var Reddit = require('./features/reddit');
 var Weather = require('./features/weather');
 var clients = {};
 var util = require('util');
-var scope;
+var scope,alerts;
 
 function NavApp(config,io){
 	this.io = io;
@@ -22,11 +22,13 @@ function NavApp(config,io){
 
 	if(this.config.getFeatures('weather')){
 		this.weather = new Weather(this.config.getSettings('features').weather);
+        alerts = this.weather.alerts;
 		this.weather.setMaxListeners(0);
 		this.weather.on('alert',function(data){
 			console.log("Caught weather alert emit.");
 			io.emit('alert',data);
 			scope.info.alerts = data;
+            alerts = data;
 		});
 	}
 	
@@ -35,7 +37,6 @@ function NavApp(config,io){
 			name: config.getSettings("kiosk.name"),
 			seconds: config.getSettings("kiosk.seconds")
 		},
-		
 		alerts:(scope.weather?scope.weather.alerts:{alerts:[]})
 	};
 
@@ -60,7 +61,7 @@ var sockHandler = function(socket){
 	
 	var info = {
 		kiosk: scope.info.kiosk,
-		alerts:(scope.weather?scope.weather.alerts:{alerts:[]}),
+		alerts:(alerts?alerts:{alerts:[]}),
 		slide: currentSlide
 	};
 	
