@@ -76,7 +76,13 @@ var sockHandler = function(socket){
             }
             else if(currentSlide.index === length && !alerts.alerts.length){
                 currentSlide.index = 0;
-                if(cb)cb();
+                scope.config.getSlide(currentSlide.index,function(slide){
+
+                    scope.popSlide(slide,function(filledSlide){
+                        currentSlide.data = filledSlide;
+                        if(cb)cb();
+                    });
+                });
             } else {
                 scope.config.getSlide(currentSlide.index,function(slide){
 
