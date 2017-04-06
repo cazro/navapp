@@ -37,8 +37,8 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		
 		sockFactory.emit('clientInfo',{
 			browser:{
-				height:$("#main").height(),
-				width:$("#main").width()
+				height:$("body").height(),
+				width:$("body").width()
 			}
 		});
 		
@@ -76,20 +76,18 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		$scope.alerts = data;
 		$scope.alert = "";
 		
-		if($scope.alerts.alerts){
-			$('#main').height('88vh');
-		} else {
-			$('#main').height('90vh');
-		}
-		
 		for(var i in data.alerts){
 			$scope.alert += (i>0?', ':'')+data.alerts[i].description;
 			var type = data.alerts[i].type;
 			if(visualAlerts.indexOf(type) !== -1){
 				needMap = true;
 			}
-			
 		}
-		
+        
+		if($scope.alert){
+			$('#main').height('85vh');
+		} else {
+			$('#main').height('88vh');
+		}
 	}
 }]);

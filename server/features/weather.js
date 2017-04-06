@@ -17,38 +17,41 @@ var weather = function(conf){
 	this.city = conf.city;
 	this.mapUrl = "http://api.wunderground.com/api/"+this.key+"/animatedradar/q/"+this.state+"/"+this.city+".gif?newmaps=1&smooth=1&width=1080&height=1080&radius=75&noclutter=1&reproj.automerc&rainsnow=1&timelabel=1&timelabel.x=10&timelabel.y=20";
 	this.alertJsonUrl = "http://api.wunderground.com/api/"+this.key+"/geolookup/alerts/q/"+this.state+"/"+this.city+".json";
-	this.refresh = conf.refresh;
+	this.webcamsUrl = "http://api.wunderground.com/api/"+this.key+"/webcams/q/"+this.state+"/"+this.city+".json";
+    this.refresh = conf.refresh;
 	this.getAlerts = getAlerts;
 	this.download = download;
 	
 	this.refreshData = function(cb){
 		var t = this;
 		this.getAlerts(function(alerts){
+            
 			if(alerts){
-				t.alerts.alerts = alerts;
-				t.download(function(res){
-					if(res){
-						t.alerts.slide = {
-							name: 'Weather Radar Map',
-							sourceType: 'reddit',
-							source:'images/weather.gif'
-						};
-					} else {
-						t.alerts.slide = {};
-					}
-					console.log("Emitting weather alert from weather.js.");
-					t.emit('alert',t.alerts);
-				});
+				t.alerts = {
+                    alerts: alerts,
+                    slide: {}
+                };
+				
 			} else {
 				t.alerts = {
 					alerts:[],
 					slide:{}
 				};
-				console.log("Emitting weather alert from weather.js.");
-
-				t.emit('alert',t.alerts);
 			}
-
+            
+            t.download(function(res){
+                if(res){
+                    t.alerts.slide = {
+                        name: 'Weather Radar Map',
+                        sourceType: 'weather',
+                        source:'html/weather/main.html',
+                        camid:t.webcam.camid
+                    };
+                }
+                console.log("Emitting weather info from weather.js.");
+                t.emit('alert',t.alerts);
+            });
+            
 			if(cb)cb(t.alerts);
 			if(!cb)return t.alerts;
 		});
@@ -84,7 +87,7 @@ var getAlerts = function(cb){
 
 		res.on('end',function(){
 
-			console.log("Received response from wunderground");
+			console.log("Received alerts from wunderground");
 			try{
 				body = JSON.parse(body);
 			} catch (e){
@@ -109,9 +112,9 @@ var getAlerts = function(cb){
 				
 			} else {
 				console.log("No bad weather.");
-				fs.access('public/images/weather.gif',function(err){
-					if(!err) fs.unlink('public/images/weather.gif');
-				});
+				//fs.access('public/images/weather.gif',function(err){
+				//	if(!err) fs.unlink('public/images/weather.gif');
+				//});
 				if(cb){
 					cb(false);
 				} else {
@@ -142,14 +145,69 @@ var download = function(cb){
 			console.log("Downloaded "+current+" out of "+total);
 		}
 	};
-
+    
 	request.get(data,dest,function(err,res){
 		if(err){
 			console.error(err);
-			if(cb)cb(false);
+		//	if(cb)cb(false);
 		} else {
 			console.log("Downloaded file "+res.file);
-			if(cb)cb(true);
+			//if(cb)cb(true);
+		}
+	});
+    
+    http.get(t.webcamsUrl,function(res){
+		var statusCode = res.statusCode;
+		var body='';
+		var error;
+        
+		if (statusCode != 200){
+			error = new Error('Request Failed.\n Status Code: '+statusCode);
+		}
+
+		if(error){
+			console.error(error.message);
+			res.resume();
+			return;
+		}
+
+		res.on('data',function(chunk){
+			body += chunk;
+		});
+
+		res.on('end',function(){
+            console.log("Received webcams from wunderground");
+			try{
+				body = JSON.parse(body);
+			} catch (e){
+				console.error(e);
+			}
+            
+            if(body.webcams && body.webcams.length){
+                t.webcam = body.webcams[Math.floor(Math.random()*body.webcams.length)];
+                var data = {
+                    url:t.webcam.CURRENTIMAGEURL
+                };
+                
+                request.get(data,'public/images/weatherCam.jpg',function(err,res){
+                    if(err){
+                        console.error(err);
+                        if(cb)cb(false);
+                    } else {
+                        console.log("Downloaded file "+res.file);
+                        if(cb)cb(true);
+                    }
+                });
+            }
+        });
+    }).on('error',function(e){
+
+		console.error('ERROR: '+e.message);
+
+		if(cb){
+			cb(false);
+		} else {
+			return false;
 		}
 	});
 };

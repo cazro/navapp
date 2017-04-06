@@ -12,7 +12,7 @@
 				<h1 id="headerText" ng-bind="header"></h1>
 			</header>
 				
-			<div class="row" ng-if="alerts.alerts">
+			<div class="row" ng-if="alert">
 				<div class="col-xs-12">
 					
 					<marquee behavior="scroll" direction="left" scrollamount="8">
@@ -21,7 +21,9 @@
 					
 				</div>
 			</div>
-			
+            <div class="slide" ng-if="slideData.sourceType === 'weather'">
+                
+            </div>
 			<div class="slide" ng-if="slideData.sourceType === 'url'">
 				
 				<iframe id="slideUrl" ng-src="{{slideData.trustedSource}}"></iframe>

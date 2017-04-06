@@ -61,22 +61,25 @@ var sockHandler = function(socket){
 	
 	var info = {
 		kiosk: scope.info.kiosk,
-		alerts:(alerts?alerts:{alerts:[]}),
+		alerts:(alerts?alerts:{alerts:[],slide:{}}),
 		slide: currentSlide
 	};
 	
 	var refreshData = function(cb){
 		scope.config.slideLength(function(length){
-			if(currentSlide.index < 0) currentSlide.index = length-1;
-			if(currentSlide.index >= length) currentSlide.index = 0;
-			
-			scope.config.getSlide(currentSlide.index,function(slide){
-				
-				scope.popSlide(slide,function(filledSlide){
-					currentSlide.data = filledSlide;
-					if(cb)cb();
-				});
-			});
+			if(currentSlide.index < 0) currentSlide.index = length;
+			if(currentSlide.index > length) currentSlide.index = 0;
+			if(currentSlide.index === length){
+                currentSlide.data = alerts.slide;
+            } else {
+                scope.config.getSlide(currentSlide.index,function(slide){
+
+                    scope.popSlide(slide,function(filledSlide){
+                        currentSlide.data = filledSlide;
+                        if(cb)cb();
+                    });
+                });
+            }
 		});
 	};
 	
