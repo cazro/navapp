@@ -1,7 +1,10 @@
+::-webkit-scrollbar { 
+    display: none; 
+}
 html,body{
 	background-color:black;
 	height: 100%;
-
+    
 }
 #main{
 	height:90vh;
