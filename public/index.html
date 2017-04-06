@@ -22,7 +22,18 @@
 				</div>
 			</div>
             <div class="slide" ng-if="slideData.sourceType === 'weather'">
-                
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="weather" ng-style="{'background':'url(images/weather.gif)'}"></div>
+                        <div class="weather" ng-style="{'background':'url(images/weatherCam.jpg'}"></div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div ng-repeat="alert in alerts.alerts"> 
+                            <p ng-bind="alert.message"></p>
+                        </div>
+                    </div>
+                </div>
+                <iframe id="slideWeather" ng-src="{{slideData.source}}"></iframe>
             </div>
 			<div class="slide" ng-if="slideData.sourceType === 'url'">
 				
@@ -32,7 +43,7 @@
 			
 			<div class="slide" ng-if="slideData.sourceType === 'folder'">
 				
-				<div id="slideImg" ng-style="{'background':'url('+slideData.source+')'}"> 
+				<div class="slideImg" ng-style="{'background':'url('+slideData.source+')'}"> 
 					<p><br></p>
 				</div>
 				
