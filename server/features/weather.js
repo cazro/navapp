@@ -42,10 +42,11 @@ var weather = function(conf){
             t.download(function(res){
                 if(res){
                     t.alerts.slide = {
-                        name: 'Weather Radar Map',
+                        name: 'Weather',
                         sourceType: 'weather',
                         source:'html/weather/main.html',
-                        camid:t.webcam.camid
+                        camid:t.webcam.camid,
+                        camDesc: (t.webcam.neighborhood?t.webcam.neighborhood:t.webcam.city)
                     };
                 }
                 console.log("Emitting weather info from weather.js.");
@@ -184,6 +185,7 @@ var download = function(cb){
 			}
             
             if(body.webcams && body.webcams.length){
+          
                 t.webcam = body.webcams[Math.floor(Math.random()*body.webcams.length)];
                 var data = {
                     url:t.webcam.CURRENTIMAGEURL
@@ -192,11 +194,26 @@ var download = function(cb){
                 request.get(data,'public/images/weatherCam.jpg',function(err,res){
                     if(err){
                         console.error(err);
-                        if(cb)cb(false);
+                        t.webcam = body.webcams[Math.floor(Math.random()*body.webcams.length)];
+                        var data = {
+                            url:t.webcam.CURRENTIMAGEURL
+                        };
+
+                        request.get(data,'public/images/weatherCam.jpg',function(err,res){
+                            if(err){
+                                console.error(err);
+
+                            } else {
+                                console.log("Downloaded file "+res.file);
+
+                            }
+                            if(cb)cb(true);
+                        });
                     } else {
                         console.log("Downloaded file "+res.file);
                         if(cb)cb(true);
                     }
+                    
                 });
             }
         });

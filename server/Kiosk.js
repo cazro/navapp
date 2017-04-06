@@ -71,6 +71,7 @@ var sockHandler = function(socket){
 			if(currentSlide.index > length) currentSlide.index = 0;
 			if(currentSlide.index === length){
                 currentSlide.data = alerts.slide;
+                if(cb)cb();
             } else {
                 scope.config.getSlide(currentSlide.index,function(slide){
 
