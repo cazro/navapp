@@ -69,8 +69,13 @@ var sockHandler = function(socket){
 		scope.config.slideLength(function(length){
 			if(currentSlide.index < 0) currentSlide.index = length;
 			if(currentSlide.index > length) currentSlide.index = 0;
-			if(currentSlide.index === length){
+			
+            if(currentSlide.index === length && alerts.alerts.length){
                 currentSlide.data = alerts.slide;
+                if(cb)cb();
+            }
+            else if(currentSlide.index === length && !alerts.alerts.length){
+                currentSlide.index = 0;
                 if(cb)cb();
             } else {
                 scope.config.getSlide(currentSlide.index,function(slide){
