@@ -27,7 +27,9 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		$scope.header = data.kiosk.name;
 		$scope.seconds = data.kiosk.seconds;
 		$scope.slideData = data.slide.data;
-		$scope.slideData.trustedSource = $sce.trustAsResourceUrl($scope.slideData.source);
+        if($scope.slideData.source){
+            $scope.slideData.trustedSource = $sce.trustAsResourceUrl($scope.slideData.source);
+        }
 		//handleAlerts(data.alerts);
 	}
     sockFactory.on('init',function(data){

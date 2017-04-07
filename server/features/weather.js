@@ -44,7 +44,6 @@ var weather = function(conf){
                     t.alerts.slide = {
                         name: 'Weather',
                         sourceType: 'weather',
-                        source:'html/weather/main.html',
                         camid:t.webcam.camid,
                         camDesc: (t.webcam.neighborhood?t.webcam.neighborhood:t.webcam.city)
                     };
