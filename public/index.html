@@ -30,7 +30,8 @@
                         </div>
                     </div>
                     <div class="col-xs-4 slide">
-                        <div ng-repeat="alert in alerts.alerts"> 
+                        <div ng-repeat="alert in alerts.alerts">
+                            <p></p>
                             <h3 class="alertMessage alertText" ng-bind="alert.message"></h3>
                         </div>
                     </div>
@@ -62,7 +63,7 @@
 						<h3 id="slideName" >{{slideData.subreddit?slideData.subreddit.toUpperCase()+' - ':''}}{{slideData.name}}</h3>
 					</div>
 					<div class="col-xs-6">
-						<h2 id="time" ng-bind="time | date: 'yyyy/M/d HH:mm:ss \'GMT\' Z'"></h2>
+						<h2 class="time" ng-bind="time | date: 'yyyy/M/d HH:mm:ss \'GMT\' Z'"></h2>
 					</div>
 				</div>
 			</footer>
