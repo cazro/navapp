@@ -26,12 +26,12 @@
                     <div class="col-xs-8 slide">
                         <div class="weather" ng-style="{'background':'url(images/weather.gif)'}"></div>
                         <div class="weather" ng-style="{'background':'url(images/weatherCam.jpg'}">
-                            <footer ng-bind="slideData.camDesc"></footer>
+                            <h3 class="text-center time" ng-bind="slideData.camDesc"></h3>
                         </div>
                     </div>
                     <div class="col-xs-4 slide">
                         <div ng-repeat="alert in alerts.alerts"> 
-                            <h3 class="alertText alertMessage" ng-bind="alert.message"></h3>
+                            <h3 class="alertMessage alertText" ng-bind="alert.message"></h3>
                         </div>
                     </div>
                 </div>

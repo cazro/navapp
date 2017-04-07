@@ -14,9 +14,7 @@ html,body{
 }
 
 #time{
-	
 	color:#DDD;
-	
 }
 .slide{
 
@@ -54,7 +52,7 @@ html,body{
 	background-repeat:no-repeat !important;
 }
 .alertMessage{
-    margin-top:25px;
+    margin-top:25px !important;
 }
 .alertText{
 	color: red;
