@@ -1,27 +1,16 @@
 angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','sockFactory','$interval',function($scope,$sce,$sanitize,sockFactory,$interval){
-		
-    var visualAlerts = ['HUR','TOR','TOW','WRN','SEW','WIN','FLO','WAT','SVR','SPE','HWW'];
-	var needMap = false;
-	
+	$scope.alert = "";
+    $scope.alerts = {};
 	$scope.header = "";
 	$scope.seconds = 60;
 	$scope.slideData = {};
-	$scope.alert = "";
-	$scope.alerts = {};
-	$scope.time = new Date().toString();
+	$scope.time = new Date();
+    
 	var slideInterval;
-	
-	var updateTime = function(){
-		$scope.time = new Date();
-	};
-	
-	var updateSlide = function(){
-		sockFactory.emit('getNextSlide', {});
-	};
-	
-	updateTime();
-	
-	var timeInterval = $interval(updateTime,1000);
+
+	var timeInterval = $interval(function(){
+        $scope.time = new Date();
+    },500);
 		
 	function refreshScope(data){
 		$scope.header = data.kiosk.name;
@@ -30,8 +19,8 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
         if($scope.slideData.source){
             $scope.slideData.trustedSource = $sce.trustAsResourceUrl($scope.slideData.source);
         }
-		//handleAlerts(data.alerts);
 	}
+    
     sockFactory.on('init',function(data){
         // Start loop to switch slide view with next url from server
 		console.log("Initializing client with: ");
@@ -80,10 +69,6 @@ angular.module('navApp').controller('NavControl',['$scope','$sce','$sanitize','s
 		
 		for(var i in data.alerts){
 			$scope.alert += (i>0?', ':'')+data.alerts[i].description;
-			var type = data.alerts[i].type;
-			if(visualAlerts.indexOf(type) !== -1){
-				needMap = true;
-			}
 		}
         
 		if($scope.alert){
