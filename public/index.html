@@ -24,9 +24,9 @@
             <div class="slide" ng-if="slideData.sourceType === 'weather'">
                 <div class="row">
                     <div class="col-xs-8 slide">
-                        <div class="weather" ng-style="{'background':'url(images/weather.gif)'}"></div>
+                        <div class="weather" ng-style="{'background':'url('+slideData.weatherMapPath+')'}"></div>
                         <h3 class="text-center time" ng-bind="slideData.camDesc"></h3>
-                        <div class="weather" ng-style="{'background':'url(images/weatherCam.jpg'}"></div>
+                        <div class="weather" ng-style="{'background':'url('+slideData.weatherCamPath+')'}"></div>
                         
                     </div>
                     <div class="col-xs-4 slide">

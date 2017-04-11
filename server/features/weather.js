@@ -21,7 +21,10 @@ var weather = function(conf){
     this.refresh = conf.refresh;
 	this.getAlerts = getAlerts;
 	this.download = download;
-	
+	this.weatherDir = 'public/images/weather/';
+	this.weatherMapPath = weatherDir+'weatherMap.gif';
+    this.weatherCamPath = weatherDir+'weatherCam.jpg';
+    
 	this.refreshData = function(cb){
 		var t = this;
 		this.getAlerts(function(alerts){
@@ -45,7 +48,9 @@ var weather = function(conf){
                         name: 'Weather',
                         sourceType: 'weather',
                         camid:t.webcam.camid,
-                        camDesc: (t.webcam.neighborhood?t.webcam.neighborhood:t.webcam.city)
+                        camDesc: (t.webcam.neighborhood?t.webcam.neighborhood:t.webcam.city),
+                        weatherMapPath: t.weatherMapPath.split('public/')[1],
+                        weatherCamPath: t.weatherCamPath.split('public/')[1]
                     };
                 }
                 console.log("Emitting weather info from weather.js.");
@@ -137,8 +142,9 @@ var getAlerts = function(cb){
 var download = function(cb){
 	var t = this;
 	console.log("Downloading weather gif");
-	var dest = 'public/images/weather.gif';
-
+	var weatherMapPath = this.weatherMapPath;
+    var weatherCamPath = this.weatherCamPath;
+    
 	var data = {
 		url:t.mapUrl,
 		progress: function(current,total){
@@ -146,13 +152,11 @@ var download = function(cb){
 		}
 	};
     
-	request.get(data,dest,function(err,res){
+	request.get(data,weatherMapPath,function(err,res){
 		if(err){
 			console.error(err);
-		//	if(cb)cb(false);
 		} else {
 			console.log("Downloaded file "+res.file);
-			//if(cb)cb(true);
 		}
 	});
     
@@ -190,7 +194,7 @@ var download = function(cb){
                     url:t.webcam.CURRENTIMAGEURL
                 };
                 
-                request.get(data,'public/images/weatherCam.jpg',function(err,res){
+                request.get(data,weatherCamPath,function(err,res){
                     if(err){
                         console.error(err);
                         t.webcam = body.webcams[Math.floor(Math.random()*body.webcams.length)];
@@ -198,13 +202,11 @@ var download = function(cb){
                             url:t.webcam.CURRENTIMAGEURL
                         };
 
-                        request.get(data,'public/images/weatherCam.jpg',function(err,res){
+                        request.get(data,weatherCamPath,function(err,res){
                             if(err){
                                 console.error(err);
-
                             } else {
                                 console.log("Downloaded file "+res.file);
-
                             }
                             if(cb)cb(true);
                         });
