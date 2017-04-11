@@ -25,6 +25,10 @@ var weather = function(conf){
 	this.weatherMapPath = this.weatherDir+'weatherMap.gif';
     this.weatherCamPath = this.weatherDir+'weatherCam.jpg';
     
+    if (!fs.existsSync(this.weatherDir)){
+		fs.mkdirSync(this.weatherDir);
+	}
+    
 	this.refreshData = function(cb){
 		var t = this;
 		this.getAlerts(function(alerts){
