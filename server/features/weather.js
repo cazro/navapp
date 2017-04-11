@@ -22,8 +22,8 @@ var weather = function(conf){
 	this.getAlerts = getAlerts;
 	this.download = download;
 	this.weatherDir = 'public/images/weather/';
-	this.weatherMapPath = weatherDir+'weatherMap.gif';
-    this.weatherCamPath = weatherDir+'weatherCam.jpg';
+	this.weatherMapPath = this.weatherDir+'weatherMap.gif';
+    this.weatherCamPath = this.weatherDir+'weatherCam.jpg';
     
 	this.refreshData = function(cb){
 		var t = this;
