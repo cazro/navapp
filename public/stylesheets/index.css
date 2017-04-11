@@ -28,7 +28,9 @@ html,body{
 	background-position:center center !important;
 	background-repeat:no-repeat !important;
 }
-
+.webcamDesc{
+    padding-top:20px;
+}
 #slideUrl{
 	border: 0px;
 	width:100%;
