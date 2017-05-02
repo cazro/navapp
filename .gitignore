@@ -1,13 +1,12 @@
 /config/default-0.json
 /nbproject/
-/public/images/weather.gif
-/public/images/osha/
-/public/images/gif/
-/public/fun.html
 /public/favicon.ico
 /.Trash-1000/
-/.gitmessage
 /node_modules/
 /bower_components/
 /public/images/reddit/
 /public/images/weather/
+/etc/
+/src/
+/user_images/*
+/build/
