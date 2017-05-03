@@ -2,8 +2,7 @@
     "features":{
         "rpi": false,
         "weather": false,
-        "reddit": false,
-        "speech": false,
+        "reddit": true,
         "webAdmin":false
     },
 	"settings":{
@@ -12,9 +11,9 @@
 			"seconds": 60,
 			"slides": [
             {
-                "name": "Google",
-				"sourceType": "url",
-                "source": "https://www.google.com/#q=news&tbm=nws"
+                "name": "Reddit",
+				"sourceType": "reddit",
+                "source": "pics"
             },
             {
                 "name": "NPR",
@@ -49,14 +48,10 @@
 				"refresh": 920
 			},
 			"reddit":{
-				"subreddit": "osha",
+				"subreddit": ["osha","pics"],
 				"limit":20,
 				"listing":"hot",
 				"refresh": 1820  
-			},
-			"speech":{
-				"voice": "default",
-				"speed": 0.9
 			},
 			"webAdmin":{
 				"db": {

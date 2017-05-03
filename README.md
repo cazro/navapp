@@ -1,15 +1,16 @@
 # NAVAPP
 
-Navapp is a NodeJS app that is meant to run on a Raspberry Pi but can
-be run on any architecture.  There are optional features such as if you have buttons
-connected the any GPIO pins you can set them in the config in order to use them
-to navigate through your list of URLs the server will cycle through.
+Navapp is a NodeJS app that serves up a web page to a browser. The browser keeps
+track of the loop but the timing of the loop and the source of the "slides" come from
+the server.
 
-You can also add weather alert support and have it check the local weather and it will
-insert a radar gif in rotation while there is bad weather in the area.
+You can also add weather alert support and have it check the local weather. It will
+insert a special page in rotation with a radar GIF, a random webcam still from the area, and a long
+description of the alerts along. During the time that there is escalated weather, the name of the alerts
+will scroll across the top of the page for all "slides" in the loop.
 
-The last feature I've added is the ability to have the server grab images from a Reddit
-subreddit and have it choose a random image to put in rotation that will change every 
+The last feature I've added is the ability to have the server grab images from one or more Reddit
+subreddits and have it choose a random image to put in rotation that will change every 
 time the page changes.
 
 ## Getting Started
@@ -36,24 +37,15 @@ to get npm to work.
 ./config/default-0.json:
 Contains the configuration for the navapp server. 
 There is an example file to help get you started.
+You can alter the sample file and rename it without the ".sample".
 
+With the config you can turn features on or off, decide which "slides" the client 
+loops through and the order of them.
 
 ### Installing
 
-Store the navapp files under /opt/navapp
-
-Make sure your normal user account has r/w access to the navapp folder.
-
-
 ```
-cd /opt/navapp
+git clone https://github.com/cazro/navapp.git
+cd navapp
 sudo npm install
 ```
-
-After installing the node modules, an extra script is run that will install some required
-packages and move configuration files to the right location for your system.
-
-
-
-
-

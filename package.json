@@ -1,5 +1,5 @@
 {
-  "name": "navapp",
+  "name": "kiosk",
   "version": "1.0.0",
   "private": true,
   "description": "Node server for a Kiosk screen that loops through a customizable list of URLs. Can also grab weather alerts and pictures from any Reddit subreddit.",
