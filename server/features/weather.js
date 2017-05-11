@@ -151,10 +151,7 @@ var download = function(cb){
     var weatherCamPath = this.weatherCamPath;
     
 	var data = {
-		url:t.mapUrl,
-		progress: function(current,total){
-			console.log("Downloaded "+current+" out of "+total);
-		}
+		url:t.mapUrl
 	};
     
 	request.get(data,weatherMapPath,function(err,res){
