@@ -36,6 +36,7 @@ function reddit(conf){
 			t.rawRedditData = raw;
 			
 			if(data.images){
+                var downCount = 0;
 				for(var i in data.images){
 					var image = data.images[i];
 
@@ -46,17 +47,23 @@ function reddit(conf){
 					image.maxRedirects = 30;
 
 					var dest = 'public/images/reddit/'+image.subreddit+'/'+image.file;
-					checkFile(image,dest,function(image,dest){
-						if(image){
-							download(image,dest,function(img,dst){
-								
-							});
-						}
-					});
-					
-				}
-				
-				cleanDir(data.images);
+                    try{
+                        fs.accessSync(dest, fs.F_OK);
+                        console.log(dest+" already exists.  Not downloading.");
+                        downCount++;
+                        if(downCount === data.images.length){
+                            cleanDir(data.images);
+                        }
+                    } catch(e){
+                        download(image,dest,function(img,dst){
+                            downCount++;
+                            if(downCount === data.images.length){
+                                cleanDir(data.images);
+                            }
+                        });
+                    }
+                    
+				}				
 			}
 		
 			if(cb && data)cb(true);
@@ -95,7 +102,13 @@ function cleanDir(images){
 
 					if(old && cnt2 == (images.length-1)){
 						console.log("Removing ye old file "+file);
-						fs.unlink(dir+'/'+file);
+                        try{
+                            fs.accessSync(dir+'/'+file,fs.F_OK);
+                            fs.unlink(dir+'/'+file);
+                        } catch(e){
+                            
+                        }
+                        
 					}
 					cnt2++;
 				}
