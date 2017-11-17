@@ -1,26 +1,33 @@
 var express = require('express');
 var router = express.Router();
-var Config = require('../models/alert');
-var mongoose = require('mongoose');
-var config = require('config');
-var dbConfig = config.get('mongodb');
-mongoose.Promise = require('bluebird');
-var db = mongoose.connection;
-mongoose.connect('mongodb://'+dbConfig.host+':'+dbConfig.port+'/'+dbConfig.db);
+var db;
 
-db.on('open',function(){
-	console.log("MongoDB connection open for admin");
+router.use(function(req,res,next){
+    db = req.app.get('db');
+    next();
 });
 
-db.on('error',console.error);
-
-/* GET alerts listing. */
+/* GET */
 router.get('/', function(req, res, next) {
-	Config.find().then(function(alerts){
-		res.json(alerts);
-	}).catch(function(err){
-		console.error(err);
-		res.send(err);
-	});
+	var options = {
+        root: 'public/admin'
+    };
+    var fileName = 'index.html';
+    
+    res.sendFile(fileName, options, function (err) {
+        if (err) {
+            console.log(err);
+            res.status(err.status).end();
+        } else {
+			console.log('Sent:', fileName);
+        }
+    });
 	
 });
+
+router.get('/:setting', function(req,res,next){
+    db.getSettings(req.params.setting,function(doc){
+        res.json(doc);
+    });
+});
+module.exports = router;

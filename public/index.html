@@ -16,7 +16,7 @@
 				<div class="col-xs-12">
 					
 					<marquee behavior="scroll" direction="left" scrollamount="8">
-						<h2 class="alertText" ng-bind="alert"></h2>
+                        <h2 class="alertText"><span ng-repeat="alert in alerts.alerts">{{alert.description}}{{alert.message}}</span></h2>
 					</marquee>
 					
 				</div>

@@ -5,7 +5,7 @@ var clients = {};
 var util = require('util');
 var scope,alerts;
 
-function NavApp(config,io){
+function Kiosk(config,io){
 	this.io = io;
 	this.config = config;
 	scope = this;
@@ -55,7 +55,7 @@ var sockHandler = function(socket){
 	clients[socket.id] = socket;
 	console.log("Client connected to socket...");
 	
-	var currentSlide = {
+    var currentSlide = {
 		index: 0
 	};
 	
@@ -130,7 +130,7 @@ var sockHandler = function(socket){
 	});
 };
 
-NavApp.prototype.popSlide = function(slide,cb){
+Kiosk.prototype.popSlide = function(slide,cb){
 
 	var t = this;
 	if(slide.sourceType === 'url') {
@@ -172,4 +172,4 @@ NavApp.prototype.popSlide = function(slide,cb){
 	}
 };
 
-module.exports = NavApp;
+module.exports = Kiosk;

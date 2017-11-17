@@ -38,29 +38,27 @@ var weather = function(conf){
                     alerts: alerts,
                     slide: {}
                 };
-				
+				t.download(function(res){
+                    if(res){
+                        t.alerts.slide = {
+                            name: 'Weather',
+                            sourceType: 'weather',
+                            source: 'weather',
+                            camid:t.webcam.camid,
+                            camDesc: (t.webcam.neighborhood?t.webcam.neighborhood:t.webcam.city),
+                            weatherMapPath: t.weatherMapPath.split('public/')[1],
+                            weatherCamPath: t.weatherCamPath.split('public/')[1]
+                        };
+                    }
+                    console.log("Emitting weather info from weather.js.");
+                    t.emit('alert',t.alerts);
+                });
 			} else {
 				t.alerts = {
 					alerts:[],
 					slide:{}
 				};
 			}
-            
-            t.download(function(res){
-                if(res){
-                    t.alerts.slide = {
-                        name: 'Weather',
-                        sourceType: 'weather',
-                        source: 'weather',
-                        camid:t.webcam.camid,
-                        camDesc: (t.webcam.neighborhood?t.webcam.neighborhood:t.webcam.city),
-                        weatherMapPath: t.weatherMapPath.split('public/')[1],
-                        weatherCamPath: t.weatherCamPath.split('public/')[1]
-                    };
-                }
-                console.log("Emitting weather info from weather.js.");
-                t.emit('alert',t.alerts);
-            });
             
 			if(cb)cb(t.alerts);
 			if(!cb)return t.alerts;
