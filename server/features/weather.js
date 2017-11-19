@@ -32,12 +32,12 @@ var weather = function(conf){
 	this.refreshData = function(cb){
 		var t = this;
 		this.getAlerts(function(alerts){
-            
+            t.alerts = {
+                alerts: [],
+                slide: {}
+            };
 			if(alerts){
-				t.alerts = {
-                    alerts: alerts,
-                    slide: {}
-                };
+				t.alerts.alerts = alerts;
 				t.download(function(res){
                     if(res){
                         t.alerts.slide = {
@@ -50,16 +50,11 @@ var weather = function(conf){
                             weatherCamPath: t.weatherCamPath.split('public/')[1]
                         };
                     }
-                    console.log("Emitting weather info from weather.js.");
-                    t.emit('alert',t.alerts);
+                    
                 });
-			} else {
-				t.alerts = {
-					alerts:[],
-					slide:{}
-				};
-			}
-            
+            }
+			console.log("Emitting weather info from weather.js.");
+            t.emit('alert',t.alerts);
 			if(cb)cb(t.alerts);
 			if(!cb)return t.alerts;
 		});
@@ -120,9 +115,7 @@ var getAlerts = function(cb){
 				
 			} else {
 				console.log("No bad weather.");
-				//fs.access('public/images/weather.gif',function(err){
-				//	if(!err) fs.unlink('public/images/weather.gif');
-				//});
+				
 				if(cb){
 					cb(false);
 				} else {
