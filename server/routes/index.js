@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var logger = require('tracer').console(require('../models/logModel'));
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -10,10 +11,10 @@ router.get('/', function(req, res, next) {
     
     res.sendFile(fileName, options, function (err) {
         if (err) {
-            console.log(err);
+            logger.error(err);
             res.status(err.status).end();
         } else {
-			console.log('Sent:', fileName);
+			logger.debug("Sent: %s", fileName);
         }
     });
 });

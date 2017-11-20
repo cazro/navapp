@@ -3,9 +3,9 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var path = require('path');
-var logger = require('morgan');
+var morgan = require('morgan');
+var logger = require('tracer').console(require('./server/models/logModel'));
 var config = require('config');
-require( "console-stamp" )( console, { pattern : "dd/mm/yyyy HH:MM:ss.l" } );
 
 var routes = require('./server/routes/index');
 var Kiosk = require('./server/Kiosk');
@@ -27,7 +27,7 @@ server.listen(settings.server.port || 3000);
 //io.on('connection',new NavApp(db).sockHandler);
 
 app.use('/user_images',express.static('user_images'));
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
@@ -43,10 +43,10 @@ app.use(function(req, res, next) {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  console.log(err);
+  logger.error(err);
 });
 
 function exit(err){
-    console.log(err);
+    logger.error(err);
     process.exit();
 }

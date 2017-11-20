@@ -3,6 +3,7 @@ var fs = require('fs');
 var request = require('http-request');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
+var logger = require('tracer').console(require('../models/logModel'));
 
 var weather = function(conf){
 	this.t = this;
@@ -53,7 +54,7 @@ var weather = function(conf){
                     
                 });
             }
-			console.log("Emitting weather info from weather.js.");
+			logger.debug("Emitting weather info.");
             t.emit('alert',t.alerts);
 			if(cb)cb(t.alerts);
 			if(!cb)return t.alerts;
@@ -79,7 +80,7 @@ var getAlerts = function(cb){
 		}
 
 		if(error){
-			console.error(error.message);
+			logger.error(error.message);
 			res.resume();
 			return;
 		}
@@ -90,21 +91,21 @@ var getAlerts = function(cb){
 
 		res.on('end',function(){
 
-			console.log("Received alerts from wunderground");
+			logger.debug("Received alerts from wunderground");
 			try{
 				body = JSON.parse(body);
 			} catch (e){
-				console.error(e);
+				logger.error(e);
 			}
 
 			if(body.alerts && body.alerts.length){
 
-				console.log("Detected bad weather");
-				console.log("There "+(body.alerts.length===1?"is ":"are ")+body.alerts.length+" weather "+(body.alerts.length===1?"alert.":"alerts."));
+				logger.info("Detected bad weather");
+				logger.info("There %s %d weather %s",(body.alerts.length===1?"is ":"are "),body.alerts.length,(body.alerts.length===1?"alert.":"alerts."));
 				
 				body.alerts.forEach(function(alert,ind,all){
-					console.log("Alert "+parseInt(ind+1)+": "+alert.description);
-					console.log(alert.message);
+					logger.info("Alert %d: %s",parseInt(ind+1),alert.description);
+					logger.info(alert.message);
 				});
 				
 				if(cb){
@@ -114,7 +115,7 @@ var getAlerts = function(cb){
 				}
 				
 			} else {
-				console.log("No bad weather.");
+				logger.info("No bad weather.");
 				
 				if(cb){
 					cb(false);
@@ -125,7 +126,7 @@ var getAlerts = function(cb){
 		});  
 	}).on('error',function(e){
 
-		console.error('ERROR: '+e.message);
+		logger.error('ERROR: '+e.message);
 
 		if(cb){
 			cb(false);
@@ -137,7 +138,7 @@ var getAlerts = function(cb){
 
 var download = function(cb){
 	var t = this;
-	console.log("Downloading weather gif");
+	logger.debug("Downloading weather gif");
 	var weatherMapPath = this.weatherMapPath;
     var weatherCamPath = this.weatherCamPath;
     
@@ -147,9 +148,9 @@ var download = function(cb){
     
 	request.get(data,weatherMapPath,function(err,res){
 		if(err){
-			console.error(err);
+			logger.error(err);
 		} else {
-			console.log("Downloaded file "+res.file);
+			logger.debug("Downloaded file %s",res.file);
 		}
 	});
     
@@ -163,7 +164,7 @@ var download = function(cb){
 		}
 
 		if(error){
-			console.error(error.message);
+			logger.error(error.message);
 			res.resume();
 			return;
 		}
@@ -173,11 +174,11 @@ var download = function(cb){
 		});
 
 		res.on('end',function(){
-            console.log("Received webcams from wunderground");
+            logger.debug("Received webcams from wunderground");
 			try{
 				body = JSON.parse(body);
 			} catch (e){
-				console.error(e);
+				logger.error(e);
 			}
             
             if(body.webcams && body.webcams.length){
@@ -189,7 +190,7 @@ var download = function(cb){
                 
                 request.get(data,weatherCamPath,function(err,res){
                     if(err){
-                        console.error(err);
+                        logger.error(err);
                         t.webcam = body.webcams[Math.floor(Math.random()*body.webcams.length)];
                         var data = {
                             url:t.webcam.CURRENTIMAGEURL
@@ -197,14 +198,14 @@ var download = function(cb){
 
                         request.get(data,weatherCamPath,function(err,res){
                             if(err){
-                                console.error(err);
+                                logger.error(err);
                             } else {
-                                console.log("Downloaded file "+res.file);
+                                logger.debug("Downloaded file %s",res.file);
                             }
                             if(cb)cb(true);
                         });
                     } else {
-                        console.log("Downloaded file "+res.file);
+                        logger.debug("Downloaded file %s",res.file);
                         if(cb)cb(true);
                     }
                     
@@ -213,7 +214,7 @@ var download = function(cb){
         });
     }).on('error',function(e){
 
-		console.error('ERROR: '+e.message);
+		logger.error('ERROR: %s',e.message);
 
 		if(cb){
 			cb(false);

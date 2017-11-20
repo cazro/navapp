@@ -2,11 +2,12 @@ var Config = require('../models/configModel');
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 var db = mongoose.connection;
+var logger = require('tracer').console(require('../models/logModel'));
 
 var findLatest = function(selection,cb){
 	Config.findOne().select(selection).sort({created:-1}).lean().exec(function(err, doc){
 		if(err){
-			console.error(err);
+			logger.error(err);
 			if(cb)cb(false);
 		} else {
 			if(cb){
@@ -24,10 +25,10 @@ function Mongo(obj){
 	mongoose.connect('mongodb://'+this.host+':'+this.port+'/'+this.db);
 
 	db.on('open',function(){
-		console.log("MongoDB connection open for client");
+		logger.debug("MongoDB connection open for client");
 	});
 
-	db.on('error',console.error);
+	db.on('error',logger.error);
 };
 Mongo.prototype.getSlides = function(cb){
 	findLatest('slides',function(doc){
@@ -54,7 +55,7 @@ Mongo.prototype.getSlide = function(index,callback){
 			return doc[index];
 
 		} else {
-			console.error(doc);
+			logger.error(doc);
 			if(callback)callback(doc);
 			return doc;
 		}
@@ -64,7 +65,7 @@ Mongo.prototype.getSlide = function(index,callback){
 Mongo.prototype.getSettings = function(section,cb){
 	findLatest('settings'+(section?'.'+section:''),function(doc){
 		if(!doc){
-			console.error(doc);
+			logger.error(doc);
 			if(cb)cb(doc);
 		} else {
 			if(cb){
@@ -79,7 +80,7 @@ Mongo.prototype.getSettings = function(section,cb){
 Mongo.prototype.getFeatures = function(section,cb){
 	findLatest('features'+(section?'.'+section:''),function(doc){
 		if(!doc){
-			console.error(doc);
+			logger.error(doc);
 			if(cb)cb(doc);
 			return false;
 		} else {

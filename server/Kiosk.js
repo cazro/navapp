@@ -1,6 +1,7 @@
 var fs = require('fs');
 var Reddit = require('./features/reddit');
 var Weather = require('./features/weather');
+var logger = require('tracer').console(require('./models/logModel'));
 var clients = {};
 var util = require('util');
 var scope,alerts;
@@ -14,8 +15,9 @@ function Kiosk(config,io){
 	this.sockHandler = sockHandler;
 	this.info;
 	
-	console.dir(this.config.getFeatures());
-	console.dir(this.config.getSettings("features"));
+	logger.debug("Features enabled/disabled: %j",this.config.getFeatures());
+	logger.info("Kiosk Settings:");
+    console.dir(this.config.getSettings());
 	
 	if(this.config.getFeatures('reddit'))
 		this.reddit = new Reddit(this.config.getSettings("features").reddit);
@@ -25,7 +27,7 @@ function Kiosk(config,io){
         alerts = this.weather.alerts;
 		this.weather.setMaxListeners(0);
 		this.weather.on('alert',function(data){
-			console.log("Caught weather alert emit.");
+			logger.debug("Caught weather alert emit.");
 			io.emit('alert',data);
 			scope.info.alerts = data;
             alerts = data;
@@ -44,7 +46,7 @@ function Kiosk(config,io){
 
 	io.on('disconnect',function(socket){
 		socket.removeListener('connection');
-		console.log("Received disconnect in app.js");
+		logger.debug("Received disconnect in app.js");
 	});
 	
 	io.sockets.setMaxListeners(100);
@@ -53,7 +55,7 @@ function Kiosk(config,io){
 
 var sockHandler = function(socket){
 	clients[socket.id] = socket;
-	console.log("Client connected to socket...");
+	logger.debug("Client connected to socket...");
 	
     var currentSlide = {
 		index: 0
@@ -96,24 +98,24 @@ var sockHandler = function(socket){
 	};
 	
 	refreshData(function(){
-		console.log("Sending initial info");
-		console.dir(info);
+		logger.info("Sending initial slide:");
+        console.dir(info);
 		
 		socket.emit('init',info);
 	});
 
 	socket.on('clientInfo',function(data){
 		clients[socket.id].clientInfo = data;
-		console.log("Received client info from "+socket.id+". Data:");
-		console.dir(data);
+		logger.debug("Received client info from %s. Data: %j",socket.id,data);
+		
 	});
 	
 	socket.on('getNextSlide',function(data){
 		currentSlide.index += 1;
 		refreshData(function(){
-			console.log("Sending next slide to "+socket.id);
-			console.log("Slide info");
-			console.dir(info.slide);
+			logger.info("Sending next slide to %s",socket.id);
+			logger.info("Slide info:");
+            console.dir(info.slide);
 			socket.emit('nextSlide',info);
 		});
 	});
@@ -124,7 +126,7 @@ var sockHandler = function(socket){
 	});
 	
 	socket.on('disconnect', function () {
-	   console.log('user disconnected - '+socket.id);
+	   logger.debug('user disconnected - '+socket.id);
 
 	   delete clients[socket.id];
 	});
@@ -152,7 +154,7 @@ Kiosk.prototype.popSlide = function(slide,cb){
 					return {};
 				}
 			} else {
-				console.error(err);
+				logger.error(err);
 				if(cb)cb({});
 				return {};
 			}

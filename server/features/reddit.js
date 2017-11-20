@@ -1,6 +1,7 @@
 var https = require('https');
 var fs = require('fs');
 var request = require('http-request');
+var logger = require('tracer').console(require('../models/logModel'));
 
 function reddit(conf){
 	var t = this;
@@ -49,7 +50,7 @@ function reddit(conf){
 					var dest = 'public/images/reddit/'+image.subreddit+'/'+image.file;
                     try{
                         fs.accessSync(dest, fs.F_OK);
-                        console.log(dest+" already exists.  Not downloading.");
+                        logger.debug("%s already exists.  Not downloading.",dest);
                         downCount++;
                         if(downCount === data.images.length){
                             cleanDir(data.images);
@@ -101,7 +102,7 @@ function cleanDir(images){
 					}
 
 					if(old && cnt2 == (images.length-1)){
-						console.log("Removing ye old file "+file);
+						logger.debug("Removing ye old file %s",file);
                         try{
                             fs.accessSync(dir+'/'+file,fs.F_OK);
                             fs.unlink(dir+'/'+file);
@@ -217,7 +218,7 @@ function checkFile(image,dest,cb){
 		if(err){
 			if(cb)cb(image,dest);
 		} else {
-			console.log(dest+" already exists.  Not downloading.");
+			logger.debug("%s already exists.  Not downloading.",dest);
 			if(cb)cb(false);
 		}
 	});
@@ -227,13 +228,13 @@ var download = function(image,dest,cb){
 	
 	request.get(image,dest,function(err,res){
 		if(err){
-			console.error("ERROR with Reddit request.get");
-			console.error(err);
-			console.error(image);
+			logger.error("ERROR with Reddit request.get");
+			logger.error(err);
+			logger.error(image);
 
 		} else {
 
-			console.log("Downloaded file "+res.file);
+			logger.debug("Downloaded file %s",res.file);
 			if(cb)cb(image,dest);
 		}
 	});
@@ -270,7 +271,7 @@ var getImages = function(cb){
         }
 
         res.on('error',function(err){
-            console.error(err.message);			
+            logger.error(err.message);			
         });
 
         res.on('data',function(chunk){
@@ -279,27 +280,27 @@ var getImages = function(cb){
 
         if (error) {
 
-            console.log(error.message);
+            logger.error(error.message);
             //console.dir(res);
             res.resume();
             return;
         }
         res.on('end',function(){
 
-            console.log("Received response from Reddit");
+            logger.debug("Received response from Reddit");
 
             try{
                 body = JSON.parse(body);
             } catch (e){
                // console.dir(body);
-                console.error(e);
+                logger.error(e);
             }
 
 			rawRedditData = body.data;
 			
             if(body.data && body.data.children){
-                console.log("Reddit success!");
-                console.log("Getting the "+t.listing+" listings from subreddit "+sub);
+                logger.debug("Reddit success!");
+                logger.debug("Getting the %s listings from subreddit %s",t.listing,sub);
 
                 for(var i in body.data.children){
                     var child = body.data.children[i];
@@ -334,7 +335,7 @@ var getImages = function(cb){
                                 });
                             }
                         } else {
-                            console.log('Data Object in child doesn\'t contain preview image urls.');
+                            logger.debug("Data Object in child doesn't contain preview image urls.");
                         }
                     }
                 }
@@ -346,7 +347,7 @@ var getImages = function(cb){
                 }
             } else {
 
-                console.error('No Data returned.');
+                logger.error('No Data returned.');
                 if(cb){
                     cb(false);
                 } else {
@@ -355,7 +356,7 @@ var getImages = function(cb){
             }
         });
     }).on('error',function(e){
-        console.error('ERROR: '+e.message);
+        logger.error('ERROR: %s',e.message);
         if(cb){
             cb(false);
         } else {
