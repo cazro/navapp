@@ -125,7 +125,7 @@ function cleanDir(images){
     for(var s in subDirs){
         if(subs.indexOf(subDirs[s]) === -1){
             //There's a subreddit directory that doesn't need to exist probably due to removing it from config.
-            fs.unlink('public/images/reddit/'+subDirs[s]+'/');
+            fs.unlink('public/images/reddit/'+subDirs[s]);
             logger.debug("Removing subreddit directory %s because no downloaded image is from that subreddit.",subDirs[s]);
         }
     }
