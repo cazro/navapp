@@ -125,11 +125,11 @@ function cleanDir(images){
     for(var s in subDirs){
         if(subs.indexOf(subDirs[s]) === -1){
             //There's a subreddit directory that doesn't need to exist probably due to removing it from config.
-            var files = fs.readdirSync('/public/images/reddit/'+subDirs[s]+'/');
+            var files = fs.readdirSync('public/images/reddit/'+subDirs[s]+'/');
             if(files){
 			
                 for(var f in files){
-                    fs.unlink('/public/images/reddit/'+subDirs[s]+'/'+files[f]);
+                    fs.unlink('public/images/reddit/'+subDirs[s]+'/'+files[f]);
                 }
             }
             fs.rmdir('public/images/reddit/'+subDirs[s]+'/',function(){
