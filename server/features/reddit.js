@@ -126,8 +126,10 @@ function cleanDir(images){
         if(subs.indexOf(subDirs[s]) === -1){
             //There's a subreddit directory that doesn't need to exist probably due to removing it from config.
            
-            fs.rmdirSync('public/images/reddit/'+subDirs[s]);
-            logger.debug("Removing subreddit directory %s because no downloaded image is from that subreddit.",subDirs[s]);
+            fs.rmdir('public/images/reddit/'+subDirs[s]+'/',function(){
+                logger.debug("Removed subreddit directory %s because no downloaded image is from that subreddit.",subDirs[s]);
+       
+            });
         }
     }
 }
