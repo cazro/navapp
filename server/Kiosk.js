@@ -15,7 +15,8 @@ function Kiosk(config,io){
 	this.sockHandler = sockHandler;
 	this.info;
 	
-	logger.debug("Features enabled/disabled: %j",this.config.getFeatures());
+	logger.debug("Features enabled/disabled:");
+    logger.debug(this.config.getFeatures());
 	logger.info("Kiosk Settings:");
     logger.info(this.config.getSettings());
 	
@@ -55,7 +56,7 @@ function Kiosk(config,io){
 
 var sockHandler = function(socket){
 	clients[socket.id] = socket;
-	logger.debug("Client connected to socket...");
+	logger.info("Client %s has connected to the kiosk...",socket.id);
 	
     var currentSlide = {
 		index: 0
@@ -98,7 +99,7 @@ var sockHandler = function(socket){
 	};
 	
 	refreshData(function(){
-		logger.info("Sending initial slide:");
+		logger.info("Sending initial kiosk description and slide to %s:", socket.id);
         logger.info(info);
 		
 		socket.emit('init',info);
