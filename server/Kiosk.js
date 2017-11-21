@@ -107,7 +107,8 @@ var sockHandler = function(socket){
 
 	socket.on('clientInfo',function(data){
 		clients[socket.id].clientInfo = data;
-		logger.debug("Received client info from %s. Data: %j",socket.id,data);
+		logger.debug("Received client info from %s. Data:",socket.id);
+        logger.debug(data);
 		
 	});
 	

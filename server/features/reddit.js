@@ -83,10 +83,15 @@ function reddit(conf){
 };
 function cleanDir(images){
 	var dir,sub,image,file,old;
+    var subDirs = fs.readdirSync('public/images/reddit/');
+    var subs = [];
 	for(var i in images){
 		old = true;
 		image = images[i];
 		sub = image.subreddit;
+        if(subs.indexOf(sub) === -1){
+            subs.push(sub);
+        }
 		dir = 'public/images/reddit/'+sub;
 		var files = fs.readdirSync(dir);
 		var cnt = 0;
@@ -117,6 +122,13 @@ function cleanDir(images){
 			}
 		}
 	}
+    for(var s in subDirs){
+        if(subs.indexOf(subDirs[s]) === -1){
+            //There's a subreddit directory that doesn't need to exist probably due to removing it from config.
+            //fs.unlinkSync('public/images/reddit/'+subDirs[s]);
+            logger.debug("Removing subreddit directory %s because no downloaded image is from that subreddit.",subDirs[s]);
+        }
+    }
 }
 reddit.prototype.getImageData = function(filename,cb){
 	var t = this;
