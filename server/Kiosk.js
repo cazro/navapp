@@ -114,7 +114,7 @@ var sockHandler = function(socket){
 		currentSlide.index += 1;
 		refreshData(function(){
 			logger.info("Sending next slide to %s",socket.id);
-			logger.info("Slide info: %j");
+			logger.info("Slide info:");
             logger.info(info.slide);
 			socket.emit('nextSlide',info);
 		});
