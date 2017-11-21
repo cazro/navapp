@@ -107,7 +107,7 @@ function cleanDir(images){
 					}
 
 					if(old && cnt2 == (images.length-1)){
-						logger.debug("Removing ye old file %s",file);
+						logger.debug("Removing ye old file %s from %s",file,sub);
                         try{
                             fs.accessSync(dir+'/'+file,fs.F_OK);
                             fs.unlink(dir+'/'+file);
@@ -125,7 +125,13 @@ function cleanDir(images){
     for(var s in subDirs){
         if(subs.indexOf(subDirs[s]) === -1){
             //There's a subreddit directory that doesn't need to exist probably due to removing it from config.
-           
+            var files = fs.readdirSync('/public/images/reddit/'+subDirs[s]+'/');
+            if(files){
+			
+                for(var f in files){
+                    fs.unlink('/public/images/reddit/'+subDirs[s]+'/'+files[f]);
+                }
+            }
             fs.rmdir('public/images/reddit/'+subDirs[s]+'/',function(){
                 logger.debug("Removed subreddit directory %s because no downloaded image is from that subreddit.",subDirs[s]);
        
