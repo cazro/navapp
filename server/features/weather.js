@@ -3,7 +3,7 @@ var fs = require('fs');
 var request = require('http-request');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
-var logger = require('tracer').console(require('../models/logModel'));
+var logger = require('../utils/logger');
 
 var weather = function(conf){
 	this.t = this;

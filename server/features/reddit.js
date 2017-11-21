@@ -1,7 +1,7 @@
 var https = require('https');
 var fs = require('fs');
 var request = require('http-request');
-var logger = require('tracer').console(require('../models/logModel'));
+var logger = require('../utils/logger');
 
 function reddit(conf){
 	var t = this;

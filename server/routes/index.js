@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var logger = require('tracer').console(require('../models/logModel'));
+var logger = require('../utils/logger');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

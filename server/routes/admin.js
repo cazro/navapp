@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var db;
-var logger = require('tracer').console(require('../models/logModel'));
+var logger = require('../utils/logger');
 
 router.use(function(req,res,next){
     db = req.app.get('db');

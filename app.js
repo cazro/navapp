@@ -4,7 +4,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var path = require('path');
 var morgan = require('morgan');
-var logger = require('tracer').console(require('./server/models/logModel'));
+var logger = require('./server/utils/logger');
 var config = require('config');
 
 var routes = require('./server/routes/index');

@@ -1,7 +1,7 @@
 var fs = require('fs');
 var Reddit = require('./features/reddit');
 var Weather = require('./features/weather');
-var logger = require('tracer').console(require('./models/logModel'));
+var logger = require('./utils/logger');
 var clients = {};
 var util = require('util');
 var scope,alerts;
