@@ -17,7 +17,7 @@ function Kiosk(config,io){
 	
 	logger.debug("Features enabled/disabled: %j",this.config.getFeatures());
 	logger.info("Kiosk Settings:");
-    console.dir(this.config.getSettings());
+    logger.info(this.config.getSettings());
 	
 	if(this.config.getFeatures('reddit'))
 		this.reddit = new Reddit(this.config.getSettings("features").reddit);
@@ -99,7 +99,7 @@ var sockHandler = function(socket){
 	
 	refreshData(function(){
 		logger.info("Sending initial slide:");
-        console.dir(info);
+        logger.info(info);
 		
 		socket.emit('init',info);
 	});
@@ -114,8 +114,8 @@ var sockHandler = function(socket){
 		currentSlide.index += 1;
 		refreshData(function(){
 			logger.info("Sending next slide to %s",socket.id);
-			logger.info("Slide info:");
-            console.dir(info.slide);
+			logger.info("Slide info: %j");
+            logger.info(info.slide);
 			socket.emit('nextSlide',info);
 		});
 	});

@@ -281,7 +281,7 @@ var getImages = function(cb){
         if (error) {
 
             logger.error(error.message);
-            //console.dir(res);
+            //logger.info(res);
             res.resume();
             return;
         }
@@ -292,7 +292,7 @@ var getImages = function(cb){
             try{
                 body = JSON.parse(body);
             } catch (e){
-               // console.dir(body);
+               // logger.info(body);
                 logger.error(e);
             }
 
