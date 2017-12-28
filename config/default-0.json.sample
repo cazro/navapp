@@ -52,6 +52,7 @@
 				"subreddit": ["osha","pics"],
 				"limit":20,
 				"listing":"hot",
+                "allow_nsfw": false,
 				"refresh": 1820  
 			},
 			"webAdmin":{

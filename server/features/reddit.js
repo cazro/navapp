@@ -12,6 +12,7 @@ function reddit(conf){
 	this.listing = conf.listing.toLowerCase();
 	this.limit = conf.limit;
 	this.refresh = conf.refresh;
+    this.allow_nsfw = conf.allowNsfw;
 	this.getImages = getImages;
 	
 	if (!fs.existsSync('public/images/reddit')){
@@ -122,22 +123,22 @@ function cleanDir(images){
 			}
 		}
 	}
-    for(var s in subDirs){
-        if(subs.indexOf(subDirs[s]) === -1){
-            //There's a subreddit directory that doesn't need to exist probably due to removing it from config.
-            var files = fs.readdirSync('public/images/reddit/'+subDirs[s]+'/');
-            if(files){
-			
-                for(var f in files){
-                    fs.unlink('public/images/reddit/'+subDirs[s]+'/'+files[f]);
-                }
-            }
-            fs.rmdir('public/images/reddit/'+subDirs[s]+'/',function(){
-                logger.debug("Removed subreddit directory %s because no downloaded image is from that subreddit.",subDirs[s]);
-       
-            });
-        }
-    }
+//    for(var s in subDirs){
+//        if(subs.indexOf(subDirs[s]) === -1){
+//            //There's a subreddit directory that doesn't need to exist probably due to removing it from config.
+//            var files = fs.readdirSync('public/images/reddit/'+subDirs[s]+'/');
+//            if(files){
+//			
+//                for(var f in files){
+//                    fs.unlink('public/images/reddit/'+subDirs[s]+'/'+files[f]);
+//                }
+//            }
+//            fs.rmdir('public/images/reddit/'+subDirs[s]+'/',function(){
+//                logger.debug("Removed subreddit directory %s because no downloaded image is from that subreddit.",subDirs[s]);
+//       
+//            });
+//        }
+//    }
 }
 reddit.prototype.getImageData = function(filename,cb){
 	var t = this;
@@ -321,11 +322,11 @@ var getImages = function(cb){
 			
             if(body.data && body.data.children){
                 logger.debug("Reddit success!");
-                logger.debug("Getting the %s listings from subreddit %s",t.listing,sub);
+                logger.info("Getting the %s listings from subreddit %s",t.listing,sub);
 
                 for(var i in body.data.children){
                     var child = body.data.children[i];
-                    if(child.kind === 't3'){
+                    if(child.kind === 't3' && (t.allowNsfw?true:!child.data.over_18)){
 
                         var data = child.data;
                         
