@@ -326,7 +326,7 @@ var getImages = function(cb){
 
                 for(var i in body.data.children){
                     var child = body.data.children[i];
-                    if(child.kind === 't3' && (t.allowNsfw?true:!child.data.over_18)){
+                    if(child.kind === 't3' && (t.allow_nsfw?true:!child.data.over_18)){
 
                         var data = child.data;
                         
@@ -353,7 +353,7 @@ var getImages = function(cb){
 									source:'images/reddit/'+data.subreddit.toLowerCase()+'/'+image.id+imageType,
 									subreddit:data.subreddit.toLowerCase(),
                                     name:data.title,
-                                    url:url
+                                    url:url.replace(/&amp;/g, "&")
                                 });
                             }
                         } else {
